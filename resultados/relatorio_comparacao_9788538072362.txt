@@ -1,0 +1,22 @@
+================================================================================
+RELATORIO DE COMPARACAO DE MODELOS DE PREVISAO
+================================================================================
+
+SKU: 9788538072362
+Data: 2026-01-02 14:46:05
+
+--------------------------------------------------------------------------------
+METRICAS DE AVALIACAO
+--------------------------------------------------------------------------------
+                modelo       mae       rmse      mape
+  SARIMA Mensal (m=30) 40.500000 123.127982 26.051366
+         ARIMA Simples 40.500000 123.127982 26.051366
+  Media Movel (7 dias) 40.871429 123.049691 26.783301
+Suavizacao Exponencial 42.093721 122.324061 29.782202
+
+--------------------------------------------------------------------------------
+INTERPRETACAO DAS METRICAS:
+--------------------------------------------------------------------------------
+MAE (Mean Absolute Error): Erro medio absoluto. Menor e melhor.
+RMSE (Root Mean Squared Error): Penaliza erros grandes. Menor e melhor.
+MAPE (Mean Absolute Percentage Error): Erro percentual. Menor e melhor.

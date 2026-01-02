@@ -122,7 +122,7 @@ class PrevisorEstoqueSARIMA:
         """
         # Verifica se há dados suficientes (mínimo de 30 observações recomendado)
         if len(serie) < 30:
-            print(f"⚠️  SKU {sku}: Dados insuficientes ({len(serie)} observações). Mínimo: 30")
+            print(f"[AVISO] SKU {sku}: Dados insuficientes ({len(serie)} observacoes). Minimo: 30")
             return None
         
         try:
@@ -138,10 +138,12 @@ class PrevisorEstoqueSARIMA:
             # - max_P, max_D, max_Q: Limites superiores para parâmetros sazonais
             # - trace=True: Mostra progresso da busca (útil para debug)
             
+            # Para sazonalidade mensal em dados diários: m=30 (aproximadamente 30 dias = 1 mês)
+            # Isso captura padrões que se repetem mensalmente (ex: outubro e dezembro)
             modelo = auto_arima(
                 serie,
                 seasonal=True,           # Ativa componente sazonal (SARIMA)
-                m=7,                     # Período sazonal: 7 dias (semanal)
+                m=30,                    # Período sazonal: 30 dias (mensal) - captura padrões de out/dez
                 stepwise=True,           # Busca eficiente (stepwise selection)
                 suppress_warnings=True,  # Suprime warnings
                 error_action='ignore',   # Ignora erros na busca
@@ -164,12 +166,12 @@ class PrevisorEstoqueSARIMA:
                 n_jobs=-1                # Usa todos os cores disponíveis
             )
             
-            print(f"✓ SKU {sku}: Modelo encontrado - {modelo.order} x {modelo.seasonal_order}")
+            print(f"[OK] SKU {sku}: Modelo encontrado - {modelo.order} x {modelo.seasonal_order}")
             
             return modelo
             
         except Exception as e:
-            print(f"✗ SKU {sku}: Erro ao treinar modelo - {str(e)}")
+            print(f"[ERRO] SKU {sku}: Erro ao treinar modelo - {str(e)}")
             return None
     
     
@@ -235,7 +237,7 @@ class PrevisorEstoqueSARIMA:
             return previsao_serie
             
         except Exception as e:
-            print(f"✗ Erro ao gerar previsão: {str(e)}")
+            print(f"[ERRO] Erro ao gerar previsao: {str(e)}")
             return None
     
     
@@ -266,7 +268,7 @@ class PrevisorEstoqueSARIMA:
             serie = self.preparar_serie_temporal(df_estoque, sku)
             
             if len(serie) < 30:
-                print(f"⚠️  SKU {sku}: Dados insuficientes. Pulando...")
+                print(f"[AVISO] SKU {sku}: Dados insuficientes. Pulando...")
                 continue
             
             # Treina modelo
