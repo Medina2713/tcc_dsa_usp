@@ -227,4 +227,4 @@ Medina2713
 
 ---
 
-**Última atualização**: 2024
+**Última atualização**: 02/01/26
