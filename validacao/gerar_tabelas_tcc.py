@@ -16,11 +16,18 @@ DIR_TABELAS = Path('resultados/tabelas_tcc')
 DIR_TABELAS.mkdir(parents=True, exist_ok=True)
 
 
-def gerar_tabela_01_base_dados():
+def gerar_tabela_01_base_dados(dir_saida=None):
     """
     Tabela 1 - Explicacao da Base de Dados Utilizada.
     Conforme requisitado na metodologia do TCC.
+
+    Parameters
+    ----------
+    dir_saida : path-like, optional
+        Diretorio de saida. Se None, usa DIR_TABELAS.
     """
+    out = Path(dir_saida) if dir_saida is not None else DIR_TABELAS
+    out.mkdir(parents=True, exist_ok=True)
     linhas = [
         # historico_estoque
         ('sku', 'Identificador unico do produto (Stock Keeping Unit)', 'sku (str)'),
@@ -47,12 +54,12 @@ def gerar_tabela_01_base_dados():
             origem.append('venda_produtos')
     df.insert(0, 'Fonte', origem)
 
-    caminho_csv = DIR_TABELAS / 'tabela_01_base_dados.csv'
+    caminho_csv = out / 'tabela_01_base_dados.csv'
     df.to_csv(caminho_csv, index=False, encoding='utf-8-sig', sep=';')
     print(f"[OK] Tabela 1 salva: {caminho_csv}")
 
     # Tambem gera versao em Markdown para visualizacao
-    caminho_md = DIR_TABELAS / 'tabela_01_base_dados.md'
+    caminho_md = out / 'tabela_01_base_dados.md'
     with open(caminho_md, 'w', encoding='utf-8') as f:
         f.write("# Tabela 1 - Explicacao da Base de Dados Utilizada\n\n")
         f.write("Fonte: Dados originais da pesquisa.\n\n")

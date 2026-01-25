@@ -500,6 +500,14 @@ def main():
     DIR_TABELAS_TCC.mkdir(parents=True, exist_ok=True)
     DIR_FIGURAS_MODELOS.mkdir(parents=True, exist_ok=True)
 
+    _log("\n[TABELA 1] Gerando Tabela 1 (explicacao da base de dados)...")
+    try:
+        import validacao.gerar_tabelas_tcc as _gt
+        _gt.gerar_tabela_01_base_dados(dir_saida=DIR_TABELAS_TCC)
+        _log("[TABELA 1] OK.")
+    except Exception as e:
+        _log(f"[AVISO] Falha ao gerar Tabela 1: {e}")
+
     _log("\n[PASSO 0] Verificando data wrangling...")
     _rodar_data_wrangling()
     _log("[PASSO 0] OK.")
@@ -560,6 +568,10 @@ def main():
             _log(f"  [OK] figura{i}.png")
         else:
             _log(f"  [--] figura{i}.png (nao gerado)")
+    _log(f"\nTabelas em {DIR_TABELAS_TCC}:")
+    for nome in ('tabela_01_base_dados.csv', 'tabela_02_desempenho_modelos.csv'):
+        p = DIR_TABELAS_TCC / nome
+        _log(f"  {'[OK]' if p.exists() else '[--]'} {nome}")
     _log(f"\nValor final da ferramenta de elencacao: {DIR_RESULTADOS / 'elencacao_final.csv'}")
     _log(f"Arquivo de log: {log_file}")
     _log("\nDocumentacao: documentacao/COMO_GERAR_FIGURAS_TCC.md")
