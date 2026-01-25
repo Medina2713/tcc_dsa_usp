@@ -36,7 +36,9 @@ plt.style.use('seaborn-v0_8-darkgrid')
 
 # Configurações
 DIR_RESULTADOS = Path('resultados/resultados_comparacao')
+DIR_TABELAS_TCC = Path('resultados/tabelas_tcc')
 DIR_RESULTADOS.mkdir(exist_ok=True)
+DIR_TABELAS_TCC.mkdir(parents=True, exist_ok=True)
 ARQUIVO_CHECKPOINT = DIR_RESULTADOS / 'checkpoint_skus.json'
 
 
@@ -478,8 +480,18 @@ def gerar_relatorio_final():
     arquivo_csv = DIR_RESULTADOS / 'metricas_consolidadas.csv'
     df_metricas.to_csv(arquivo_csv, index=False)
     
+    # Tabela 2 (TCC): medias por modelo (MAE, RMSE, MAPE)
+    resumo = df_metricas.groupby('modelo').agg({
+        'mae': 'mean', 'rmse': 'mean', 'mape': 'mean'
+    }).round(4).reset_index()
+    resumo.columns = ['Modelo', 'MAE', 'RMSE', 'MAPE']
+    resumo['MAPE'] = resumo['MAPE'].astype(str) + '%'
+    path_tab2 = DIR_TABELAS_TCC / 'tabela_02_desempenho_modelos.csv'
+    resumo.to_csv(path_tab2, index=False, encoding='utf-8-sig', sep=';')
+    
     print(f"\n[OK] Relatorio salvo: {arquivo_relatorio}")
     print(f"[OK] CSV salvo: {arquivo_csv}")
+    print(f"[OK] Tabela 2 (TCC) salva: {path_tab2}")
     print("\n" + texto)
 
 

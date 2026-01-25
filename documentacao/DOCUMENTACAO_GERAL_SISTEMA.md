@@ -1,4 +1,4 @@
-# Documentação Geral do Sistema de Previsão de Demanda e Elencação
+# Documentação Geral do Sistema de Previsão de Estoque e Elencação
 
 ## 📋 Índice
 
@@ -15,19 +15,21 @@
 
 ## 🎯 Visão Geral
 
-Este sistema foi desenvolvido para **previsão de demanda** e **elencação de produtos** (priorização) em um ambiente de e-commerce de brinquedos. O sistema combina:
+Este sistema foi desenvolvido para **previsão de estoque** e **elencação de produtos** (priorização para reposição) em um ambiente de e-commerce de brinquedos. O sistema combina:
 
-- **Modelos SARIMA** para previsão de demanda futura
+- **Modelos SARIMA, ARIMA, Holt-Winters e Média Móvel** para **previsão de estoque (saldo)**, não de vendas
 - **Métricas de negócio** (Rentabilidade, Urgência, Giro) para elencação
 - **Análises exploratórias** para identificar padrões sazonais
 - **Comparação de modelos** para validação estatística
+
+**Importante:** Os modelos são treinados na série histórica de **saldo de estoque** (`historico_estoque`). A saída é previsão de **unidades em estoque** por dia. O **terceiro pilar da elencação** usa essa previsão para **sinalizar necessidade de reposição**: estoque previsto baixo → priorizar repor; estoque previsto alto → menor urgência.
 
 ### Objetivo Principal
 
 Priorizar produtos para compra/reposição com base em três pilares:
 1. **Rentabilidade (R(t))**: Valor financeiro (margem de contribuição)
-2. **Nível de Urgência (U(t))**: Tempo que o estoque atual dura
-3. **Giro Futuro Previsto (GP(t))**: Previsão SARIMA de demanda futura
+2. **Nível de Urgência (U(t))**: Tempo que o estoque atual dura (estoque atual / venda média diária)
+3. **Giro Futuro Previsto (GP(t))**: Soma das **previsões de estoque** (SARIMA ou melhor modelo) no horizonte — usada para sinalizar reposição
 
 ---
 
@@ -35,8 +37,15 @@ Priorizar produtos para compra/reposição com base em três pilares:
 
 ```
 .
-├── sarima_estoque.py              # Módulo principal SARIMA
+├── gerar_figuras_tcc.py           # Script mestre TCC: figuras 1–7, Tabela 2, elencação final
 ├── requirements_sarima.txt        # Dependências Python
+├── DB/                            # Dados (historico_estoque, venda_produtos)
+│
+├── previsoes/
+│   ├── sarima_estoque.py          # Módulo SARIMA (previsão de ESTOQUE)
+│   ├── teste_sarima_produto.py
+│   ├── teste_elencacao_3_skus.py
+│   └── ...
 │
 ├── data_wrangling/                # Preparação de dados
 │   ├── dw_historico.py           # Processa histórico de estoque
@@ -57,10 +66,6 @@ Priorizar produtos para compra/reposição com base em três pilares:
 │   ├── calcular_metricas_elencacao.py
 │   └── validacao_walk_forward_sarima.py
 │
-├── previsoes/                     # Scripts de previsão
-│   ├── teste_sarima_produto.py
-│   └── teste_elencacao_3_skus.py
-│
 ├── exemplos/                      # Exemplos de uso
 │   ├── exemplo_uso_sarima.py
 │   └── exemplo_elencacao_completa.py
@@ -69,7 +74,11 @@ Priorizar produtos para compra/reposição com base em três pilares:
 │
 ├── dados/                         # Dados processados (gerados)
 │
-└── resultados/                    # Todos os resultados (CSV, PNG, TXT)
+└── resultados/                    # Figuras, tabelas, elencação, logs
+    ├── figuras_tcc/               # figura1.png … figura7.png
+    ├── tabelas_tcc/               # tabela_02_desempenho_modelos.csv
+    ├── elencacao_final.csv        # Ranking R(t), U(t), GP(t)
+    └── logs/
 ```
 
 ---
@@ -78,8 +87,8 @@ Priorizar produtos para compra/reposição com base em três pilares:
 
 ### 🔧 Módulo Principal
 
-#### `sarima_estoque.py`
-**Descrição**: Módulo principal com a classe `PrevisorEstoqueSARIMA` para previsão de demanda usando modelos SARIMA.
+#### `previsoes/sarima_estoque.py`
+**Descrição**: Módulo principal com a classe `PrevisorEstoqueSARIMA` para **previsão de estoque (saldo)** usando modelos SARIMA. Os modelos preveem **unidades em estoque**, não vendas.
 
 **Classe Principal**: `PrevisorEstoqueSARIMA`
 
@@ -282,6 +291,16 @@ pip install -r requirements_sarima.txt
 
 ### Fluxo Básico
 
+**Opção principal (TCC):** use o script único que gera figuras, Tabela 2 e **elencação final**:
+
+```bash
+python gerar_figuras_tcc.py
+```
+
+Ele executa data wrangling (se necessário), análise exploratória (figura1–4), pipeline 300 candidatos → 10 melhores (métricas, filtros, figuras 5–7, Tabela 2) e **elencação final** (R(t), U(t), GP(t) → ranking). Salva `resultados/elencacao_final.csv` e **retorna** o DataFrame do ranking. Veja `documentacao/COMO_GERAR_FIGURAS_TCC.md`.
+
+**Fluxo alternativo (passo a passo):**
+
 1. **Preparar dados**:
 ```bash
 python data_wrangling/dw_historico.py
@@ -289,7 +308,7 @@ python data_wrangling/dw_historico.py
 
 2. **Análise exploratória** (opcional):
 ```bash
-python analises/analise_exploratoria_sazonalidade.py
+python analises/analise_exploratoria_sazonalidade.py --tcc
 ```
 
 3. **Calcular métricas de elencação**:
@@ -297,7 +316,7 @@ python analises/analise_exploratoria_sazonalidade.py
 python validacao/calcular_metricas_elencacao.py
 ```
 
-4. **Gerar previsões e elencação**:
+4. **Gerar previsões e elencação** (3 SKUs):
 ```bash
 python previsoes/teste_elencacao_3_skus.py
 ```
@@ -349,20 +368,20 @@ nivel_urgencia = estoque_atual / venda_media_diaria
 
 ### 3. Giro Futuro Previsto (GP(t))
 
-**Fórmula**: GP(t) = Soma das Previsões SARIMA para os próximos N dias
+**Fórmula**: GP(t) = Soma das **previsões de estoque** (SARIMA ou melhor modelo) para os próximos N dias
 
-**Fonte**: Modelo SARIMA treinado com `historico_estoque_atual.csv`
+**Fonte**: Modelo treinado com `historico_estoque_atual` (série de **saldo de estoque**). Os modelos preveem **estoque (saldo)**, não vendas.
 
 **Cálculo**:
 ```python
 from sarima_estoque import PrevisorEstoqueSARIMA
 
 previsor = PrevisorEstoqueSARIMA(horizonte_previsao=30)
-previsao = previsor.prever(serie_temporal, modelo=modelo_treinado)
-giro_futuro_previsto = previsao.sum()  # Soma das previsões
+previsao = previsor.prever(serie_temporal, modelo=modelo_treinado)  # previsão de ESTOQUE
+giro_futuro_previsto = previsao.sum()  # Soma das previsões de estoque
 ```
 
-**Interpretação**: Demanda total prevista para os próximos N dias.
+**Interpretação**: Soma das unidades de **estoque previstas** no horizonte. Usada na elencação para **sinalizar necessidade de reposição**: estoque previsto baixo ou tendendo a zero → maior prioridade para repor.
 
 ---
 
@@ -389,10 +408,23 @@ score_elencacao = (
 
 ## 📝 Exemplos Práticos
 
-### Exemplo 1: Elencação Completa (3 SKUs)
+### Exemplo 1: Pipeline TCC (figuras, Tabela 2 e elencação final)
 
 ```bash
-# Executa teste completo de elencação
+python gerar_figuras_tcc.py
+```
+
+**Resultado**: 
+- Figuras 1–7 em `resultados/figuras_tcc/`
+- Tabela 2 em `resultados/tabelas_tcc/tabela_02_desempenho_modelos.csv`
+- **Elencação final** em `resultados/elencacao_final.csv` (ranking R(t), U(t), GP(t), score)
+- O script **retorna** o DataFrame do ranking (valor final da ferramenta de elencação)
+
+Veja `documentacao/COMO_GERAR_FIGURAS_TCC.md` e `documentacao/CRITERIOS_SELECAO_ANALISE_TEMPORAL.md`.
+
+### Exemplo 2: Elencação Completa (3 SKUs)
+
+```bash
 python previsoes/teste_elencacao_3_skus.py
 ```
 
@@ -403,7 +435,7 @@ python previsoes/teste_elencacao_3_skus.py
 
 ---
 
-### Exemplo 2: Calcular Métricas para Todos os SKUs
+### Exemplo 3: Calcular Métricas para Todos os SKUs
 
 ```bash
 # Calcula métricas de elencação
@@ -419,7 +451,7 @@ python validacao/calcular_metricas_elencacao.py
 
 ---
 
-### Exemplo 3: Previsão SARIMA para um Produto
+### Exemplo 4: Previsão SARIMA para um Produto
 
 ```python
 from sarima_estoque import PrevisorEstoqueSARIMA
@@ -445,7 +477,7 @@ print(f"Previsão para próximos 30 dias: {previsao.sum():.0f} unidades")
 
 ---
 
-### Exemplo 4: Elencação Customizada (Múltiplos SKUs)
+### Exemplo 5: Elencação Customizada (Múltiplos SKUs)
 
 ```python
 import pandas as pd
@@ -661,7 +693,10 @@ Consulte a pasta `documentacao/` para:
 
 ### Saída
 
-**resultados/resultado_elencacao_[N]_skus.csv**:
+**resultados/elencacao_final.csv** (gerado por `gerar_figuras_tcc.py`):
+- Ranking dos 10 melhores SKUs com R(t), U(t), GP(t), score_elencacao. **Valor final da ferramenta de elencação.**
+
+**resultados/resultado_elencacao_[N]_skus.csv** (gerado por `teste_elencacao_3_skus.py`):
 - `sku`: Código do produto
 - `quantidade_vendida_total`: Soma de quantidade vendida
 - `rentabilidade_Rt`: Rentabilidade (R$)
@@ -684,6 +719,6 @@ Para dúvidas ou problemas:
 
 ---
 
-**Última atualização**: 2024  
-**Versão**: 1.0
+**Última atualização**: 25/01/26  
+**Versão**: 1.0 — Pipeline TCC (gerar_figuras_tcc), elencação final (R(t), U(t), GP(t)), modelos preveem **estoque**, terceiro pilar = reposição.
 

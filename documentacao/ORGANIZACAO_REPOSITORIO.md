@@ -63,23 +63,23 @@ CODE/
 - `README.md`
 
 ### Arquivos Principais (raiz)
-- `sarima_estoque.py` - Módulo principal SARIMA
-- `requirements_sarima.txt` - Dependências
-- `organizar_repositorio.py` - Script de organização
-- `RESUMO_MELHORIAS.md` ⭐ **NOVO**
-- `ORGANIZACAO_REPOSITORIO.md` ⭐ **Este arquivo**
+- **`gerar_figuras_tcc.py`** — Script mestre TCC: figuras 1–7, Tabela 2, **elencação final** (ranking R(t), U(t), GP(t)). Pipeline 300→10 melhores. Modelos preveem **estoque (saldo)**, não vendas; terceiro pilar **sinaliza reposição**. Ver `documentacao/COMO_GERAR_FIGURAS_TCC.md`.
+- `sarima_estoque.py` — Módulo SARIMA (em `previsoes/`)
+- `requirements_sarima.txt` — Dependências
+- `ORGANIZACAO_REPOSITORIO.md` — Este arquivo
 
 ## 🎯 Scripts Principais
 
-### Para Previsão de Demanda:
-1. **`comparacao_top_skus_otimizado.py`** ⭐ **RECOMENDADO**
-   - Versão otimizada
-   - Salva incrementalmente
-   - Sistema de checkpoint
-   - Todas as métricas
+### Pipeline TCC (figuras, tabela, elencação):
+1. **`gerar_figuras_tcc.py`** ⭐ **RECOMENDADO**
+   - Gera figuras 1–7, Tabela 2, `elencacao_final.csv`
+   - Pipeline: exploratória → 300 candidatos → 10 melhores → figuras e elencação
+   - Retorna DataFrame do ranking (valor final da ferramenta de elencação)
 
-2. `comparacao_top_skus.py`
-   - Versão antiga (não recomendada)
+### Para comparação de modelos (uso direto):
+1. **`modelos/comparacao_modelos_previsao.py`** — usado pelo pipeline TCC
+2. **`modelos/comparacao_top_skus_otimizado.py`** — versão otimizada, checkpoint
+3. `modelos/comparacao_top_skus.py` — versão antiga
 
 ### Para Análise Exploratória:
 - `analise_exploratoria_sazonalidade.py`
@@ -95,5 +95,5 @@ CODE/
 
 ---
 
-**Use `comparacao_top_skus_otimizado.py` para comparação de modelos!** ✅
+**Use `gerar_figuras_tcc.py` para figuras TCC e elencação final.** Para comparação de modelos isolada: `comparacao_modelos_previsao.py` ou `comparacao_top_skus_otimizado.py`. ✅
 

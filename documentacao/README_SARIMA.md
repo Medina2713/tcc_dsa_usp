@@ -2,15 +2,17 @@
 
 ## 📋 Visão Geral
 
-Este módulo implementa previsões de estoque futuro usando o modelo **SARIMA** (Seasonal AutoRegressive Integrated Moving Average) com busca automática de parâmetros via `pmdarima.auto_arima`.
+Este módulo implementa **previsões de estoque (saldo)** futuro usando o modelo **SARIMA** (Seasonal AutoRegressive Integrated Moving Average) com busca automática de parâmetros via `pmdarima.auto_arima`.
 
 Desenvolvido para o **TCC do MBA em Data Science & Analytics** - Ferramenta de Gestão de Estoque para E-commerce de Brinquedos.
+
+**Importante:** Os modelos preveem **estoque (unidades em estoque)**, não vendas. A previsão é usada na elencação para **sinalizar necessidade de reposição**: estoque previsto baixo → priorizar repor; estoque previsto alto → menor urgência. GP(t) = soma das previsões de estoque no horizonte.
 
 ---
 
 ## 🎯 Objetivo
 
-Gerar previsões de estoque para os próximos **7 a 15 dias** por produto (SKU), que serão utilizadas como input na fórmula de elencação da ferramenta de reposição de estoque.
+Gerar previsões de **estoque** para os próximos **7 a 15 dias** por produto (SKU), que serão utilizadas como **terceiro pilar** (GP(t)) na fórmula de elencação da ferramenta de reposição de estoque.
 
 ---
 

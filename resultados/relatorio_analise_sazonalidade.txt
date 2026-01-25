@@ -2,7 +2,7 @@
 RELATORIO DE ANALISE EXPLORATORIA: PADROES SAZONAIS
 ================================================================================
 
-Data de analise: 2026-01-02 13:58:26
+Data de analise: 2026-01-25 17:04:05
 
 Periodo analisado: 2024-05-13 ate 2026-01-02
 Total de registros: 567,000

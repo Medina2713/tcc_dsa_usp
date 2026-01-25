@@ -1,0 +1,133 @@
+[2026-01-25 16:11:37] ================================================================================
+[2026-01-25 16:11:37] GERADOR DE FIGURAS TCC (figura1 ... figura7)
+[2026-01-25 16:11:37] ================================================================================
+[2026-01-25 16:11:37] Inicio da execucao: 2026-01-25 16:11:37
+[2026-01-25 16:11:37] Arquivo de log: C:\Users\Desktop\Documents\POS\TCC\CODE\resultados\logs\log_execucao_20260125_161137.txt
+[2026-01-25 16:11:37] [CPU] Limite configurado: 80% | Cores disponiveis: 6 | n_jobs limitado: ~4
+[2026-01-25 16:11:37] [CPU] Monitoramento em tempo real: ATIVO
+[2026-01-25 16:11:37] 
+Saida: C:\Users\Desktop\Documents\POS\TCC\CODE\resultados\figuras_tcc
+[2026-01-25 16:11:37] 
+[LIMPEZA] Limpando diretorios de saida de execucoes anteriores...
+[2026-01-25 16:11:37]   [REMOVIDO] figura1.png
+[2026-01-25 16:11:37]   [REMOVIDO] figura2.png
+[2026-01-25 16:11:37]   [REMOVIDO] figura3.png
+[2026-01-25 16:11:37]   [REMOVIDO] figura4.png
+[2026-01-25 16:11:37]   [REMOVIDO] figura5.png
+[2026-01-25 16:11:37]   [REMOVIDO] figura6.png
+[2026-01-25 16:11:37]   [REMOVIDO] figura7.png
+[2026-01-25 16:11:37]   [OK] Diretorio limpo: C:\Users\Desktop\Documents\POS\TCC\CODE\resultados\figuras_tcc
+[2026-01-25 16:11:37]   [REMOVIDO] tabela_02_desempenho_modelos.csv
+[2026-01-25 16:11:37]   [OK] Diretorio limpo: C:\Users\Desktop\Documents\POS\TCC\CODE\resultados\tabelas_tcc
+[2026-01-25 16:11:37]   [REMOVIDO] comparacao_modelos_0904.png
+[2026-01-25 16:11:37]   [REMOVIDO] comparacao_modelos_0910.png
+[2026-01-25 16:11:37]   [REMOVIDO] comparacao_modelos_0914.png
+[2026-01-25 16:11:37]   [REMOVIDO] comparacao_modelos_7531.png
+[2026-01-25 16:11:37]   [REMOVIDO] comparacao_modelos_7535.png
+[2026-01-25 16:11:37]   [REMOVIDO] comparacao_modelos_792489.png
+[2026-01-25 16:11:37]   [REMOVIDO] comparacao_modelos_811077.png
+[2026-01-25 16:11:37]   [REMOVIDO] comparacao_modelos_MK418.png
+[2026-01-25 16:11:37]   [REMOVIDO] comparacao_modelos_MK420.png
+[2026-01-25 16:11:37]   [REMOVIDO] comparacao_modelos_MK440.png
+[2026-01-25 16:11:37]   [OK] Diretorio limpo: C:\Users\Desktop\Documents\POS\TCC\CODE\resultados\figuras_modelos
+[2026-01-25 16:11:37]   [OK] Diretorio limpo: C:\Users\Desktop\Documents\POS\TCC\CODE\resultados\figuras_exploratoria
+[2026-01-25 16:11:37]   [REMOVIDO] relatorio_comparacao_0904.txt
+[2026-01-25 16:11:37]   [REMOVIDO] relatorio_comparacao_0910.txt
+[2026-01-25 16:11:37]   [REMOVIDO] relatorio_comparacao_0914.txt
+[2026-01-25 16:11:37]   [REMOVIDO] relatorio_comparacao_7531.txt
+[2026-01-25 16:11:37]   [REMOVIDO] relatorio_comparacao_7535.txt
+[2026-01-25 16:11:37]   [REMOVIDO] relatorio_comparacao_792489.txt
+[2026-01-25 16:11:37]   [REMOVIDO] relatorio_comparacao_811077.txt
+[2026-01-25 16:11:37]   [REMOVIDO] relatorio_comparacao_MK418.txt
+[2026-01-25 16:11:37]   [REMOVIDO] relatorio_comparacao_MK420.txt
+[2026-01-25 16:11:37]   [REMOVIDO] relatorio_comparacao_MK440.txt
+[2026-01-25 16:11:37]   [OK] 10 arquivo(s) removido(s) de C:\Users\Desktop\Documents\POS\TCC\CODE\resultados
+[2026-01-25 16:11:37] [LIMPEZA] Concluida.
+
+[2026-01-25 16:11:37] 
+[PASSO 0] Verificando data wrangling...
+[2026-01-25 16:11:37] [PASSO 0] OK.
+[2026-01-25 16:11:37] 
+================================================================================
+[2026-01-25 16:11:37] [1/2] Analise exploratoria -> figura1, figura2, figura3, figura4
+[2026-01-25 16:11:37] ================================================================================
+[2026-01-25 16:12:05] 
+[1/2] Concluido em 27.7s
+[2026-01-25 16:12:05] [OK] SKU representativo (figura4): 811077
+[2026-01-25 16:12:05] [OK] Top 10 SKUs (figura5-7 e Tabela 2): ['811077', '0914', 'MK440', '0904', '7531', 'MK420', '792489', '0910', '7535', 'MK418']
+[2026-01-25 16:12:05] [VERIFICACAO] SKU 811077 tem 18.8% zeros (limite 30%). OK.
+[2026-01-25 16:12:05] 
+================================================================================
+[2026-01-25 16:12:05] [2/2] Comparacao de modelos (10 melhores SKUs) -> figura5, figura6, figura7 + Tabela 2
+[2026-01-25 16:12:05] ================================================================================
+[2026-01-25 16:12:05]   (treino de modelos pode levar varios minutos por SKU; saida do stepwise atualiza a cada combinacao)
+[2026-01-25 16:12:05]   (figuras 5-7 usam o SKU da Figura 4: 811077)
+[2026-01-25 16:12:06] [CPU] Limite configurado: 80.0% | Monitoramento: Ativo (psutil)
+[2026-01-25 16:12:06] [CPU] Cores disponiveis: 6 | n_jobs limitado para ~4 cores
+[2026-01-25 16:12:06] 
+[SKU 1/10] Processando 811077...
+[2026-01-25 16:12:10]   [SKU 1/10] Concluido em 4.4s
+[2026-01-25 16:12:11] 
+[SKU 2/10] Processando 0914...
+[2026-01-25 16:12:11]   [ESTIMATIVA] Tempo medio por SKU: 4.4s | Restantes: 9 | Tempo estimado restante: 0.7 min
+[2026-01-25 16:12:21]   [SKU 2/10] Concluido em 9.9s
+[2026-01-25 16:12:21] 
+[SKU 3/10] Processando MK440...
+[2026-01-25 16:12:21]   [ESTIMATIVA] Tempo medio por SKU: 7.2s | Restantes: 8 | Tempo estimado restante: 1.0 min
+[2026-01-25 16:12:26]   [SKU 3/10] Concluido em 5.1s
+[2026-01-25 16:12:27] 
+[SKU 4/10] Processando 0904...
+[2026-01-25 16:12:27]   [ESTIMATIVA] Tempo medio por SKU: 6.5s | Restantes: 7 | Tempo estimado restante: 0.8 min
+[2026-01-25 16:12:36]   [SKU 4/10] Concluido em 9.2s
+[2026-01-25 16:12:37] 
+[SKU 5/10] Processando 7531...
+[2026-01-25 16:12:37]   [ESTIMATIVA] Tempo medio por SKU: 7.2s | Restantes: 6 | Tempo estimado restante: 0.7 min
+[2026-01-25 16:12:46]   [SKU 5/10] Concluido em 9.5s
+[2026-01-25 16:12:47] 
+[SKU 6/10] Processando MK420...
+[2026-01-25 16:12:47]   [ESTIMATIVA] Tempo medio por SKU: 7.6s | Restantes: 5 | Tempo estimado restante: 0.6 min
+[2026-01-25 16:12:56]   [SKU 6/10] Concluido em 8.9s
+[2026-01-25 16:12:56] 
+[SKU 7/10] Processando 792489...
+[2026-01-25 16:12:56]   [ESTIMATIVA] Tempo medio por SKU: 7.8s | Restantes: 4 | Tempo estimado restante: 0.5 min
+[2026-01-25 16:13:07]   [SKU 7/10] Concluido em 10.9s
+[2026-01-25 16:13:08] 
+[SKU 8/10] Processando 0910...
+[2026-01-25 16:13:08]   [ESTIMATIVA] Tempo medio por SKU: 8.3s | Restantes: 3 | Tempo estimado restante: 0.4 min
+[2026-01-25 16:13:18]   [SKU 8/10] Concluido em 10.1s
+[2026-01-25 16:13:19] 
+[SKU 9/10] Processando 7535...
+[2026-01-25 16:13:19]   [ESTIMATIVA] Tempo medio por SKU: 8.5s | Restantes: 2 | Tempo estimado restante: 0.3 min
+[2026-01-25 16:13:25]   [SKU 9/10] Concluido em 6.3s
+[2026-01-25 16:13:25] 
+[SKU 10/10] Processando MK418...
+[2026-01-25 16:13:25]   [ESTIMATIVA] Tempo medio por SKU: 8.3s | Restantes: 1 | Tempo estimado restante: 0.1 min
+[2026-01-25 16:13:31]   [SKU 10/10] Concluido em 5.6s
+[2026-01-25 16:13:31] 
+[GERANDO FIGURAS] Consolidando figura5, figura6, figura7 (SKU da Figura 4)...
+[2026-01-25 16:13:33] [GERANDO TABELA] Consolidando Tabela 2...
+[2026-01-25 16:13:33] 
+[OK] Comparacao dos 10 SKUs concluida em 1.5 min. Figuras 5-7 e Tabela 2 geradas.
+[2026-01-25 16:13:33] 
+[2/2] Concluido em 87.9s
+[2026-01-25 16:13:33] 
+================================================================================
+[2026-01-25 16:13:33] CONCLUIDO
+[2026-01-25 16:13:33] ================================================================================
+[2026-01-25 16:13:33] Inicio: 2026-01-25 16:11:37
+[2026-01-25 16:13:33] Fim: 2026-01-25 16:13:33
+[2026-01-25 16:13:33] Tempo total: 1.9 min (115.7s)
+[2026-01-25 16:13:33] 
+Figuras em C:\Users\Desktop\Documents\POS\TCC\CODE\resultados\figuras_tcc:
+[2026-01-25 16:13:33]   [OK] figura1.png
+[2026-01-25 16:13:33]   [OK] figura2.png
+[2026-01-25 16:13:33]   [OK] figura3.png
+[2026-01-25 16:13:33]   [OK] figura4.png
+[2026-01-25 16:13:33]   [OK] figura5.png
+[2026-01-25 16:13:33]   [OK] figura6.png
+[2026-01-25 16:13:33]   [OK] figura7.png
+[2026-01-25 16:13:33] 
+Arquivo de log: C:\Users\Desktop\Documents\POS\TCC\CODE\resultados\logs\log_execucao_20260125_161137.txt
+[2026-01-25 16:13:33] 
+Documentacao: documentacao/COMO_GERAR_FIGURAS_TCC.md
+[2026-01-25 16:13:33] ================================================================================

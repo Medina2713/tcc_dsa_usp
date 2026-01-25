@@ -143,10 +143,11 @@ def visualizar_resultado(serie_historica, previsao, sku, stats):
     plt.xticks(rotation=45)
     plt.tight_layout()
     
-    # Salva gráfico
+    # Salva gráfico (TCC Fig 7 – formato SARIMA único)
     from pathlib import Path
-    Path("resultados").mkdir(exist_ok=True)
-    nome_arquivo = f'resultados/previsao_sarima_{sku}.png'
+    dir_fig = Path('resultados/figuras_modelos')
+    dir_fig.mkdir(parents=True, exist_ok=True)
+    nome_arquivo = dir_fig / f'previsao_sarima_{sku}.png'
     plt.savefig(nome_arquivo, dpi=300, bbox_inches='tight')
     print(f"\n[OK] Grafico salvo: {nome_arquivo}")
     

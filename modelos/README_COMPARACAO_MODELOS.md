@@ -1,8 +1,8 @@
-# Comparação de Modelos de Previsão de Demanda
+# Comparação de Modelos de Previsão de Estoque
 
 ## 📋 Visão Geral
 
-Este script compara diferentes modelos de previsão temporal para encontrar o melhor modelo para previsão de demanda/estoque.
+Este script compara diferentes modelos de previsão temporal (**SARIMA**, **ARIMA**, **Holt-Winters**, **Média Móvel**) para **previsão de estoque (saldo)** por SKU. Os modelos são treinados na série histórica de **saldo de estoque** (`historico_estoque`); a saída é previsão de **unidades em estoque**, não vendas. A previsão é usada na elencação (GP(t)) para **sinalizar necessidade de reposição**. Usado pelo pipeline TCC (`gerar_figuras_tcc.py`) para figuras 5–7 e Tabela 2.
 
 ## 🎯 Modelos Comparados
 

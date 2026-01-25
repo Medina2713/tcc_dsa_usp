@@ -1,0 +1,903 @@
+[2026-01-25 17:03:38] ================================================================================
+[2026-01-25 17:03:38] GERADOR DE FIGURAS TCC (figura1 ... figura7)
+[2026-01-25 17:03:38] ================================================================================
+[2026-01-25 17:03:38] Inicio da execucao: 2026-01-25 17:03:38
+[2026-01-25 17:03:38] Arquivo de log: C:\Users\Desktop\Documents\POS\TCC\CODE\resultados\logs\log_execucao_20260125_170338.txt
+[2026-01-25 17:03:38] [CPU] Limite configurado: 80% | Cores disponiveis: 6 | n_jobs limitado: ~4
+[2026-01-25 17:03:38] [CPU] Monitoramento em tempo real: ATIVO
+[2026-01-25 17:03:38] 
+Saida: C:\Users\Desktop\Documents\POS\TCC\CODE\resultados\figuras_tcc
+[2026-01-25 17:03:38] 
+[LIMPEZA] Limpando diretorios de saida de execucoes anteriores...
+[2026-01-25 17:03:38]   [REMOVIDO] figura1.png
+[2026-01-25 17:03:38]   [REMOVIDO] figura2.png
+[2026-01-25 17:03:38]   [REMOVIDO] figura3.png
+[2026-01-25 17:03:38]   [REMOVIDO] figura4.png
+[2026-01-25 17:03:38]   [REMOVIDO] figura5.png
+[2026-01-25 17:03:38]   [REMOVIDO] figura6.png
+[2026-01-25 17:03:38]   [REMOVIDO] figura7.png
+[2026-01-25 17:03:38]   [OK] Diretorio limpo: C:\Users\Desktop\Documents\POS\TCC\CODE\resultados\figuras_tcc
+[2026-01-25 17:03:38]   [REMOVIDO] tabela_02_desempenho_modelos.csv
+[2026-01-25 17:03:38]   [OK] Diretorio limpo: C:\Users\Desktop\Documents\POS\TCC\CODE\resultados\tabelas_tcc
+[2026-01-25 17:03:38]   [REMOVIDO] comparacao_modelos_0904.png
+[2026-01-25 17:03:38]   [REMOVIDO] comparacao_modelos_0910.png
+[2026-01-25 17:03:38]   [REMOVIDO] comparacao_modelos_0914.png
+[2026-01-25 17:03:38]   [REMOVIDO] comparacao_modelos_7531.png
+[2026-01-25 17:03:38]   [REMOVIDO] comparacao_modelos_7535.png
+[2026-01-25 17:03:38]   [REMOVIDO] comparacao_modelos_792489.png
+[2026-01-25 17:03:38]   [REMOVIDO] comparacao_modelos_811077.png
+[2026-01-25 17:03:38]   [REMOVIDO] comparacao_modelos_MK418.png
+[2026-01-25 17:03:38]   [REMOVIDO] comparacao_modelos_MK420.png
+[2026-01-25 17:03:38]   [REMOVIDO] comparacao_modelos_MK440.png
+[2026-01-25 17:03:38]   [OK] Diretorio limpo: C:\Users\Desktop\Documents\POS\TCC\CODE\resultados\figuras_modelos
+[2026-01-25 17:03:38]   [OK] Diretorio limpo: C:\Users\Desktop\Documents\POS\TCC\CODE\resultados\figuras_exploratoria
+[2026-01-25 17:03:38]   [REMOVIDO] relatorio_comparacao_0904.txt
+[2026-01-25 17:03:38]   [REMOVIDO] relatorio_comparacao_0910.txt
+[2026-01-25 17:03:38]   [REMOVIDO] relatorio_comparacao_0914.txt
+[2026-01-25 17:03:38]   [REMOVIDO] relatorio_comparacao_7531.txt
+[2026-01-25 17:03:38]   [REMOVIDO] relatorio_comparacao_7535.txt
+[2026-01-25 17:03:38]   [REMOVIDO] relatorio_comparacao_792489.txt
+[2026-01-25 17:03:38]   [REMOVIDO] relatorio_comparacao_811077.txt
+[2026-01-25 17:03:38]   [REMOVIDO] relatorio_comparacao_MK418.txt
+[2026-01-25 17:03:38]   [REMOVIDO] relatorio_comparacao_MK420.txt
+[2026-01-25 17:03:38]   [REMOVIDO] relatorio_comparacao_MK440.txt
+[2026-01-25 17:03:38]   [OK] 10 arquivo(s) removido(s) de C:\Users\Desktop\Documents\POS\TCC\CODE\resultados
+[2026-01-25 17:03:38] [LIMPEZA] Concluida.
+
+[2026-01-25 17:03:38] 
+[PASSO 0] Verificando data wrangling...
+[2026-01-25 17:03:38] [PASSO 0] OK.
+[2026-01-25 17:03:38] 
+================================================================================
+[2026-01-25 17:03:38] [1/2] Analise exploratoria -> figura1, figura2, figura3, figura4
+[2026-01-25 17:03:38] ================================================================================
+[2026-01-25 17:04:05] 
+[1/2] Concluido em 27.2s
+[2026-01-25 17:04:05] [OK] SKU representativo (figura4): 811077
+[2026-01-25 17:04:05] [OK] Top 10 SKUs (exploratoria): ['811077', '0914', 'MK440', '0904', '7531', 'MK420', '792489', '0910', '7535', 'MK418']
+[2026-01-25 17:04:05] [OK] Top 300 candidatos (comparacao): 193 SKUs
+[2026-01-25 17:04:05] [VERIFICACAO] SKU 811077 tem 18.8% zeros (limite 30%). OK.
+[2026-01-25 17:04:05] 
+================================================================================
+[2026-01-25 17:04:05] [2/2] Comparacao: 300 candidatos -> selecao dos 10 melhores -> figura5, figura6, figura7 + Tabela 2
+[2026-01-25 17:04:05] ================================================================================
+[2026-01-25 17:04:05]   (Fase 1: metricas para candidatos; Fase 2: filtrar constante/insatisfatorio, ranquear; Fase 3: figuras para os 10 melhores)
+[2026-01-25 17:04:05] [CPU] Limite: 80.0% | Monitoramento: Ativo
+[2026-01-25 17:04:05] [CPU] Cores: 6 | n_jobs ~4
+[2026-01-25 17:04:05] 
+[INFO] Os modelos preveem ESTOQUE (saldo), nao vendas. GP(t) na elencacao = soma das previsoes de estoque.
+[2026-01-25 17:04:05] 
+[FASE 1/3] Rodando metricas para 193 candidatos (sem figuras/relatorios)...
+[2026-01-25 17:04:05] 
+[CANDIDATO 1/193] 811077...
+[2026-01-25 17:04:09]   [CANDIDATO 1/193] Concluido em 3.2s
+[2026-01-25 17:04:09] 
+[CANDIDATO 2/193] 0914...
+[2026-01-25 17:04:09]   [ESTIMATIVA] Media: 3.2s/SKU | Restantes: 192 | ETA: 10.3 min
+[2026-01-25 17:04:18]   [CANDIDATO 2/193] Concluido em 8.8s
+[2026-01-25 17:04:18] 
+[CANDIDATO 3/193] MK440...
+[2026-01-25 17:04:18]   [ESTIMATIVA] Media: 6.0s/SKU | Restantes: 191 | ETA: 19.2 min
+[2026-01-25 17:04:22]   [CANDIDATO 3/193] Concluido em 4.0s
+[2026-01-25 17:04:23] 
+[CANDIDATO 4/193] 0904...
+[2026-01-25 17:04:23]   [ESTIMATIVA] Media: 5.4s/SKU | Restantes: 190 | ETA: 17.0 min
+[2026-01-25 17:04:31]   [CANDIDATO 4/193] Concluido em 7.8s
+[2026-01-25 17:04:31] 
+[CANDIDATO 5/193] 7531...
+[2026-01-25 17:04:31]   [ESTIMATIVA] Media: 6.0s/SKU | Restantes: 189 | ETA: 18.8 min
+[2026-01-25 17:04:39]   [CANDIDATO 5/193] Concluido em 8.1s
+[2026-01-25 17:04:40] 
+[CANDIDATO 6/193] MK420...
+[2026-01-25 17:04:40]   [ESTIMATIVA] Media: 6.4s/SKU | Restantes: 188 | ETA: 20.1 min
+[2026-01-25 17:04:47]   [CANDIDATO 6/193] Concluido em 7.5s
+[2026-01-25 17:04:47] 
+[CANDIDATO 7/193] 792489...
+[2026-01-25 17:04:47]   [ESTIMATIVA] Media: 6.6s/SKU | Restantes: 187 | ETA: 20.5 min
+[2026-01-25 17:04:57]   [CANDIDATO 7/193] Concluido em 9.7s
+[2026-01-25 17:04:58] 
+[CANDIDATO 8/193] 0910...
+[2026-01-25 17:04:58]   [ESTIMATIVA] Media: 7.0s/SKU | Restantes: 186 | ETA: 21.8 min
+[2026-01-25 17:05:06]   [CANDIDATO 8/193] Concluido em 9.0s
+[2026-01-25 17:05:07] 
+[CANDIDATO 9/193] 7535...
+[2026-01-25 17:05:07]   [ESTIMATIVA] Media: 7.3s/SKU | Restantes: 185 | ETA: 22.4 min
+[2026-01-25 17:05:12]   [CANDIDATO 9/193] Concluido em 5.1s
+[2026-01-25 17:05:12] 
+[CANDIDATO 10/193] MK418...
+[2026-01-25 17:05:12]   [ESTIMATIVA] Media: 7.0s/SKU | Restantes: 184 | ETA: 21.6 min
+[2026-01-25 17:05:16]   [CANDIDATO 10/193] Concluido em 4.1s
+[2026-01-25 17:05:17] 
+[CANDIDATO 11/193] 7710...
+[2026-01-25 17:05:17]   [ESTIMATIVA] Media: 6.7s/SKU | Restantes: 183 | ETA: 20.6 min
+[2026-01-25 17:05:21]   [CANDIDATO 11/193] Concluido em 3.6s
+[2026-01-25 17:05:21] 
+[CANDIDATO 12/193] MK211...
+[2026-01-25 17:05:21]   [ESTIMATIVA] Media: 6.5s/SKU | Restantes: 182 | ETA: 19.6 min
+[2026-01-25 17:05:24]   [CANDIDATO 12/193] Concluido em 3.3s
+[2026-01-25 17:05:25] 
+[CANDIDATO 13/193] 7261...
+[2026-01-25 17:05:25]   [ESTIMATIVA] Media: 6.2s/SKU | Restantes: 181 | ETA: 18.7 min
+[2026-01-25 17:05:37]   [CANDIDATO 13/193] Concluido em 12.1s
+[2026-01-25 17:05:37] 
+[CANDIDATO 14/193] 792423...
+[2026-01-25 17:05:37]   [ESTIMATIVA] Media: 6.7s/SKU | Restantes: 180 | ETA: 20.0 min
+[2026-01-25 17:05:41]   [CANDIDATO 14/193] Concluido em 4.0s
+[2026-01-25 17:05:42] 
+[CANDIDATO 15/193] MK328...
+[2026-01-25 17:05:42]   [ESTIMATIVA] Media: 6.5s/SKU | Restantes: 179 | ETA: 19.3 min
+[2026-01-25 17:05:46]   [CANDIDATO 15/193] Concluido em 4.3s
+[2026-01-25 17:05:46] 
+[CANDIDATO 16/193] 2157...
+[2026-01-25 17:05:46]   [ESTIMATIVA] Media: 6.3s/SKU | Restantes: 178 | ETA: 18.7 min
+[2026-01-25 17:05:50]   [CANDIDATO 16/193] Concluido em 3.4s
+[2026-01-25 17:05:50] 
+[CANDIDATO 17/193] 7705...
+[2026-01-25 17:05:50]   [ESTIMATIVA] Media: 6.1s/SKU | Restantes: 177 | ETA: 18.1 min
+[2026-01-25 17:05:53]   [CANDIDATO 17/193] Concluido em 3.3s
+[2026-01-25 17:05:54] 
+[CANDIDATO 18/193] MK363...
+[2026-01-25 17:05:54]   [ESTIMATIVA] Media: 6.0s/SKU | Restantes: 176 | ETA: 17.5 min
+[2026-01-25 17:05:58]   [CANDIDATO 18/193] Concluido em 4.1s
+[2026-01-25 17:05:58] 
+[CANDIDATO 19/193] 7533...
+[2026-01-25 17:05:58]   [ESTIMATIVA] Media: 5.9s/SKU | Restantes: 175 | ETA: 17.1 min
+[2026-01-25 17:06:06]   [CANDIDATO 19/193] Concluido em 7.7s
+[2026-01-25 17:06:06] 
+[CANDIDATO 20/193] 791655...
+[2026-01-25 17:06:06]   [ESTIMATIVA] Media: 6.0s/SKU | Restantes: 174 | ETA: 17.3 min
+[2026-01-25 17:06:11]   [CANDIDATO 20/193] Concluido em 4.2s
+[2026-01-25 17:06:11] 
+[CANDIDATO 21/193] 2159...
+[2026-01-25 17:06:11]   [ESTIMATIVA] Media: 5.9s/SKU | Restantes: 173 | ETA: 16.9 min
+[2026-01-25 17:06:18]   [CANDIDATO 21/193] Concluido em 7.1s
+[2026-01-25 17:06:18] 
+[CANDIDATO 22/193] MK348...
+[2026-01-25 17:06:18]   [ESTIMATIVA] Media: 5.9s/SKU | Restantes: 172 | ETA: 17.0 min
+[2026-01-25 17:06:25]   [CANDIDATO 22/193] Concluido em 6.2s
+[2026-01-25 17:06:25] 
+[CANDIDATO 23/193] 7709...
+[2026-01-25 17:06:25]   [ESTIMATIVA] Media: 5.9s/SKU | Restantes: 171 | ETA: 16.9 min
+[2026-01-25 17:06:28]   [CANDIDATO 23/193] Concluido em 3.4s
+[2026-01-25 17:06:29] 
+[CANDIDATO 24/193] 7359...
+[2026-01-25 17:06:29]   [ESTIMATIVA] Media: 5.8s/SKU | Restantes: 170 | ETA: 16.5 min
+[2026-01-25 17:06:33]   [CANDIDATO 24/193] Concluido em 4.1s
+[2026-01-25 17:06:33] 
+[CANDIDATO 25/193] 791658...
+[2026-01-25 17:06:33]   [ESTIMATIVA] Media: 5.8s/SKU | Restantes: 169 | ETA: 16.2 min
+[2026-01-25 17:06:37]   [CANDIDATO 25/193] Concluido em 4.1s
+[2026-01-25 17:06:38] 
+[CANDIDATO 26/193] MK417...
+[2026-01-25 17:06:38]   [ESTIMATIVA] Media: 5.7s/SKU | Restantes: 168 | ETA: 15.9 min
+[2026-01-25 17:06:41]   [CANDIDATO 26/193] Concluido em 3.5s
+[2026-01-25 17:06:42] 
+[CANDIDATO 27/193] MK379...
+[2026-01-25 17:06:42]   [ESTIMATIVA] Media: 5.6s/SKU | Restantes: 167 | ETA: 15.6 min
+[2026-01-25 17:06:46]   [CANDIDATO 27/193] Concluido em 4.2s
+[2026-01-25 17:06:46] 
+[CANDIDATO 28/193] 2863...
+[2026-01-25 17:06:46]   [ESTIMATIVA] Media: 5.6s/SKU | Restantes: 166 | ETA: 15.4 min
+[2026-01-25 17:07:05]   [CANDIDATO 28/193] Concluido em 18.7s
+[2026-01-25 17:07:05] 
+[CANDIDATO 29/193] 791937...
+[2026-01-25 17:07:05]   [ESTIMATIVA] Media: 6.0s/SKU | Restantes: 165 | ETA: 16.6 min
+[2026-01-25 17:07:09]   [CANDIDATO 29/193] Concluido em 3.5s
+[2026-01-25 17:07:09] 
+[CANDIDATO 30/193] 7394...
+[2026-01-25 17:07:09]   [ESTIMATIVA] Media: 5.9s/SKU | Restantes: 164 | ETA: 16.2 min
+[2026-01-25 17:07:13]   [CANDIDATO 30/193] Concluido em 3.6s
+[2026-01-25 17:07:13] 
+[CANDIDATO 31/193] 2803...
+[2026-01-25 17:07:13]   [ESTIMATIVA] Media: 5.9s/SKU | Restantes: 163 | ETA: 15.9 min
+[2026-01-25 17:07:18]   [CANDIDATO 31/193] Concluido em 4.2s
+[2026-01-25 17:07:18] 
+[CANDIDATO 32/193] 791677...
+[2026-01-25 17:07:18]   [ESTIMATIVA] Media: 5.8s/SKU | Restantes: 162 | ETA: 15.7 min
+[2026-01-25 17:07:22]   [CANDIDATO 32/193] Concluido em 3.6s
+[2026-01-25 17:07:22] 
+[CANDIDATO 33/193] MK383-1...
+[2026-01-25 17:07:22]   [ESTIMATIVA] Media: 5.7s/SKU | Restantes: 161 | ETA: 15.4 min
+[2026-01-25 17:07:26]   [CANDIDATO 33/193] Concluido em 3.8s
+[2026-01-25 17:07:26] 
+[CANDIDATO 34/193] 792530...
+[2026-01-25 17:07:26]   [ESTIMATIVA] Media: 5.7s/SKU | Restantes: 160 | ETA: 15.1 min
+[2026-01-25 17:07:30]   [CANDIDATO 34/193] Concluido em 4.2s
+[2026-01-25 17:07:31] 
+[CANDIDATO 35/193] 792504...
+[2026-01-25 17:07:31]   [ESTIMATIVA] Media: 5.6s/SKU | Restantes: 159 | ETA: 14.9 min
+[2026-01-25 17:07:34]   [CANDIDATO 35/193] Concluido em 3.5s
+[2026-01-25 17:07:35] 
+[CANDIDATO 36/193] MK308...
+[2026-01-25 17:07:35]   [ESTIMATIVA] Media: 5.6s/SKU | Restantes: 158 | ETA: 14.7 min
+[2026-01-25 17:07:38]   [CANDIDATO 36/193] Concluido em 3.9s
+[2026-01-25 17:07:39] 
+[CANDIDATO 37/193] 792413...
+[2026-01-25 17:07:39]   [ESTIMATIVA] Media: 5.5s/SKU | Restantes: 157 | ETA: 14.5 min
+[2026-01-25 17:07:42]   [CANDIDATO 37/193] Concluido em 3.4s
+[2026-01-25 17:07:43] 
+[CANDIDATO 38/193] 791934...
+[2026-01-25 17:07:43]   [ESTIMATIVA] Media: 5.5s/SKU | Restantes: 156 | ETA: 14.2 min
+[2026-01-25 17:07:53]   [CANDIDATO 38/193] Concluido em 10.1s
+[2026-01-25 17:07:53] 
+[CANDIDATO 39/193] 791829...
+[2026-01-25 17:07:53]   [ESTIMATIVA] Media: 5.6s/SKU | Restantes: 155 | ETA: 14.4 min
+[2026-01-25 17:07:58]   [CANDIDATO 39/193] Concluido em 4.8s
+[2026-01-25 17:07:58] 
+[CANDIDATO 40/193] MK451...
+[2026-01-25 17:07:58]   [ESTIMATIVA] Media: 5.6s/SKU | Restantes: 154 | ETA: 14.3 min
+[2026-01-25 17:08:03]   [CANDIDATO 40/193] Concluido em 4.6s
+[2026-01-25 17:08:03] 
+[CANDIDATO 41/193] MK434...
+[2026-01-25 17:08:03]   [ESTIMATIVA] Media: 5.5s/SKU | Restantes: 153 | ETA: 14.1 min
+[2026-01-25 17:08:07]   [CANDIDATO 41/193] Concluido em 3.6s
+[2026-01-25 17:08:07] 
+[CANDIDATO 42/193] MK165...
+[2026-01-25 17:08:07]   [ESTIMATIVA] Media: 5.5s/SKU | Restantes: 152 | ETA: 13.9 min
+[2026-01-25 17:08:11]   [CANDIDATO 42/193] Concluido em 3.6s
+[2026-01-25 17:08:11] 
+[CANDIDATO 43/193] MK413...
+[2026-01-25 17:08:11]   [ESTIMATIVA] Media: 5.5s/SKU | Restantes: 151 | ETA: 13.7 min
+[2026-01-25 17:08:15]   [CANDIDATO 43/193] Concluido em 3.6s
+[2026-01-25 17:08:15] 
+[CANDIDATO 44/193] 811075...
+[2026-01-25 17:08:15]   [ESTIMATIVA] Media: 5.4s/SKU | Restantes: 150 | ETA: 13.5 min
+[2026-01-25 17:08:18]   [CANDIDATO 44/193] Concluido em 2.9s
+[2026-01-25 17:08:19] 
+[CANDIDATO 45/193] MK442...
+[2026-01-25 17:08:19]   [ESTIMATIVA] Media: 5.4s/SKU | Restantes: 149 | ETA: 13.3 min
+[2026-01-25 17:08:22]   [CANDIDATO 45/193] Concluido em 3.5s
+[2026-01-25 17:08:23] 
+[CANDIDATO 46/193] MK161...
+[2026-01-25 17:08:23]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 148 | ETA: 13.1 min
+[2026-01-25 17:08:27]   [CANDIDATO 46/193] Concluido em 4.3s
+[2026-01-25 17:08:27] 
+[CANDIDATO 47/193] MK336...
+[2026-01-25 17:08:27]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 147 | ETA: 13.0 min
+[2026-01-25 17:08:32]   [CANDIDATO 47/193] Concluido em 4.3s
+[2026-01-25 17:08:32] 
+[CANDIDATO 48/193] MK264...
+[2026-01-25 17:08:32]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 146 | ETA: 12.8 min
+[2026-01-25 17:08:37]   [CANDIDATO 48/193] Concluido em 4.4s
+[2026-01-25 17:08:37] 
+[CANDIDATO 49/193] 10778...
+[2026-01-25 17:08:37]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 145 | ETA: 12.7 min
+[2026-01-25 17:08:41]   [CANDIDATO 49/193] Concluido em 4.2s
+[2026-01-25 17:08:42] 
+[CANDIDATO 50/193] 792417...
+[2026-01-25 17:08:42]   [ESTIMATIVA] Media: 5.2s/SKU | Restantes: 144 | ETA: 12.6 min
+[2026-01-25 17:08:46]   [CANDIDATO 50/193] Concluido em 4.9s
+[2026-01-25 17:08:47] 
+[CANDIDATO 51/193] MK430...
+[2026-01-25 17:08:47]   [ESTIMATIVA] Media: 5.2s/SKU | Restantes: 143 | ETA: 12.5 min
+[2026-01-25 17:08:51]   [CANDIDATO 51/193] Concluido em 4.4s
+[2026-01-25 17:08:52] 
+[CANDIDATO 52/193] 792466...
+[2026-01-25 17:08:52]   [ESTIMATIVA] Media: 5.2s/SKU | Restantes: 142 | ETA: 12.3 min
+[2026-01-25 17:08:55]   [CANDIDATO 52/193] Concluido em 3.9s
+[2026-01-25 17:08:56] 
+[CANDIDATO 53/193] 991...
+[2026-01-25 17:08:56]   [ESTIMATIVA] Media: 5.2s/SKU | Restantes: 141 | ETA: 12.2 min
+[2026-01-25 17:08:59]   [CANDIDATO 53/193] Concluido em 3.2s
+[2026-01-25 17:08:59] 
+[CANDIDATO 54/193] MK414...
+[2026-01-25 17:08:59]   [ESTIMATIVA] Media: 5.1s/SKU | Restantes: 140 | ETA: 12.0 min
+[2026-01-25 17:09:07]   [CANDIDATO 54/193] Concluido em 7.7s
+[2026-01-25 17:09:08] 
+[CANDIDATO 55/193] 2922...
+[2026-01-25 17:09:08]   [ESTIMATIVA] Media: 5.2s/SKU | Restantes: 139 | ETA: 12.0 min
+[2026-01-25 17:09:11]   [CANDIDATO 55/193] Concluido em 3.4s
+[2026-01-25 17:09:11] 
+[CANDIDATO 56/193] 790738...
+[2026-01-25 17:09:11]   [ESTIMATIVA] Media: 5.2s/SKU | Restantes: 138 | ETA: 11.9 min
+[2026-01-25 17:09:15]   [CANDIDATO 56/193] Concluido em 4.1s
+[2026-01-25 17:09:16] 
+[CANDIDATO 57/193] MK426...
+[2026-01-25 17:09:16]   [ESTIMATIVA] Media: 5.1s/SKU | Restantes: 137 | ETA: 11.7 min
+[2026-01-25 17:09:19]   [CANDIDATO 57/193] Concluido em 3.5s
+[2026-01-25 17:09:20] 
+[CANDIDATO 58/193] MK412...
+[2026-01-25 17:09:20]   [ESTIMATIVA] Media: 5.1s/SKU | Restantes: 136 | ETA: 11.6 min
+[2026-01-25 17:09:23]   [CANDIDATO 58/193] Concluido em 3.0s
+[2026-01-25 17:09:23] 
+[CANDIDATO 59/193] MK427...
+[2026-01-25 17:09:23]   [ESTIMATIVA] Media: 5.1s/SKU | Restantes: 135 | ETA: 11.4 min
+[2026-01-25 17:09:30]   [CANDIDATO 59/193] Concluido em 7.1s
+[2026-01-25 17:09:31] 
+[CANDIDATO 60/193] 792506...
+[2026-01-25 17:09:31]   [ESTIMATIVA] Media: 5.1s/SKU | Restantes: 134 | ETA: 11.4 min
+[2026-01-25 17:09:34]   [CANDIDATO 60/193] Concluido em 3.5s
+[2026-01-25 17:09:35] 
+[CANDIDATO 61/193] MK436...
+[2026-01-25 17:09:35]   [ESTIMATIVA] Media: 5.1s/SKU | Restantes: 133 | ETA: 11.3 min
+[2026-01-25 17:09:43]   [CANDIDATO 61/193] Concluido em 8.7s
+[2026-01-25 17:09:44] 
+[CANDIDATO 62/193] 790876...
+[2026-01-25 17:09:44]   [ESTIMATIVA] Media: 5.1s/SKU | Restantes: 132 | ETA: 11.3 min
+[2026-01-25 17:09:47]   [CANDIDATO 62/193] Concluido em 3.6s
+[2026-01-25 17:09:48] 
+[CANDIDATO 63/193] 2175...
+[2026-01-25 17:09:48]   [ESTIMATIVA] Media: 5.1s/SKU | Restantes: 131 | ETA: 11.2 min
+[2026-01-25 17:09:51]   [CANDIDATO 63/193] Concluido em 3.6s
+[2026-01-25 17:09:52] 
+[CANDIDATO 64/193] 2852...
+[2026-01-25 17:09:52]   [ESTIMATIVA] Media: 5.1s/SKU | Restantes: 130 | ETA: 11.0 min
+[2026-01-25 17:09:55]   [CANDIDATO 64/193] Concluido em 3.5s
+[2026-01-25 17:09:56] 
+[CANDIDATO 65/193] MK403...
+[2026-01-25 17:09:56]   [ESTIMATIVA] Media: 5.1s/SKU | Restantes: 129 | ETA: 10.9 min
+[2026-01-25 17:10:00]   [CANDIDATO 65/193] Concluido em 4.4s
+[2026-01-25 17:10:00] 
+[CANDIDATO 66/193] 3330...
+[2026-01-25 17:10:00]   [ESTIMATIVA] Media: 5.1s/SKU | Restantes: 128 | ETA: 10.8 min
+[2026-01-25 17:10:09]   [CANDIDATO 66/193] Concluido em 8.5s
+[2026-01-25 17:10:09] 
+[CANDIDATO 67/193] MK428...
+[2026-01-25 17:10:09]   [ESTIMATIVA] Media: 5.1s/SKU | Restantes: 127 | ETA: 10.8 min
+[2026-01-25 17:10:14]   [CANDIDATO 67/193] Concluido em 4.2s
+[2026-01-25 17:10:14] 
+[CANDIDATO 68/193] MK407...
+[2026-01-25 17:10:14]   [ESTIMATIVA] Media: 5.1s/SKU | Restantes: 126 | ETA: 10.7 min
+[2026-01-25 17:10:17]   [CANDIDATO 68/193] Concluido em 3.4s
+[2026-01-25 17:10:18] 
+[CANDIDATO 69/193] MK419...
+[2026-01-25 17:10:18]   [ESTIMATIVA] Media: 5.1s/SKU | Restantes: 125 | ETA: 10.6 min
+[2026-01-25 17:10:23]   [CANDIDATO 69/193] Concluido em 5.3s
+[2026-01-25 17:10:23] 
+[CANDIDATO 70/193] 790689...
+[2026-01-25 17:10:23]   [ESTIMATIVA] Media: 5.1s/SKU | Restantes: 124 | ETA: 10.5 min
+[2026-01-25 17:10:27]   [CANDIDATO 70/193] Concluido em 3.6s
+[2026-01-25 17:10:27] 
+[CANDIDATO 71/193] 792470...
+[2026-01-25 17:10:27]   [ESTIMATIVA] Media: 5.1s/SKU | Restantes: 123 | ETA: 10.4 min
+[2026-01-25 17:10:36]   [CANDIDATO 71/193] Concluido em 8.1s
+[2026-01-25 17:10:36] 
+[CANDIDATO 72/193] 2862...
+[2026-01-25 17:10:36]   [ESTIMATIVA] Media: 5.1s/SKU | Restantes: 122 | ETA: 10.4 min
+[2026-01-25 17:10:40]   [CANDIDATO 72/193] Concluido em 3.7s
+[2026-01-25 17:10:40] 
+[CANDIDATO 73/193] MK282...
+[2026-01-25 17:10:40]   [ESTIMATIVA] Media: 5.1s/SKU | Restantes: 121 | ETA: 10.2 min
+[2026-01-25 17:10:44]   [CANDIDATO 73/193] Concluido em 3.6s
+[2026-01-25 17:10:44] 
+[CANDIDATO 74/193] MK406...
+[2026-01-25 17:10:44]   [ESTIMATIVA] Media: 5.1s/SKU | Restantes: 120 | ETA: 10.1 min
+[2026-01-25 17:11:11]   [CANDIDATO 74/193] Concluido em 26.4s
+[2026-01-25 17:11:11] 
+[CANDIDATO 75/193] MK438...
+[2026-01-25 17:11:11]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 119 | ETA: 10.6 min
+[2026-01-25 17:11:15]   [CANDIDATO 75/193] Concluido em 4.2s
+[2026-01-25 17:11:16] 
+[CANDIDATO 76/193] 791650...
+[2026-01-25 17:11:16]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 118 | ETA: 10.5 min
+[2026-01-25 17:11:20]   [CANDIDATO 76/193] Concluido em 4.2s
+[2026-01-25 17:11:20] 
+[CANDIDATO 77/193] 791661...
+[2026-01-25 17:11:20]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 117 | ETA: 10.4 min
+[2026-01-25 17:11:23]   [CANDIDATO 77/193] Concluido em 3.2s
+[2026-01-25 17:11:24] 
+[CANDIDATO 78/193] 2203...
+[2026-01-25 17:11:24]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 116 | ETA: 10.2 min
+[2026-01-25 17:11:28]   [CANDIDATO 78/193] Concluido em 3.9s
+[2026-01-25 17:11:28] 
+[CANDIDATO 79/193] 2202...
+[2026-01-25 17:11:28]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 115 | ETA: 10.1 min
+[2026-01-25 17:11:40]   [CANDIDATO 79/193] Concluido em 12.1s
+[2026-01-25 17:11:41] 
+[CANDIDATO 80/193] 10838...
+[2026-01-25 17:11:41]   [ESTIMATIVA] Media: 5.4s/SKU | Restantes: 114 | ETA: 10.2 min
+[2026-01-25 17:11:48]   [CANDIDATO 80/193] Concluido em 7.7s
+[2026-01-25 17:11:49] 
+[CANDIDATO 81/193] MK409...
+[2026-01-25 17:11:49]   [ESTIMATIVA] Media: 5.4s/SKU | Restantes: 113 | ETA: 10.1 min
+[2026-01-25 17:11:52]   [CANDIDATO 81/193] Concluido em 3.4s
+[2026-01-25 17:11:52] 
+[CANDIDATO 82/193] MK381...
+[2026-01-25 17:11:52]   [ESTIMATIVA] Media: 5.4s/SKU | Restantes: 112 | ETA: 10.0 min
+[2026-01-25 17:12:01]   [CANDIDATO 82/193] Concluido em 8.2s
+[2026-01-25 17:12:01] 
+[CANDIDATO 83/193] 792451...
+[2026-01-25 17:12:01]   [ESTIMATIVA] Media: 5.4s/SKU | Restantes: 111 | ETA: 10.0 min
+[2026-01-25 17:12:04]   [CANDIDATO 83/193] Concluido em 3.3s
+[2026-01-25 17:12:05] 
+[CANDIDATO 84/193] 2904...
+[2026-01-25 17:12:05]   [ESTIMATIVA] Media: 5.4s/SKU | Restantes: 110 | ETA: 9.9 min
+[2026-01-25 17:12:09]   [CANDIDATO 84/193] Concluido em 4.2s
+[2026-01-25 17:12:09] 
+[CANDIDATO 85/193] MK383...
+[2026-01-25 17:12:09]   [ESTIMATIVA] Media: 5.4s/SKU | Restantes: 109 | ETA: 9.7 min
+[2026-01-25 17:12:12]   [CANDIDATO 85/193] Concluido em 3.1s
+[2026-01-25 17:12:13] 
+[CANDIDATO 86/193] MK435...
+[2026-01-25 17:12:13]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 108 | ETA: 9.6 min
+[2026-01-25 17:12:16]   [CANDIDATO 86/193] Concluido em 3.6s
+[2026-01-25 17:12:17] 
+[CANDIDATO 87/193] 2199...
+[2026-01-25 17:12:17]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 107 | ETA: 9.5 min
+[2026-01-25 17:12:21]   [CANDIDATO 87/193] Concluido em 4.2s
+[2026-01-25 17:12:21] 
+[CANDIDATO 88/193] 792474...
+[2026-01-25 17:12:21]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 106 | ETA: 9.4 min
+[2026-01-25 17:12:26]   [CANDIDATO 88/193] Concluido em 4.4s
+[2026-01-25 17:12:26] 
+[CANDIDATO 89/193] 792429...
+[2026-01-25 17:12:26]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 105 | ETA: 9.3 min
+[2026-01-25 17:12:31]   [CANDIDATO 89/193] Concluido em 4.3s
+[2026-01-25 17:12:31] 
+[CANDIDATO 90/193] 7719...
+[2026-01-25 17:12:31]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 104 | ETA: 9.1 min
+[2026-01-25 17:12:35]   [CANDIDATO 90/193] Concluido em 3.6s
+[2026-01-25 17:12:35] 
+[CANDIDATO 91/193] 10798...
+[2026-01-25 17:12:35]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 103 | ETA: 9.0 min
+[2026-01-25 17:12:39]   [CANDIDATO 91/193] Concluido em 4.1s
+[2026-01-25 17:12:39] 
+[CANDIDATO 92/193] 4745...
+[2026-01-25 17:12:39]   [ESTIMATIVA] Media: 5.2s/SKU | Restantes: 102 | ETA: 8.9 min
+[2026-01-25 17:12:43]   [CANDIDATO 92/193] Concluido em 3.6s
+[2026-01-25 17:12:43] 
+[CANDIDATO 93/193] 790357...
+[2026-01-25 17:12:43]   [ESTIMATIVA] Media: 5.2s/SKU | Restantes: 101 | ETA: 8.8 min
+[2026-01-25 17:12:48]   [CANDIDATO 93/193] Concluido em 5.0s
+[2026-01-25 17:12:49] 
+[CANDIDATO 94/193] 1174...
+[2026-01-25 17:12:49]   [ESTIMATIVA] Media: 5.2s/SKU | Restantes: 100 | ETA: 8.7 min
+[2026-01-25 17:12:53]   [CANDIDATO 94/193] Concluido em 4.4s
+[2026-01-25 17:12:54] 
+[CANDIDATO 95/193] 790699...
+[2026-01-25 17:12:54]   [ESTIMATIVA] Media: 5.2s/SKU | Restantes: 99 | ETA: 8.6 min
+[2026-01-25 17:12:57]   [CANDIDATO 95/193] Concluido em 3.8s
+[2026-01-25 17:12:58] 
+[CANDIDATO 96/193] 899503...
+[2026-01-25 17:12:58]   [ESTIMATIVA] Media: 5.2s/SKU | Restantes: 98 | ETA: 8.5 min
+[2026-01-25 17:13:01]   [CANDIDATO 96/193] Concluido em 3.2s
+[2026-01-25 17:13:01] 
+[CANDIDATO 97/193] 7714...
+[2026-01-25 17:13:01]   [ESTIMATIVA] Media: 5.2s/SKU | Restantes: 97 | ETA: 8.4 min
+[2026-01-25 17:13:05]   [CANDIDATO 97/193] Concluido em 3.6s
+[2026-01-25 17:13:06] 
+[CANDIDATO 98/193] 2903...
+[2026-01-25 17:13:06]   [ESTIMATIVA] Media: 5.2s/SKU | Restantes: 96 | ETA: 8.3 min
+[2026-01-25 17:13:14]   [CANDIDATO 98/193] Concluido em 8.9s
+[2026-01-25 17:13:15] 
+[CANDIDATO 99/193] 2910...
+[2026-01-25 17:13:15]   [ESTIMATIVA] Media: 5.2s/SKU | Restantes: 95 | ETA: 8.2 min
+[2026-01-25 17:13:19]   [CANDIDATO 99/193] Concluido em 3.8s
+[2026-01-25 17:13:19] 
+[CANDIDATO 100/193] 811080...
+[2026-01-25 17:13:19]   [ESTIMATIVA] Media: 5.2s/SKU | Restantes: 94 | ETA: 8.1 min
+[2026-01-25 17:13:28]   [CANDIDATO 100/193] Concluido em 9.2s
+[2026-01-25 17:13:29] 
+[CANDIDATO 101/193] 2201...
+[2026-01-25 17:13:29]   [ESTIMATIVA] Media: 5.2s/SKU | Restantes: 93 | ETA: 8.1 min
+[2026-01-25 17:13:37]   [CANDIDATO 101/193] Concluido em 8.7s
+[2026-01-25 17:13:38] 
+[CANDIDATO 102/193] MK447...
+[2026-01-25 17:13:38]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 92 | ETA: 8.1 min
+[2026-01-25 17:13:41]   [CANDIDATO 102/193] Concluido em 3.5s
+[2026-01-25 17:13:42] 
+[CANDIDATO 103/193] 2205...
+[2026-01-25 17:13:42]   [ESTIMATIVA] Media: 5.2s/SKU | Restantes: 91 | ETA: 8.0 min
+[2026-01-25 17:13:51]   [CANDIDATO 103/193] Concluido em 9.5s
+[2026-01-25 17:13:51] 
+[CANDIDATO 104/193] MK390...
+[2026-01-25 17:13:51]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 90 | ETA: 7.9 min
+[2026-01-25 17:13:57]   [CANDIDATO 104/193] Concluido em 5.2s
+[2026-01-25 17:13:57] 
+[CANDIDATO 105/193] 10656...
+[2026-01-25 17:13:57]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 89 | ETA: 7.8 min
+[2026-01-25 17:14:00]   [CANDIDATO 105/193] Concluido em 3.3s
+[2026-01-25 17:14:01] 
+[CANDIDATO 106/193] MK362...
+[2026-01-25 17:14:01]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 88 | ETA: 7.7 min
+[2026-01-25 17:14:11]   [CANDIDATO 106/193] Concluido em 9.9s
+[2026-01-25 17:14:11] 
+[CANDIDATO 107/193] MK326...
+[2026-01-25 17:14:11]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 87 | ETA: 7.7 min
+[2026-01-25 17:14:20]   [CANDIDATO 107/193] Concluido em 8.7s
+[2026-01-25 17:14:20] 
+[CANDIDATO 108/193] 7437...
+[2026-01-25 17:14:20]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 86 | ETA: 7.7 min
+[2026-01-25 17:14:25]   [CANDIDATO 108/193] Concluido em 5.3s
+[2026-01-25 17:14:26] 
+[CANDIDATO 109/193] 792502...
+[2026-01-25 17:14:26]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 85 | ETA: 7.6 min
+[2026-01-25 17:14:30]   [CANDIDATO 109/193] Concluido em 4.3s
+[2026-01-25 17:14:30] 
+[CANDIDATO 110/193] MK423-1...
+[2026-01-25 17:14:30]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 84 | ETA: 7.5 min
+[2026-01-25 17:14:36]   [CANDIDATO 110/193] Concluido em 5.2s
+[2026-01-25 17:14:36] 
+[CANDIDATO 111/193] 791939...
+[2026-01-25 17:14:36]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 83 | ETA: 7.4 min
+[2026-01-25 17:14:40]   [CANDIDATO 111/193] Concluido em 4.1s
+[2026-01-25 17:14:41] 
+[CANDIDATO 112/193] MK382...
+[2026-01-25 17:14:41]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 82 | ETA: 7.3 min
+[2026-01-25 17:14:48]   [CANDIDATO 112/193] Concluido em 7.7s
+[2026-01-25 17:14:49] 
+[CANDIDATO 113/193] 2854...
+[2026-01-25 17:14:49]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 81 | ETA: 7.2 min
+[2026-01-25 17:14:53]   [CANDIDATO 113/193] Concluido em 3.9s
+[2026-01-25 17:14:53] 
+[CANDIDATO 114/193] 791304...
+[2026-01-25 17:14:53]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 80 | ETA: 7.1 min
+[2026-01-25 17:14:58]   [CANDIDATO 114/193] Concluido em 4.8s
+[2026-01-25 17:14:58] 
+[CANDIDATO 115/193] MK448...
+[2026-01-25 17:14:58]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 79 | ETA: 7.0 min
+[2026-01-25 17:15:02]   [CANDIDATO 115/193] Concluido em 4.1s
+[2026-01-25 17:15:03]   [CPU] Uso atual: 89.2% (limite: 80.0%) - aguardando...
+[2026-01-25 17:15:03]   [CPU] Uso atual: 26.2% - prosseguindo
+[2026-01-25 17:15:03] 
+[CANDIDATO 116/193] MK441...
+[2026-01-25 17:15:03]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 78 | ETA: 6.9 min
+[2026-01-25 17:15:07]   [CANDIDATO 116/193] Concluido em 3.9s
+[2026-01-25 17:15:07] 
+[CANDIDATO 117/193] 2895...
+[2026-01-25 17:15:07]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 77 | ETA: 6.8 min
+[2026-01-25 17:15:11]   [CANDIDATO 117/193] Concluido em 4.3s
+[2026-01-25 17:15:12] 
+[CANDIDATO 118/193] 4747...
+[2026-01-25 17:15:12]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 76 | ETA: 6.7 min
+[2026-01-25 17:15:16]   [CANDIDATO 118/193] Concluido em 4.0s
+[2026-01-25 17:15:16] 
+[CANDIDATO 119/193] 2759...
+[2026-01-25 17:15:16]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 75 | ETA: 6.6 min
+[2026-01-25 17:15:22]   [CANDIDATO 119/193] Concluido em 6.2s
+[2026-01-25 17:15:23] 
+[CANDIDATO 120/193] 811078...
+[2026-01-25 17:15:23]   [ESTIMATIVA] Media: 5.3s/SKU | Restantes: 74 | ETA: 6.5 min
+[2026-01-25 17:15:44]   [CANDIDATO 120/193] Concluido em 21.0s
+[2026-01-25 17:15:44] 
+[CANDIDATO 121/193] 0907...
+[2026-01-25 17:15:44]   [ESTIMATIVA] Media: 5.4s/SKU | Restantes: 73 | ETA: 6.6 min
+[2026-01-25 17:15:47]   [CANDIDATO 121/193] Concluido em 3.2s
+[2026-01-25 17:15:48] 
+[CANDIDATO 122/193] MK268...
+[2026-01-25 17:15:48]   [ESTIMATIVA] Media: 5.4s/SKU | Restantes: 72 | ETA: 6.5 min
+[2026-01-25 17:15:51]   [CANDIDATO 122/193] Concluido em 3.4s
+[2026-01-25 17:15:52] 
+[CANDIDATO 123/193] 791676...
+[2026-01-25 17:15:52]   [ESTIMATIVA] Media: 5.4s/SKU | Restantes: 71 | ETA: 6.4 min
+[2026-01-25 17:15:55]   [CANDIDATO 123/193] Concluido em 3.4s
+[2026-01-25 17:15:55] 
+[CANDIDATO 124/193] XK103...
+[2026-01-25 17:15:55]   [ESTIMATIVA] Media: 5.4s/SKU | Restantes: 70 | ETA: 6.3 min
+[2026-01-25 17:16:04]   [CANDIDATO 124/193] Concluido em 8.1s
+[2026-01-25 17:16:04] 
+[CANDIDATO 125/193] 791901...
+[2026-01-25 17:16:04]   [ESTIMATIVA] Media: 5.4s/SKU | Restantes: 69 | ETA: 6.2 min
+[2026-01-25 17:16:08]   [CANDIDATO 125/193] Concluido em 4.2s
+[2026-01-25 17:16:09] 
+[CANDIDATO 126/193] 10841...
+[2026-01-25 17:16:09]   [ESTIMATIVA] Media: 5.4s/SKU | Restantes: 68 | ETA: 6.1 min
+[2026-01-25 17:16:12]   [CANDIDATO 126/193] Concluido em 3.6s
+[2026-01-25 17:16:13] 
+[CANDIDATO 127/193] 792503...
+[2026-01-25 17:16:13]   [ESTIMATIVA] Media: 5.4s/SKU | Restantes: 67 | ETA: 6.0 min
+[2026-01-25 17:16:18]   [CANDIDATO 127/193] Concluido em 5.0s
+[2026-01-25 17:16:18] 
+[CANDIDATO 128/193] 790707...
+[2026-01-25 17:16:18]   [ESTIMATIVA] Media: 5.4s/SKU | Restantes: 66 | ETA: 5.9 min
+[2026-01-25 17:16:22]   [CANDIDATO 128/193] Concluido em 4.2s
+[2026-01-25 17:16:23] 
+[CANDIDATO 129/193] 790772...
+[2026-01-25 17:16:23]   [ESTIMATIVA] Media: 5.4s/SKU | Restantes: 65 | ETA: 5.8 min
+[2026-01-25 17:16:31]   [CANDIDATO 129/193] Concluido em 8.4s
+[2026-01-25 17:16:31] 
+[CANDIDATO 130/193] MK404...
+[2026-01-25 17:16:31]   [ESTIMATIVA] Media: 5.4s/SKU | Restantes: 64 | ETA: 5.7 min
+[2026-01-25 17:16:40]   [CANDIDATO 130/193] Concluido em 8.2s
+[2026-01-25 17:16:40] 
+[CANDIDATO 131/193] 2865...
+[2026-01-25 17:16:40]   [ESTIMATIVA] Media: 5.4s/SKU | Restantes: 63 | ETA: 5.7 min
+[2026-01-25 17:16:48]   [CANDIDATO 131/193] Concluido em 8.5s
+[2026-01-25 17:16:49] 
+[CANDIDATO 132/193] 899515...
+[2026-01-25 17:16:49]   [ESTIMATIVA] Media: 5.4s/SKU | Restantes: 62 | ETA: 5.6 min
+[2026-01-25 17:16:55]   [CANDIDATO 132/193] Concluido em 6.1s
+[2026-01-25 17:16:55] 
+[CANDIDATO 133/193] 2796...
+[2026-01-25 17:16:55]   [ESTIMATIVA] Media: 5.4s/SKU | Restantes: 61 | ETA: 5.5 min
+[2026-01-25 17:16:59]   [CANDIDATO 133/193] Concluido em 3.5s
+[2026-01-25 17:16:59] 
+[CANDIDATO 134/193] XK110...
+[2026-01-25 17:16:59]   [ESTIMATIVA] Media: 5.4s/SKU | Restantes: 60 | ETA: 5.4 min
+[2026-01-25 17:17:03]   [CANDIDATO 134/193] Concluido em 4.2s
+[2026-01-25 17:17:04] 
+[CANDIDATO 135/193] MK366...
+[2026-01-25 17:17:04]   [ESTIMATIVA] Media: 5.4s/SKU | Restantes: 59 | ETA: 5.3 min
+[2026-01-25 17:17:10]   [CANDIDATO 135/193] Concluido em 6.2s
+[2026-01-25 17:17:10] 
+[CANDIDATO 136/193] 1079...
+[2026-01-25 17:17:10]   [ESTIMATIVA] Media: 5.4s/SKU | Restantes: 58 | ETA: 5.2 min
+[2026-01-25 17:17:14]   [CANDIDATO 136/193] Concluido em 4.0s
+[2026-01-25 17:17:15] 
+[CANDIDATO 137/193] MK361...
+[2026-01-25 17:17:15]   [ESTIMATIVA] Media: 5.4s/SKU | Restantes: 57 | ETA: 5.1 min
+[2026-01-25 17:17:19]   [CANDIDATO 137/193] Concluido em 4.2s
+[2026-01-25 17:17:19] 
+[CANDIDATO 138/193] 1259...
+[2026-01-25 17:17:19]   [ESTIMATIVA] Media: 5.4s/SKU | Restantes: 56 | ETA: 5.0 min
+[2026-01-25 17:17:27]   [CANDIDATO 138/193] Concluido em 8.0s
+[2026-01-25 17:17:28] 
+[CANDIDATO 139/193] 792430...
+[2026-01-25 17:17:28]   [ESTIMATIVA] Media: 5.4s/SKU | Restantes: 55 | ETA: 5.0 min
+[2026-01-25 17:17:32]   [CANDIDATO 139/193] Concluido em 3.9s
+[2026-01-25 17:17:32] 
+[CANDIDATO 140/193] 791091...
+[2026-01-25 17:17:32]   [ESTIMATIVA] Media: 5.4s/SKU | Restantes: 54 | ETA: 4.9 min
+[2026-01-25 17:18:00]   [CANDIDATO 140/193] Concluido em 28.3s
+[2026-01-25 17:18:01] 
+[CANDIDATO 141/193] 10801...
+[2026-01-25 17:18:01]   [ESTIMATIVA] Media: 5.6s/SKU | Restantes: 53 | ETA: 4.9 min
+[2026-01-25 17:18:05]   [CANDIDATO 141/193] Concluido em 4.2s
+[2026-01-25 17:18:05] 
+[CANDIDATO 142/193] 10827...
+[2026-01-25 17:18:05]   [ESTIMATIVA] Media: 5.6s/SKU | Restantes: 52 | ETA: 4.8 min
+[2026-01-25 17:18:13]   [CANDIDATO 142/193] Concluido em 8.1s
+[2026-01-25 17:18:14] 
+[CANDIDATO 143/193] 2822...
+[2026-01-25 17:18:14]   [ESTIMATIVA] Media: 5.6s/SKU | Restantes: 51 | ETA: 4.7 min
+[2026-01-25 17:18:17]   [CANDIDATO 143/193] Concluido em 3.2s
+[2026-01-25 17:18:17] 
+[CANDIDATO 144/193] 5518...
+[2026-01-25 17:18:17]   [ESTIMATIVA] Media: 5.6s/SKU | Restantes: 50 | ETA: 4.6 min
+[2026-01-25 17:18:28]   [CANDIDATO 144/193] Concluido em 10.4s
+[2026-01-25 17:18:28] 
+[CANDIDATO 145/193] 791678...
+[2026-01-25 17:18:28]   [ESTIMATIVA] Media: 5.6s/SKU | Restantes: 49 | ETA: 4.6 min
+[2026-01-25 17:18:32]   [CANDIDATO 145/193] Concluido em 3.5s
+[2026-01-25 17:18:32] 
+[CANDIDATO 146/193] 10821...
+[2026-01-25 17:18:32]   [ESTIMATIVA] Media: 5.6s/SKU | Restantes: 48 | ETA: 4.5 min
+[2026-01-25 17:19:42]   [CANDIDATO 146/193] Concluido em 69.4s
+[2026-01-25 17:19:42] 
+[CANDIDATO 147/193] MK367...
+[2026-01-25 17:19:42]   [ESTIMATIVA] Media: 6.0s/SKU | Restantes: 47 | ETA: 4.7 min
+[2026-01-25 17:19:45]   [CANDIDATO 147/193] Concluido em 3.2s
+[2026-01-25 17:19:46] 
+[CANDIDATO 148/193] 0364...
+[2026-01-25 17:19:46]   [ESTIMATIVA] Media: 6.0s/SKU | Restantes: 46 | ETA: 4.6 min
+[2026-01-25 17:19:54]   [CANDIDATO 148/193] Concluido em 8.0s
+[2026-01-25 17:19:54] 
+[CANDIDATO 149/193] 2861...
+[2026-01-25 17:19:54]   [ESTIMATIVA] Media: 6.0s/SKU | Restantes: 45 | ETA: 4.5 min
+[2026-01-25 17:19:57]   [CANDIDATO 149/193] Concluido em 3.2s
+[2026-01-25 17:19:58] 
+[CANDIDATO 150/193] 4017...
+[2026-01-25 17:19:58]   [ESTIMATIVA] Media: 6.0s/SKU | Restantes: 44 | ETA: 4.4 min
+[2026-01-25 17:20:08]   [CANDIDATO 150/193] Concluido em 10.5s
+[2026-01-25 17:20:09] 
+[CANDIDATO 151/193] 792475...
+[2026-01-25 17:20:09]   [ESTIMATIVA] Media: 6.0s/SKU | Restantes: 43 | ETA: 4.3 min
+[2026-01-25 17:20:17]   [CANDIDATO 151/193] Concluido em 8.8s
+[2026-01-25 17:20:18] 
+[CANDIDATO 152/193] 790723...
+[2026-01-25 17:20:18]   [ESTIMATIVA] Media: 6.0s/SKU | Restantes: 42 | ETA: 4.2 min
+[2026-01-25 17:20:22]   [CANDIDATO 152/193] Concluido em 4.1s
+[2026-01-25 17:20:22] 
+[CANDIDATO 153/193] 10820...
+[2026-01-25 17:20:22]   [ESTIMATIVA] Media: 6.0s/SKU | Restantes: 41 | ETA: 4.1 min
+[2026-01-25 17:20:37]   [CANDIDATO 153/193] Concluido em 15.1s
+[2026-01-25 17:20:38] 
+[CANDIDATO 154/193] 10825...
+[2026-01-25 17:20:38]   [ESTIMATIVA] Media: 6.1s/SKU | Restantes: 40 | ETA: 4.1 min
+[2026-01-25 17:20:41]   [CANDIDATO 154/193] Concluido em 2.9s
+[2026-01-25 17:20:41] 
+[CANDIDATO 155/193] 7267...
+[2026-01-25 17:20:41]   [ESTIMATIVA] Media: 6.1s/SKU | Restantes: 39 | ETA: 3.9 min
+[2026-01-25 17:21:09]   [CANDIDATO 155/193] Concluido em 27.6s
+[2026-01-25 17:21:09] 
+[CANDIDATO 156/193] MK433...
+[2026-01-25 17:21:09]   [ESTIMATIVA] Media: 6.2s/SKU | Restantes: 38 | ETA: 3.9 min
+[2026-01-25 17:21:12]   [CANDIDATO 156/193] Concluido em 3.5s
+[2026-01-25 17:21:13] 
+[CANDIDATO 157/193] 0863...
+[2026-01-25 17:21:13]   [ESTIMATIVA] Media: 6.2s/SKU | Restantes: 37 | ETA: 3.8 min
+[2026-01-25 17:21:21]   [CANDIDATO 157/193] Concluido em 8.5s
+[2026-01-25 17:21:22] 
+[CANDIDATO 158/193] 10842...
+[2026-01-25 17:21:22]   [ESTIMATIVA] Media: 6.2s/SKU | Restantes: 36 | ETA: 3.7 min
+[2026-01-25 17:21:43]   [CANDIDATO 158/193] Concluido em 21.7s
+[2026-01-25 17:21:44] 
+[CANDIDATO 159/193] 7361...
+[2026-01-25 17:21:44]   [ESTIMATIVA] Media: 6.3s/SKU | Restantes: 35 | ETA: 3.7 min
+[2026-01-25 17:21:47]   [CANDIDATO 159/193] Concluido em 3.5s
+[2026-01-25 17:21:48] 
+[CANDIDATO 160/193] MK394...
+[2026-01-25 17:21:48]   [ESTIMATIVA] Media: 6.3s/SKU | Restantes: 34 | ETA: 3.6 min
+[2026-01-25 17:21:52]   [CANDIDATO 160/193] Concluido em 4.3s
+[2026-01-25 17:21:52] 
+[CANDIDATO 161/193] 899001...
+[2026-01-25 17:21:52]   [ESTIMATIVA] Media: 6.3s/SKU | Restantes: 33 | ETA: 3.4 min
+[2026-01-25 17:21:56]   [CANDIDATO 161/193] Concluido em 3.2s
+[2026-01-25 17:21:56] 
+[CANDIDATO 162/193] 7824...
+[2026-01-25 17:21:56]   [ESTIMATIVA] Media: 6.2s/SKU | Restantes: 32 | ETA: 3.3 min
+[2026-01-25 17:22:23]   [CANDIDATO 162/193] Concluido em 26.9s
+[2026-01-25 17:22:23] 
+[CANDIDATO 163/193] 791288...
+[2026-01-25 17:22:23]   [ESTIMATIVA] Media: 6.4s/SKU | Restantes: 31 | ETA: 3.3 min
+[2026-01-25 17:22:35]   [CANDIDATO 163/193] Concluido em 11.4s
+[2026-01-25 17:22:35] 
+[CANDIDATO 164/193] 791680...
+[2026-01-25 17:22:35]   [ESTIMATIVA] Media: 6.4s/SKU | Restantes: 30 | ETA: 3.2 min
+[2026-01-25 17:22:38]   [CANDIDATO 164/193] Concluido em 3.4s
+[2026-01-25 17:22:39] 
+[CANDIDATO 165/193] 790875...
+[2026-01-25 17:22:39]   [ESTIMATIVA] Media: 6.4s/SKU | Restantes: 29 | ETA: 3.1 min
+[2026-01-25 17:22:42]   [CANDIDATO 165/193] Concluido em 3.4s
+[2026-01-25 17:22:43] 
+[CANDIDATO 166/193] 792510...
+[2026-01-25 17:22:43]   [ESTIMATIVA] Media: 6.4s/SKU | Restantes: 28 | ETA: 3.0 min
+[2026-01-25 17:22:46]   [CANDIDATO 166/193] Concluido em 3.8s
+[2026-01-25 17:22:47] 
+[CANDIDATO 167/193] 7266...
+[2026-01-25 17:22:47]   [ESTIMATIVA] Media: 6.4s/SKU | Restantes: 27 | ETA: 2.9 min
+[2026-01-25 17:22:54]   [CANDIDATO 167/193] Concluido em 6.7s
+[2026-01-25 17:22:54] 
+[CANDIDATO 168/193] 0902-1...
+[2026-01-25 17:22:54]   [ESTIMATIVA] Media: 6.4s/SKU | Restantes: 26 | ETA: 2.8 min
+[2026-01-25 17:22:59]   [CANDIDATO 168/193] Concluido em 4.9s
+[2026-01-25 17:22:59] 
+[CANDIDATO 169/193] 2976...
+[2026-01-25 17:22:59]   [ESTIMATIVA] Media: 6.3s/SKU | Restantes: 25 | ETA: 2.6 min
+[2026-01-25 17:23:07]   [CANDIDATO 169/193] Concluido em 7.5s
+[2026-01-25 17:23:07] 
+[CANDIDATO 170/193] 790708...
+[2026-01-25 17:23:07]   [ESTIMATIVA] Media: 6.4s/SKU | Restantes: 24 | ETA: 2.5 min
+[2026-01-25 17:23:11]   [CANDIDATO 170/193] Concluido em 4.3s
+[2026-01-25 17:23:12] 
+[CANDIDATO 171/193] MK181...
+[2026-01-25 17:23:12]   [ESTIMATIVA] Media: 6.3s/SKU | Restantes: 23 | ETA: 2.4 min
+[2026-01-25 17:23:16]   [CANDIDATO 171/193] Concluido em 4.1s
+[2026-01-25 17:23:16] 
+[CANDIDATO 172/193] Mk231...
+[2026-01-25 17:23:16]   [ESTIMATIVA] Media: 6.3s/SKU | Restantes: 22 | ETA: 2.3 min
+[2026-01-25 17:23:23]   [CANDIDATO 172/193] Concluido em 7.2s
+[2026-01-25 17:23:24] 
+[CANDIDATO 173/193] 2971...
+[2026-01-25 17:23:24]   [ESTIMATIVA] Media: 6.3s/SKU | Restantes: 21 | ETA: 2.2 min
+[2026-01-25 17:23:27]   [CANDIDATO 173/193] Concluido em 3.2s
+[2026-01-25 17:23:27] 
+[CANDIDATO 174/193] 1176-2...
+[2026-01-25 17:23:27]   [ESTIMATIVA] Media: 6.3s/SKU | Restantes: 20 | ETA: 2.1 min
+[2026-01-25 17:23:33]   [CANDIDATO 174/193] Concluido em 5.3s
+[2026-01-25 17:23:33] 
+[CANDIDATO 175/193] 1354-2...
+[2026-01-25 17:23:33]   [ESTIMATIVA] Media: 6.3s/SKU | Restantes: 19 | ETA: 2.0 min
+[2026-01-25 17:23:38]   [CANDIDATO 175/193] Concluido em 5.2s
+[2026-01-25 17:23:39] 
+[CANDIDATO 176/193] 2857...
+[2026-01-25 17:23:39]   [ESTIMATIVA] Media: 6.3s/SKU | Restantes: 18 | ETA: 1.9 min
+[2026-01-25 17:23:42]   [CANDIDATO 176/193] Concluido em 3.6s
+[2026-01-25 17:23:43] 
+[CANDIDATO 177/193] 792528...
+[2026-01-25 17:23:43]   [ESTIMATIVA] Media: 6.3s/SKU | Restantes: 17 | ETA: 1.8 min
+[2026-01-25 17:23:46]   [CANDIDATO 177/193] Concluido em 3.5s
+[2026-01-25 17:23:47] 
+[CANDIDATO 178/193] 811076...
+[2026-01-25 17:23:47]   [ESTIMATIVA] Media: 6.3s/SKU | Restantes: 16 | ETA: 1.7 min
+[2026-01-25 17:23:53]   [CANDIDATO 178/193] Concluido em 6.0s
+[2026-01-25 17:23:53] 
+[CANDIDATO 179/193] 2080...
+[2026-01-25 17:23:53]   [ESTIMATIVA] Media: 6.3s/SKU | Restantes: 15 | ETA: 1.6 min
+[2026-01-25 17:24:10]   [CANDIDATO 179/193] Concluido em 17.1s
+[2026-01-25 17:24:11] 
+[CANDIDATO 180/193] 791840...
+[2026-01-25 17:24:11]   [ESTIMATIVA] Media: 6.3s/SKU | Restantes: 14 | ETA: 1.5 min
+[2026-01-25 17:24:16]   [CANDIDATO 180/193] Concluido em 5.0s
+[2026-01-25 17:24:16] 
+[CANDIDATO 181/193] 899507...
+[2026-01-25 17:24:16]   [ESTIMATIVA] Media: 6.3s/SKU | Restantes: 13 | ETA: 1.4 min
+[2026-01-25 17:24:26]   [CANDIDATO 181/193] Concluido em 10.0s
+[2026-01-25 17:24:26] 
+[CANDIDATO 182/193] MK425...
+[2026-01-25 17:24:26]   [ESTIMATIVA] Media: 6.3s/SKU | Restantes: 12 | ETA: 1.3 min
+[2026-01-25 17:24:31]   [CANDIDATO 182/193] Concluido em 4.6s
+[2026-01-25 17:24:31] 
+[CANDIDATO 183/193] MK402...
+[2026-01-25 17:24:31]   [ESTIMATIVA] Media: 6.3s/SKU | Restantes: 11 | ETA: 1.2 min
+[2026-01-25 17:24:35]   [CANDIDATO 183/193] Concluido em 3.5s
+[2026-01-25 17:24:35] 
+[CANDIDATO 184/193] 899551...
+[2026-01-25 17:24:35]   [ESTIMATIVA] Media: 6.3s/SKU | Restantes: 10 | ETA: 1.1 min
+[2026-01-25 17:24:43]   [CANDIDATO 184/193] Concluido em 8.1s
+[2026-01-25 17:24:44] 
+[CANDIDATO 185/193] 792427...
+[2026-01-25 17:24:44]   [ESTIMATIVA] Media: 6.3s/SKU | Restantes: 9 | ETA: 0.9 min
+[2026-01-25 17:24:50]   [CANDIDATO 185/193] Concluido em 6.1s
+[2026-01-25 17:24:50] 
+[CANDIDATO 186/193] 2817...
+[2026-01-25 17:24:50]   [ESTIMATIVA] Media: 6.3s/SKU | Restantes: 8 | ETA: 0.8 min
+[2026-01-25 17:25:23]   [CANDIDATO 186/193] Concluido em 32.4s
+[2026-01-25 17:25:23] 
+[CANDIDATO 187/193] MK421...
+[2026-01-25 17:25:23]   [ESTIMATIVA] Media: 6.5s/SKU | Restantes: 7 | ETA: 0.8 min
+[2026-01-25 17:25:30]   [CANDIDATO 187/193] Concluido em 6.7s
+[2026-01-25 17:25:30] 
+[CANDIDATO 188/193] MK416...
+[2026-01-25 17:25:30]   [ESTIMATIVA] Media: 6.5s/SKU | Restantes: 6 | ETA: 0.6 min
+[2026-01-25 17:25:34]   [CANDIDATO 188/193] Concluido em 3.9s
+[2026-01-25 17:25:34] 
+[CANDIDATO 189/193] MK360...
+[2026-01-25 17:25:34]   [ESTIMATIVA] Media: 6.5s/SKU | Restantes: 5 | ETA: 0.5 min
+[2026-01-25 17:25:41]   [CANDIDATO 189/193] Concluido em 6.7s
+[2026-01-25 17:25:42] 
+[CANDIDATO 190/193] 7460...
+[2026-01-25 17:25:42]   [ESTIMATIVA] Media: 6.5s/SKU | Restantes: 4 | ETA: 0.4 min
+[2026-01-25 17:25:52]   [CANDIDATO 190/193] Concluido em 10.2s
+[2026-01-25 17:25:52]   [CPU] Uso atual: 100.0% (limite: 80.0%) - aguardando...
+[2026-01-25 17:25:52]   [CPU] Uso atual: 35.7% - prosseguindo
+[2026-01-25 17:25:52] 
+[CANDIDATO 191/193] MK405...
+[2026-01-25 17:25:52]   [ESTIMATIVA] Media: 6.5s/SKU | Restantes: 3 | ETA: 0.3 min
+[2026-01-25 17:26:00]   [CANDIDATO 191/193] Concluido em 7.6s
+[2026-01-25 17:26:00] 
+[CANDIDATO 192/193] MK380...
+[2026-01-25 17:26:00]   [ESTIMATIVA] Media: 6.5s/SKU | Restantes: 2 | ETA: 0.2 min
+[2026-01-25 17:26:06]   [CANDIDATO 192/193] Concluido em 5.7s
+[2026-01-25 17:26:06] 
+[CANDIDATO 193/193] 790694...
+[2026-01-25 17:26:06]   [ESTIMATIVA] Media: 6.5s/SKU | Restantes: 1 | ETA: 0.1 min
+[2026-01-25 17:26:18]   [CANDIDATO 193/193] Concluido em 11.6s
+[2026-01-25 17:26:18] 
+[FASE 1] Concluida em 22.2 min. 193 candidatos com metricas.
+[2026-01-25 17:26:18] [FASE 1] CSV salvo: C:\Users\Desktop\Documents\POS\TCC\CODE\resultados\candidatos_300_metricas.csv
+[2026-01-25 17:26:18] 
+[FASE 2/3] Filtrando e selecionando os 10 melhores...
+[2026-01-25 17:26:18]   Excluidos: 127 (teste constante), 32 (metricas insatisfatorias).
+[2026-01-25 17:26:18]   Elegiveis: 34. Top 10: ['2922', '791288', '3330', 'MK360', '790694', '792528', '7824', '792427', 'MK382', '791840'].
+[2026-01-25 17:26:18] 
+[FASE 3/3] Gerando figuras e relatorios para os 10 melhores (Fig 5-7: 2922)...
+[2026-01-25 17:26:31] 
+[OK] Comparacao concluida. 193 candidatos processados; 10 melhores com figuras e Tabela 2.
+[2026-01-25 17:26:31] 
+================================================================================
+[2026-01-25 17:26:31] ELENCAO FINAL (valor da ferramenta de elencacao)
+[2026-01-25 17:26:31] ================================================================================
+[2026-01-25 17:26:31]   Metricas: R(t)=Rentabilidade, U(t)=Nivel de Urgencia, GP(t)=Giro Futuro Previsto (soma previsoes de ESTOQUE)
+[2026-01-25 17:26:31] 
+[OK] Elencacao salva: C:\Users\Desktop\Documents\POS\TCC\CODE\resultados\elencacao_final.csv
+[2026-01-25 17:26:31] 
+RANKING DE ELENCAO (ordenado por score_elencacao):
+[2026-01-25 17:26:31] --------------------------------------------------------------------------------
+[2026-01-25 17:26:31]  ranking    sku  estoque_atual  R(t)_rentabilidade  U(t)_nivel_urgencia  GP(t)_giro_futuro_previsto  score_elencacao
+       1  MK360            3.0           67.513846             1.254545                   90.000000         0.430120
+       2  MK382           15.0           59.914024             8.855422                  450.000000         0.405096
+       3 792427           46.0           14.786316            20.879433                 1380.000000         0.372857
+       4 790694           12.0           18.874113             1.776699                  196.910230         0.242611
+       5   3330           15.0           14.862573             6.120690                  450.000000         0.236581
+       6   2922           13.0           16.195263            10.947368                  390.000000         0.206891
+       7 792528           12.0           14.945000             8.400000                  360.000000         0.199695
+       8 791288            9.0           12.473571             4.800000                  265.146080         0.181162
+       9   7824           12.0           12.250000             9.000000                  317.521922         0.174257
+      10 791840            7.0            6.126757             3.972973                  210.000000         0.147833
+[2026-01-25 17:26:31] --------------------------------------------------------------------------------
+[2026-01-25 17:26:31]   (Valor final da ferramenta de elencacao = este ranking + CSV acima)
+[2026-01-25 17:26:32] 
+[2/2] Concluido em 1346.7s
+[2026-01-25 17:26:32] 
+================================================================================
+[2026-01-25 17:26:32] CONCLUIDO
+[2026-01-25 17:26:32] ================================================================================
+[2026-01-25 17:26:32] Inicio: 2026-01-25 17:03:38
+[2026-01-25 17:26:32] Fim: 2026-01-25 17:26:32
+[2026-01-25 17:26:32] Tempo total: 22.9 min (1373.9s)
+[2026-01-25 17:26:32] 
+Figuras em C:\Users\Desktop\Documents\POS\TCC\CODE\resultados\figuras_tcc:
+[2026-01-25 17:26:32]   [OK] figura1.png
+[2026-01-25 17:26:32]   [OK] figura2.png
+[2026-01-25 17:26:32]   [OK] figura3.png
+[2026-01-25 17:26:32]   [OK] figura4.png
+[2026-01-25 17:26:32]   [OK] figura5.png
+[2026-01-25 17:26:32]   [OK] figura6.png
+[2026-01-25 17:26:32]   [OK] figura7.png
+[2026-01-25 17:26:32] 
+Valor final da ferramenta de elencacao: C:\Users\Desktop\Documents\POS\TCC\CODE\resultados\elencacao_final.csv
+[2026-01-25 17:26:32] Arquivo de log: C:\Users\Desktop\Documents\POS\TCC\CODE\resultados\logs\log_execucao_20260125_170338.txt
+[2026-01-25 17:26:32] 
+Documentacao: documentacao/COMO_GERAR_FIGURAS_TCC.md
+[2026-01-25 17:26:32] ================================================================================

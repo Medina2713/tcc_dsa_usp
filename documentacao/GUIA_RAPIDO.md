@@ -1,5 +1,9 @@
 # 🚀 Guia Rápido - SARIMA para Previsão de Estoque
 
+**Funcionamento atual:** Os modelos (SARIMA, ARIMA, Holt-Winters, Média Móvel) preveem **estoque (saldo)**, não vendas. A previsão é usada na elencação (GP(t)) para **sinalizar necessidade de reposição**. Pipeline TCC: `python gerar_figuras_tcc.py` gera figuras 1–7, Tabela 2 e **elencação final** (ranking R(t), U(t), GP(t)). Ver `documentacao/COMO_GERAR_FIGURAS_TCC.md`.
+
+---
+
 ## Instalação (1 minuto)
 
 ```bash

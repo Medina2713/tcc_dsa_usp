@@ -14,6 +14,9 @@ import numpy as np
 from pmdarima import auto_arima
 from pmdarima.arima import ADFTest
 import warnings
+import pickle
+import hashlib
+from pathlib import Path
 warnings.filterwarnings('ignore')
 
 
@@ -25,7 +28,7 @@ class PrevisorEstoqueSARIMA:
     (p, d, q) x (P, D, Q, s) para cada produto/SKU.
     """
     
-    def __init__(self, horizonte_previsao=7, frequencia='D'):
+    def __init__(self, horizonte_previsao=7, frequencia='D', cache_dir='cache_modelos'):
         """
         Inicializa o previsor.
         
@@ -35,15 +38,21 @@ class PrevisorEstoqueSARIMA:
             Número de dias à frente para prever (padrão: 7)
         frequencia : str
             Frequência da série temporal ('D' para diária, 'W' para semanal)
+        cache_dir : str
+            Diretório para armazenar modelos em cache
         """
         self.horizonte_previsao = horizonte_previsao
         self.frequencia = frequencia
         self.modelos = {}  # Armazena modelos treinados por SKU
+        self.cache_dir = Path(cache_dir)
+        self.cache_dir.mkdir(exist_ok=True)
+        self.series_cache = {}  # Cache de séries temporais preparadas
         
     
-    def preparar_serie_temporal(self, df_estoque, sku):
+    def preparar_serie_temporal(self, df_estoque, sku, usar_cache=True):
         """
         Prepara a série temporal de estoque para um SKU específico.
+        Usa cache para evitar reprocessamento.
         
         Parameters:
         -----------
@@ -51,12 +60,18 @@ class PrevisorEstoqueSARIMA:
             DataFrame com colunas: 'data' (datetime), 'sku', 'estoque_atual'
         sku : str
             Código do produto (SKU)
+        usar_cache : bool
+            Se True, usa cache de séries preparadas
             
         Returns:
         --------
         pd.Series
             Série temporal de estoque com índice datetime
         """
+        # Verifica cache
+        if usar_cache and sku in self.series_cache:
+            return self.series_cache[sku]
+        
         # Filtra dados do SKU
         df_sku = df_estoque[df_estoque['sku'] == sku].copy()
         
@@ -77,6 +92,10 @@ class PrevisorEstoqueSARIMA:
         
         # Remove valores NaN no início (se houver)
         serie = serie.dropna()
+        
+        # Armazena no cache
+        if usar_cache:
+            self.series_cache[sku] = serie
         
         return serie
     
@@ -104,9 +123,99 @@ class PrevisorEstoqueSARIMA:
         return is_stationary
     
     
-    def treinar_modelo(self, serie, sku):
+    def _calcular_hash_serie(self, serie):
+        """Calcula hash da série para validação de cache"""
+        # Usa primeiros e últimos valores + tamanho para hash rápido
+        hash_data = f"{len(serie)}_{serie.iloc[0]}_{serie.iloc[-1]}_{serie.sum()}"
+        return hashlib.md5(hash_data.encode()).hexdigest()
+    
+    def _caminho_cache_modelo(self, sku):
+        """Retorna caminho do arquivo de cache do modelo"""
+        return self.cache_dir / f"modelo_{sku}.pkl"
+    
+    def _caminho_cache_metadata(self, sku):
+        """Retorna caminho do arquivo de metadata do cache"""
+        return self.cache_dir / f"metadata_{sku}.pkl"
+    
+    def carregar_modelo_cache(self, sku, serie):
+        """
+        Carrega modelo do cache se existir e for válido.
+        
+        Parameters:
+        -----------
+        sku : str
+            Código do produto
+        serie : pd.Series
+            Série temporal atual (para validar cache)
+            
+        Returns:
+        --------
+        modelo ou None
+            Modelo carregado do cache ou None se não existir/inválido
+        """
+        cache_path = self._caminho_cache_modelo(sku)
+        metadata_path = self._caminho_cache_metadata(sku)
+        
+        if not cache_path.exists() or not metadata_path.exists():
+            return None
+        
+        try:
+            # Carrega metadata
+            with open(metadata_path, 'rb') as f:
+                metadata = pickle.load(f)
+            
+            # Valida hash da série
+            hash_atual = self._calcular_hash_serie(serie)
+            if metadata.get('hash_serie') != hash_atual:
+                # Série mudou, cache inválido
+                return None
+            
+            # Carrega modelo
+            with open(cache_path, 'rb') as f:
+                modelo = pickle.load(f)
+            
+            return modelo
+        except Exception as e:
+            print(f"[AVISO] Erro ao carregar cache para SKU {sku}: {str(e)}")
+            return None
+    
+    def salvar_modelo_cache(self, sku, modelo, serie):
+        """
+        Salva modelo no cache.
+        
+        Parameters:
+        -----------
+        sku : str
+            Código do produto
+        modelo : modelo_fit
+            Modelo treinado
+        serie : pd.Series
+            Série temporal usada (para validar cache depois)
+        """
+        try:
+            cache_path = self._caminho_cache_modelo(sku)
+            metadata_path = self._caminho_cache_metadata(sku)
+            
+            # Salva modelo
+            with open(cache_path, 'wb') as f:
+                pickle.dump(modelo, f)
+            
+            # Salva metadata
+            metadata = {
+                'hash_serie': self._calcular_hash_serie(serie),
+                'len_serie': len(serie),
+                'order': modelo.order,
+                'seasonal_order': modelo.seasonal_order
+            }
+            with open(metadata_path, 'wb') as f:
+                pickle.dump(metadata, f)
+        except Exception as e:
+            print(f"[AVISO] Erro ao salvar cache para SKU {sku}: {str(e)}")
+    
+    def treinar_modelo(self, serie, sku, usar_cache=True):
         """
         Treina modelo SARIMA usando auto_arima para encontrar melhores parâmetros.
+        Usa cache para evitar retreinamento.
         
         Parameters:
         -----------
@@ -114,6 +223,8 @@ class PrevisorEstoqueSARIMA:
             Série temporal de estoque
         sku : str
             Código do produto (SKU)
+        usar_cache : bool
+            Se True, tenta carregar do cache antes de treinar
             
         Returns:
         --------
@@ -125,25 +236,20 @@ class PrevisorEstoqueSARIMA:
             print(f"[AVISO] SKU {sku}: Dados insuficientes ({len(serie)} observacoes). Minimo: 30")
             return None
         
+        # Tenta carregar do cache
+        if usar_cache:
+            modelo_cache = self.carregar_modelo_cache(sku, serie)
+            if modelo_cache is not None:
+                print(f"[CACHE] SKU {sku}: Modelo carregado do cache - {modelo_cache.order} x {modelo_cache.seasonal_order}")
+                self.modelos[sku] = modelo_cache
+                return modelo_cache
+        
         try:
             # AUTO-ARIMA: Busca automática dos melhores parâmetros
-            # 
-            # Parâmetros explicados:
-            # - seasonal=True: Habilita componente sazonal (importante para estoque)
-            # - m=7: Período sazonal de 7 dias (semanal) - ajuste conforme seu caso
-            # - stepwise=True: Busca eficiente (mais rápido)
-            # - suppress_warnings=True: Suprime warnings durante a busca
-            # - error_action='ignore': Ignora erros durante busca
-            # - max_p, max_d, max_q: Limites superiores para parâmetros ARIMA
-            # - max_P, max_D, max_Q: Limites superiores para parâmetros sazonais
-            # - trace=True: Mostra progresso da busca (útil para debug)
-            
-            # Para sazonalidade mensal em dados diários: m=30 (aproximadamente 30 dias = 1 mês)
-            # Isso captura padrões que se repetem mensalmente (ex: outubro e dezembro)
             modelo = auto_arima(
                 serie,
                 seasonal=True,           # Ativa componente sazonal (SARIMA)
-                m=30,                    # Período sazonal: 30 dias (mensal) - captura padrões de out/dez
+                m=30,                    # Período sazonal: 30 dias (mensal)
                 stepwise=True,           # Busca eficiente (stepwise selection)
                 suppress_warnings=True,  # Suprime warnings
                 error_action='ignore',   # Ignora erros na busca
@@ -167,6 +273,13 @@ class PrevisorEstoqueSARIMA:
             )
             
             print(f"[OK] SKU {sku}: Modelo encontrado - {modelo.order} x {modelo.seasonal_order}")
+            
+            # Salva no cache
+            if usar_cache:
+                self.salvar_modelo_cache(sku, modelo, serie)
+            
+            # Armazena em memória
+            self.modelos[sku] = modelo
             
             return modelo
             

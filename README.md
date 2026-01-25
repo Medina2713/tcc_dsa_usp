@@ -1,14 +1,15 @@
-# Sistema de Previsão de Demanda - TCC MBA DSA USP
+# Sistema de Previsão de Estoque e Elencação - TCC MBA DSA USP
 
-Sistema completo de previsão de demanda para gestão de estoque usando modelos SARIMA e técnicas de análise de séries temporais.
+Sistema completo de **previsão de estoque** (saldo) e **elencação de produtos** para reposição, usando modelos SARIMA, ARIMA, Holt-Winters e Média Móvel. Os modelos preveem **unidades em estoque**, não vendas; o **terceiro pilar** da elencação usa a previsão para **sinalizar necessidade de reposição** (estoque previsto baixo → priorizar repor).
 
 ## 📁 Estrutura do Repositório
 
 ```
 .
-├── sarima_estoque.py          # Módulo principal SARIMA (importar nos scripts)
+├── gerar_figuras_tcc.py       # Script mestre TCC: figuras 1–7, Tabela 2, elencação final
 ├── requirements_sarima.txt    # Dependências Python
 ├── README.md                  # Este arquivo
+├── DB/                        # Dados (historico_estoque, venda_produtos)
 │
 ├── data_wrangling/            # Preparação e limpeza de dados
 │   ├── dw_historico.py        # Script principal de data wrangling
@@ -27,9 +28,11 @@ Sistema completo de previsão de demanda para gestão de estoque usando modelos 
 ├── validacao/                 # Scripts de validação e testes
 │   ├── validar_extracao_vendas.py
 │   ├── calcular_metricas_elencacao.py
+│   ├── gerar_tabelas_tcc.py   # Tabela 1 (base de dados) e Tabela 2 (desempenho)
 │   └── validacao_walk_forward_sarima.py
 │
 ├── previsoes/                 # Scripts de previsão
+│   ├── sarima_estoque.py      # Módulo SARIMA (previsão de ESTOQUE)
 │   ├── teste_sarima_produto.py
 │   └── teste_elencacao_3_skus.py
 │
@@ -38,17 +41,24 @@ Sistema completo de previsão de demanda para gestão de estoque usando modelos 
 │   └── exemplo_elencacao_completa.py
 │
 ├── documentacao/              # Documentação completa
+│   ├── COMO_GERAR_FIGURAS_TCC.md
+│   ├── CRITERIOS_SELECAO_ANALISE_TEMPORAL.md
+│   ├── DOCUMENTACAO_GERAL_SISTEMA.md
 │   ├── GUIA_RAPIDO.md
 │   ├── README_SARIMA.md
 │   └── DOCUMENTACAO_TECNICA_FERRAMENTAS.md
 │
-├── dados/                     # Dados processados intermediários (gerados pelos scripts)
+├── dados/                     # Dados processados intermediários
 │
-└── resultados/                # Todos os resultados (CSV, PNG, relatórios)
+└── resultados/                # Figuras, tabelas, elencação, logs
+    ├── figuras_tcc/           # figura1.png … figura7.png
+    ├── tabelas_tcc/           # tabela_02_desempenho_modelos.csv
+    ├── elencacao_final.csv    # Ranking R(t), U(t), GP(t) — valor final da ferramenta
+    ├── figuras_modelos/       # comparacao_modelos_*.png
+    ├── candidatos_300_metricas.csv
     ├── metricas_elencacao.csv
     ├── resultado_elencacao_*.csv
-    ├── previsao_sarima_*.png
-    └── relatorio_*.txt
+    └── logs/
 ```
 
 ## 🚀 Início Rápido
@@ -59,58 +69,80 @@ Sistema completo de previsão de demanda para gestão de estoque usando modelos 
 pip install -r requirements_sarima.txt
 ```
 
-### 2. Preparar Dados
+### 2. Dados de Entrada
 
-Os dados de entrada devem estar na pasta `DB/`:
-- `DB/historico_estoque_atual.csv` - Histórico de estoque
-- `DB/venda_produtos_atual.csv` - Histórico de vendas
+Coloque na pasta `DB/`:
+- `DB/historico_estoque_atual.csv` — histórico de estoque (sku, created_at, saldo)
+- `DB/venda_produtos_atual.csv` — histórico de vendas (para R(t), U(t) na elencação)
 
-Processar dados para formato SARIMA:
+### 3. Pipeline TCC (recomendado)
+
+Gera **todas** as figuras (1–7), **Tabela 2** e o **valor final da ferramenta de elencação**:
+
+```bash
+python gerar_figuras_tcc.py
+```
+
+O script executa data wrangling (se necessário), análise exploratória (figura1–4), pipeline 300 candidatos → 10 melhores (métricas, filtros, figuras 5–7, Tabela 2) e **elencação final** (R(t), U(t), GP(t) → ranking). Salva `resultados/elencacao_final.csv` e **retorna** o DataFrame do ranking. Veja `documentacao/COMO_GERAR_FIGURAS_TCC.md` e `documentacao/CRITERIOS_SELECAO_ANALISE_TEMPORAL.md`.
+
+**Funcionamento e razões:** Os modelos preveem **estoque (saldo)**, não vendas. GP(t) = soma das previsões de estoque; o terceiro pilar **sinaliza necessidade de reposição**. Limpeza de saídas anteriores antes de cada rodada; CPU limitado a ~80% (psutil).
+
+### 4. Outros scripts
+
+#### Data wrangling (isolado)
 ```bash
 python data_wrangling/dw_historico.py
 ```
 
-### 3. Executar Análises
-
-#### Análise Exploratória de Sazonalidade
+#### Análise Exploratória (Figuras 1–4, modo TCC)
 ```bash
-python analises/analise_exploratoria_sazonalidade.py
+python analises/analise_exploratoria_sazonalidade.py --tcc
 ```
-Resultados salvos em: `resultados/analise_sazonalidade_*.png` e `resultados/relatorio_analise_sazonalidade.txt`
 
-#### Previsão para um Produto
+#### Selecionar Top SKUs para Análise Temporal
 ```bash
-python previsoes/teste_sarima_produto.py
+python previsoes/selecionar_top_skus_analise_temporal.py
 ```
-Resultados salvos em: `resultados/previsao_sarima_[SKU].png`
+Ver `documentacao/CRITERIOS_SELECAO_ANALISE_TEMPORAL.md`.
 
 #### Teste de Elencação (3 SKUs)
 ```bash
 python previsoes/teste_elencacao_3_skus.py
 ```
-Resultados salvos em: `resultados/resultado_elencacao_3_skus.csv`
 
 #### Calcular Métricas de Elencação
 ```bash
 python validacao/calcular_metricas_elencacao.py
 ```
-Resultados salvos em: `resultados/metricas_elencacao.csv`
 
-#### Comparar Modelos (Top 10 SKUs)
+#### Comparar Modelos (Figuras 5–7, Tabela 2)
+```bash
+python modelos/comparacao_modelos_previsao.py
+```
+Um SKU: gera Fig 5 (Holt-Winters), 6 (ARIMA), 7 (SARIMA) em `resultados/figuras_modelos/` e Tabela 2 em `resultados/tabelas_tcc/`.
+
 ```bash
 python modelos/comparacao_top_skus_otimizado.py
 ```
-Resultados salvos em: `resultados/resultados_comparacao/`
+Vários SKUs: resultados em `resultados/resultados_comparacao/` e Tabela 2 (médias por modelo) em `resultados/tabelas_tcc/`.
 
-### 4. Validar Extração de Dados
+*(O pipeline principal `gerar_figuras_tcc.py` já gera figuras 1–7, Tabela 2 e elencação final; ver seção 3.)*
 
+#### Gerar Tabelas do TCC (Metodologia)
+```bash
+python validacao/gerar_tabelas_tcc.py
+```
+- **Tabela 1:** Explicação da base de dados (variáveis, descrição, código e rótulo). Sempre gerada em `resultados/tabelas_tcc/`.
+- **Tabela 2:** Desempenho dos modelos (MAE, RMSE, MAPE). Usa saída de `comparacao_modelos_previsao` ou `comparacao_top_skus_otimizado` se já executados.
+
+#### Validar Extração de Dados
 ```bash
 python validacao/validar_extracao_vendas.py
 ```
 
 ## 📊 Principais Funcionalidades
 
-- ✅ **Previsão de demanda usando SARIMA** - Modelos automáticos com auto_arima
+- ✅ **Previsão de estoque** (SARIMA, ARIMA, Holt-Winters, Média Móvel) — modelos preveem **estoque (saldo)**, não vendas; terceiro pilar da elencação **sinaliza reposição**
 - ✅ **Identificação de padrões sazonais** - Análise de sazonalidade (outubro/dezembro)
 - ✅ **Comparação de modelos** - SARIMA, ARIMA, Médias Móveis, Suavização Exponencial
 - ✅ **Métricas de desempenho** - MAE, RMSE, MAPE, R², MAE%, RMSE%, Bias
@@ -122,11 +154,15 @@ python validacao/validar_extracao_vendas.py
 
 Consulte a pasta `documentacao/` para documentação detalhada:
 
-- **GUIA_RAPIDO.md** - Guia rápido de uso
-- **README_SARIMA.md** - Documentação técnica do módulo SARIMA
-- **DOCUMENTACAO_TECNICA_FERRAMENTAS.md** - Guia completo de ferramentas estatísticas
-- **EXPLICACAO_RESULTADOS_SARIMA.md** - Interpretação de resultados SARIMA
-- **RESUMO_VALIDACAO_VENDAS.md** - Validação das métricas de elencação
+- **COMO_GERAR_FIGURAS_TCC.md** — Como gerar figuras 1–7, Tabela 2 e elencação final; funcionamento e razões do pipeline
+- **CRITERIOS_SELECAO_ANALISE_TEMPORAL.md** — Critérios de seleção de SKUs; pipeline 300→10; modelos preveem estoque, terceiro pilar = reposição
+- **DOCUMENTACAO_GERAL_SISTEMA.md** — Visão geral do sistema, fluxo de elencação, GP(t) = previsão de estoque
+- **README_SARIMA.md** — Módulo SARIMA (previsão de **estoque**)
+- **DOCUMENTACAO_TECNICA_FERRAMENTAS.md** — Ferramentas estatísticas (Box-Jenkins, etc.)
+- **GUIA_RAPIDO.md** — Guia rápido de uso
+- **EXPLICACAO_RESULTADOS_SARIMA.md** — Interpretação de resultados SARIMA
+- **RESUMO_VALIDACAO_VENDAS.md** — Validação das métricas de elencação
+- **ANALISE_FIGURAS_TABELAS_TCC.md** — Verificação figuras/tabelas vs. TCC
 
 ## 🛠️ Uso do Módulo SARIMA
 

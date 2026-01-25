@@ -1,5 +1,9 @@
 # 🚀 Guia Rápido: Como Explicar Cada Ferramenta
 
+**Contexto do projeto:** Os modelos (SARIMA, ARIMA, Holt-Winters, Média Móvel) preveem **estoque (saldo)**, não vendas. A previsão alimenta o **terceiro pilar** da elencação (GP(t) = soma das previsões de estoque) e **sinaliza necessidade de reposição**. Pipeline TCC: `gerar_figuras_tcc.py` gera figuras 1–7, Tabela 2 e elencação final. Ver `COMO_GERAR_FIGURAS_TCC.md` e `CRITERIOS_SELECAO_ANALISE_TEMPORAL.md`.
+
+---
+
 ## 📋 Estrutura de Explicação (Use para TODAS as ferramentas)
 
 Para cada ferramenta, siga esta estrutura de 5 pontos:

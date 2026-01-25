@@ -17,7 +17,7 @@
 
 Este documento explica **todas as ferramentas estatísticas** implementadas no projeto de previsão de estoque usando modelos SARIMA. Cada ferramenta é justificada teoricamente e explicada em detalhes para que você possa defender sua escolha em apresentações, defesas de TCC ou discussões técnicas.
 
-**Objetivo do Projeto:** Prever demanda futura de estoque para produtos (SKUs) em um e-commerce de brinquedos, utilizando essas previsões como uma das métricas na ferramenta de elencação (ranking) para reposição de estoque.
+**Objetivo do Projeto:** Prever **estoque (saldo)** futuro para produtos (SKUs) em um e-commerce de brinquedos, utilizando essas previsões como o **terceiro pilar** da ferramenta de elencação (ranking) para **reposição de estoque**. Os modelos preveem **unidades em estoque**, não vendas; a previsão serve para **sinalizar necessidade de reposição** (estoque previsto baixo → priorizar repor).
 
 ---
 

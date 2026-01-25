@@ -2,6 +2,13 @@
 Script de Teste: Previsão de Demanda e Elencação para 3 SKUs com Melhor Movimentação
 TCC MBA Data Science & Analytics
 
+VERSÃO OTIMIZADA:
+- Carregamento único de dados
+- Cache de modelos treinados
+- Processamento paralelo
+- Logs de progresso com porcentagem
+- Sistema de checkpoint para retomar processamento
+
 Este script:
 1. Identifica os 3 SKUs com maior quantidade vendida (melhor movimentação)
 2. Gera previsões SARIMA para esses SKUs
@@ -13,25 +20,83 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 from datetime import datetime
+import json
+import sys
+import time
+
+# Importação local
+sys.path.insert(0, str(Path(__file__).parent))
 from sarima_estoque import PrevisorEstoqueSARIMA
 
-def identificar_top_skus_movimentacao(top_n=3, caminho_vendas="DB/venda_produtos_atual.csv"):
+# Configurações
+DIR_CHECKPOINT = Path('cache_checkpoints')
+DIR_CHECKPOINT.mkdir(exist_ok=True)
+ARQUIVO_CHECKPOINT = DIR_CHECKPOINT / 'checkpoint_elencacao.json'
+
+
+def carregar_dados(caminho_vendas="DB/venda_produtos_atual.csv", 
+                   caminho_estoque="DB/historico_estoque_atual.csv"):
     """
-    Identifica os N SKUs com maior quantidade vendida (melhor movimentação).
+    Carrega dados uma única vez e prepara para uso.
     
     Returns:
     --------
-    list
-        Lista de SKUs ordenados por quantidade vendida (maior para menor)
+    tuple
+        (df_vendas, df_estoque) - DataFrames preparados
     """
     print("=" * 80)
-    print("IDENTIFICANDO TOP SKUs POR MOVIMENTACAO")
+    print("CARREGANDO DADOS")
     print("=" * 80)
     
-    print(f"\nCarregando dados de vendas: {caminho_vendas}")
+    print(f"\n[1/2] Carregando vendas: {caminho_vendas}")
     df_vendas = pd.read_csv(caminho_vendas, low_memory=False)
+    df_vendas['created_at'] = pd.to_datetime(df_vendas['created_at'], errors='coerce')
     df_vendas['quantidade'] = pd.to_numeric(df_vendas['quantidade'], errors='coerce')
+    df_vendas['valor_unitario'] = pd.to_numeric(df_vendas['valor_unitario'], errors='coerce')
+    df_vendas['custo_unitario'] = pd.to_numeric(df_vendas['custo_unitario'], errors='coerce')
+    df_vendas['margem_proporcional'] = pd.to_numeric(df_vendas['margem_proporcional'], errors='coerce')
     df_vendas = df_vendas[df_vendas['sku'].notna()]
+    print(f"      [OK] {len(df_vendas):,} registros carregados")
+    
+    print(f"\n[2/2] Carregando estoque: {caminho_estoque}")
+    if not Path(caminho_estoque).exists():
+        print(f"      [ERRO] Arquivo não encontrado: {caminho_estoque}")
+        return None, None
+    
+    df_estoque = pd.read_csv(caminho_estoque, low_memory=False)
+    df_estoque['created_at'] = pd.to_datetime(df_estoque['created_at'], errors='coerce')
+    df_estoque['saldo'] = pd.to_numeric(df_estoque['saldo'], errors='coerce')
+    df_estoque = df_estoque[df_estoque['sku'].notna()]
+    
+    # Converte para formato esperado pelo SARIMA
+    df_estoque['data'] = df_estoque['created_at']
+    df_estoque['estoque_atual'] = df_estoque['saldo']
+    
+    print(f"      [OK] {len(df_estoque):,} registros carregados")
+    print("\n[OK] Dados carregados com sucesso!")
+    
+    return df_vendas, df_estoque
+
+
+def identificar_top_skus_movimentacao(df_vendas, top_n=3):
+    """
+    Identifica os N SKUs com maior quantidade vendida.
+    
+    Parameters:
+    -----------
+    df_vendas : pd.DataFrame
+        DataFrame com dados de vendas (já carregado)
+    top_n : int
+        Número de SKUs a retornar
+        
+    Returns:
+    --------
+    list
+        Lista de SKUs ordenados por quantidade vendida
+    """
+    print("\n" + "=" * 80)
+    print("IDENTIFICANDO TOP SKUs POR MOVIMENTACAO")
+    print("=" * 80)
     
     # Agrega por SKU
     vendas_por_sku = df_vendas.groupby('sku')['quantidade'].sum().reset_index()
@@ -47,10 +112,17 @@ def identificar_top_skus_movimentacao(top_n=3, caminho_vendas="DB/venda_produtos
     return top_skus, vendas_por_sku.head(top_n)
 
 
-def calcular_metricas_vendas(skus, caminho_vendas="DB/venda_produtos_atual.csv"):
+def calcular_metricas_vendas(df_vendas, skus):
     """
     Calcula métricas de vendas (R(t)) para os SKUs selecionados.
     
+    Parameters:
+    -----------
+    df_vendas : pd.DataFrame
+        DataFrame com dados de vendas (já carregado)
+    skus : list
+        Lista de SKUs
+        
     Returns:
     --------
     pd.DataFrame
@@ -60,18 +132,11 @@ def calcular_metricas_vendas(skus, caminho_vendas="DB/venda_produtos_atual.csv")
     print("CALCULANDO METRICAS DE VENDAS (RENTABILIDADE)")
     print("=" * 80)
     
-    df_vendas = pd.read_csv(caminho_vendas, low_memory=False)
-    df_vendas['quantidade'] = pd.to_numeric(df_vendas['quantidade'], errors='coerce')
-    df_vendas['valor_unitario'] = pd.to_numeric(df_vendas['valor_unitario'], errors='coerce')
-    df_vendas['custo_unitario'] = pd.to_numeric(df_vendas['custo_unitario'], errors='coerce')
-    df_vendas['margem_proporcional'] = pd.to_numeric(df_vendas['margem_proporcional'], errors='coerce')
-    df_vendas = df_vendas[df_vendas['sku'].notna()]
-    
     # Filtra apenas os SKUs selecionados
-    df_vendas = df_vendas[df_vendas['sku'].isin(skus)]
+    df_vendas_filtrado = df_vendas[df_vendas['sku'].isin(skus)].copy()
     
     # Agrega por SKU
-    df_agregado = df_vendas.groupby('sku').agg({
+    df_agregado = df_vendas_filtrado.groupby('sku').agg({
         'valor_unitario': 'mean',
         'custo_unitario': 'mean',
         'margem_proporcional': 'mean',
@@ -96,19 +161,16 @@ def calcular_metricas_vendas(skus, caminho_vendas="DB/venda_produtos_atual.csv")
     return df_agregado
 
 
-def calcular_venda_media_diaria(skus, caminho_vendas="DB/venda_produtos_atual.csv", periodo_dias=365):
+def calcular_venda_media_diaria(df_vendas, skus, periodo_dias=365):
     """Calcula venda média diária histórica por SKU"""
     print("\nCalculando venda média diária histórica...")
     
-    df_vendas = pd.read_csv(caminho_vendas, low_memory=False)
-    df_vendas['created_at'] = pd.to_datetime(df_vendas['created_at'], errors='coerce')
-    df_vendas['quantidade'] = pd.to_numeric(df_vendas['quantidade'], errors='coerce')
-    df_vendas = df_vendas[df_vendas['sku'].notna()]
-    df_vendas = df_vendas[df_vendas['sku'].isin(skus)]
+    # Filtra SKUs
+    df_vendas_filtrado = df_vendas[df_vendas['sku'].isin(skus)].copy()
     
     # Filtra período
-    data_limite = df_vendas['created_at'].max() - pd.Timedelta(days=periodo_dias)
-    df_periodo = df_vendas[df_vendas['created_at'] >= data_limite].copy()
+    data_limite = df_vendas_filtrado['created_at'].max() - pd.Timedelta(days=periodo_dias)
+    df_periodo = df_vendas_filtrado[df_vendas_filtrado['created_at'] >= data_limite].copy()
     
     # Agrupa por SKU e data, soma quantidade
     df_vendas_diarias = df_periodo.groupby(['sku', pd.Grouper(key='created_at', freq='D')])['quantidade'].sum().reset_index()
@@ -121,24 +183,17 @@ def calcular_venda_media_diaria(skus, caminho_vendas="DB/venda_produtos_atual.cs
     return venda_media
 
 
-def calcular_nivel_urgencia(skus, caminho_estoque="DB/historico_estoque_atual.csv", df_venda_media=None):
+def calcular_nivel_urgencia(df_estoque, skus, df_venda_media):
     """
     Calcula Nível de Urgência U(t) = Estoque Atual / Venda Média Diária
     """
     print("\nCalculando Nível de Urgência U(t)...")
     
-    if not Path(caminho_estoque).exists():
-        print(f"[AVISO] Arquivo de estoque não encontrado: {caminho_estoque}")
-        return None
-    
-    df_estoque = pd.read_csv(caminho_estoque, low_memory=False)
-    df_estoque['created_at'] = pd.to_datetime(df_estoque['created_at'], errors='coerce')
-    df_estoque['saldo'] = pd.to_numeric(df_estoque['saldo'], errors='coerce')
-    df_estoque = df_estoque[df_estoque['sku'].notna()]
-    df_estoque = df_estoque[df_estoque['sku'].isin(skus)]
+    # Filtra SKUs
+    df_estoque_filtrado = df_estoque[df_estoque['sku'].isin(skus)].copy()
     
     # Pega último saldo por SKU (estoque atual)
-    df_estoque_atual = df_estoque.sort_values('created_at').groupby('sku').last().reset_index()[['sku', 'saldo']]
+    df_estoque_atual = df_estoque_filtrado.sort_values('created_at').groupby('sku').last().reset_index()[['sku', 'saldo']]
     
     if df_venda_media is not None:
         df_merge = df_estoque_atual.merge(df_venda_media, on='sku', how='left')
@@ -154,10 +209,23 @@ def calcular_nivel_urgencia(skus, caminho_estoque="DB/historico_estoque_atual.cs
         return df_estoque_atual
 
 
-def gerar_previsoes_sarima(skus, caminho_estoque="DB/historico_estoque_atual.csv", horizonte=30):
+def gerar_previsoes_sarima_sequencial(df_estoque, skus, horizonte=30, callback_progresso=None):
     """
-    Gera previsões SARIMA para os SKUs selecionados.
+    Gera previsões SARIMA para múltiplos SKUs sequencialmente (com logs de progresso).
+    Nota: auto_arima já usa n_jobs=-1 internamente, então paralelização adicional
+    pode não trazer ganho significativo.
     
+    Parameters:
+    -----------
+    df_estoque : pd.DataFrame
+        DataFrame com dados de estoque
+    skus : list
+        Lista de SKUs para processar
+    horizonte : int
+        Horizonte de previsão
+    callback_progresso : callable
+        Função callback(progresso, total, sku_atual, tempo_estimado) para log de progresso
+        
     Returns:
     --------
     dict
@@ -167,47 +235,38 @@ def gerar_previsoes_sarima(skus, caminho_estoque="DB/historico_estoque_atual.csv
     print("GERANDO PREVISOES SARIMA")
     print("=" * 80)
     
-    if not Path(caminho_estoque).exists():
-        print(f"[ERRO] Arquivo de estoque não encontrado: {caminho_estoque}")
-        return {}
+    print(f"\n[INFO] Processando {len(skus)} SKUs sequencialmente")
+    print(f"       (auto_arima usa todos os cores disponíveis internamente)")
     
-    print(f"\nCarregando dados de estoque: {caminho_estoque}")
-    df_estoque = pd.read_csv(caminho_estoque, low_memory=False)
-    df_estoque['created_at'] = pd.to_datetime(df_estoque['created_at'], errors='coerce')
-    df_estoque['saldo'] = pd.to_numeric(df_estoque['saldo'], errors='coerce')
-    df_estoque = df_estoque[df_estoque['sku'].notna()]
-    
-    # Filtra apenas os SKUs selecionados
-    df_estoque = df_estoque[df_estoque['sku'].isin(skus)]
-    
-    # Converte para formato esperado pelo SARIMA (data e estoque_atual)
-    df_estoque['data'] = df_estoque['created_at']
-    df_estoque['estoque_atual'] = df_estoque['saldo']
-    
-    print(f"[OK] {len(df_estoque):,} registros carregados")
-    
-    # Inicializa previsor
+    # Inicializa previsor (uma vez)
     previsor = PrevisorEstoqueSARIMA(horizonte_previsao=horizonte, frequencia='D')
     
     previsoes = {}
+    inicio = time.time()
+    tempos_skus = []
     
-    for sku in skus:
-        print(f"\n--- Processando SKU {sku} ---")
+    for i, sku in enumerate(skus, 1):
+        inicio_sku = time.time()
+        print(f"\n--- Processando SKU {sku} ({i}/{len(skus)}) ---")
         
         try:
-            # Prepara série temporal
-            serie = previsor.preparar_serie_temporal(df_estoque, sku)
+            # Prepara série temporal (com cache)
+            serie = previsor.preparar_serie_temporal(df_estoque, sku, usar_cache=True)
             
             if len(serie) < 30:
                 print(f"  [AVISO] Dados insuficientes ({len(serie)} observações). Mínimo: 30")
+                if callback_progresso:
+                    callback_progresso(i, len(skus), sku, None)
                 continue
             
             print(f"  [OK] Série temporal preparada: {len(serie)} observações")
             
-            # Treina modelo
-            modelo = previsor.treinar_modelo(serie, sku)
+            # Treina modelo (com cache)
+            modelo = previsor.treinar_modelo(serie, sku, usar_cache=True)
             if modelo is None:
                 print(f"  [ERRO] Falha ao treinar modelo")
+                if callback_progresso:
+                    callback_progresso(i, len(skus), sku, None)
                 continue
             
             print(f"  [OK] Modelo treinado: {modelo.order} x {modelo.seasonal_order}")
@@ -216,55 +275,82 @@ def gerar_previsoes_sarima(skus, caminho_estoque="DB/historico_estoque_atual.csv
             previsao = previsor.prever(serie, modelo=modelo, sku=sku)
             if previsao is None:
                 print(f"  [ERRO] Falha ao gerar previsão")
+                if callback_progresso:
+                    callback_progresso(i, len(skus), sku, None)
                 continue
             
-            # Calcula GP(t) = Soma das previsões (Giro Futuro Previsto)
+            # Calcula GP(t) = Soma das previsões
             giro_futuro_previsto = previsao.sum()
             estoque_medio_previsto = previsao.mean()
             
             previsoes[sku] = {
-                'previsao': previsao,
-                'modelo': modelo,
                 'giro_futuro_previsto': giro_futuro_previsto,
                 'estoque_medio_previsto': estoque_medio_previsto,
-                'estoque_atual': serie.iloc[-1]
+                'estoque_atual': float(serie.iloc[-1]),
+                'modelo_order': modelo.order,
+                'modelo_seasonal_order': modelo.seasonal_order
             }
+            
+            tempo_sku = time.time() - inicio_sku
+            tempos_skus.append(tempo_sku)
+            tempo_medio = np.mean(tempos_skus) if tempos_skus else 0
+            tempo_restante = tempo_medio * (len(skus) - i) if tempo_medio > 0 else None
             
             print(f"  [OK] Previsão gerada:")
             print(f"      - Estoque atual: {serie.iloc[-1]:.1f}")
             print(f"      - Estoque médio previsto: {estoque_medio_previsto:.1f}")
             print(f"      - GP(t) (soma previsões): {giro_futuro_previsto:.1f}")
+            print(f"      - Tempo: {tempo_sku:.1f}s")
+            
+            # Callback de progresso
+            if callback_progresso:
+                callback_progresso(i, len(skus), sku, tempo_restante)
             
         except Exception as e:
             print(f"  [ERRO] Erro ao processar SKU {sku}: {str(e)}")
+            if callback_progresso:
+                callback_progresso(i, len(skus), sku, None)
             continue
     
-    print(f"\n[OK] Previsões geradas para {len(previsoes)} SKUs")
+    tempo_total = time.time() - inicio
+    print(f"\n[OK] Previsões geradas para {len(previsoes)}/{len(skus)} SKUs em {tempo_total:.1f}s")
+    if tempos_skus:
+        print(f"     Tempo médio por SKU: {np.mean(tempos_skus):.1f}s")
+    
     return previsoes
+
+
+def carregar_checkpoint():
+    """Carrega checkpoint de processamento"""
+    if ARQUIVO_CHECKPOINT.exists():
+        try:
+            with open(ARQUIVO_CHECKPOINT, 'r') as f:
+                return json.load(f)
+        except:
+            return {}
+    return {}
+
+
+def salvar_checkpoint(dados):
+    """Salva checkpoint de processamento"""
+    dados['ultima_atualizacao'] = datetime.now().isoformat()
+    with open(ARQUIVO_CHECKPOINT, 'w') as f:
+        json.dump(dados, f, indent=2)
 
 
 def calcular_score_elencacao(rentabilidade, nivel_urgencia, giro_futuro_previsto, 
                              peso_rentabilidade=0.4, peso_urgencia=0.3, peso_giro=0.3):
     """
     Calcula score de elencação combinando as três métricas.
-    
-    Nota: As métricas são normalizadas para [0, 1] antes do cálculo.
     """
-    # Normalização simples (pode ser ajustada conforme necessidade)
-    # Para este teste, vamos usar valores normalizados diretamente
-    
-    # Rentabilidade normalizada (assumindo range baseado nos dados)
+    # Normalização simples
     rent_norm = min(1.0, rentabilidade / 100.0) if rentabilidade > 0 else 0.0
     
-    # Urgência normalizada (menor urgência = maior score, inverso)
-    # Se urgência é 0 (risco alto), score alto; se alto, score baixo
     urgencia_norm = 1.0 / (1.0 + nivel_urgencia) if nivel_urgencia > 0 else 1.0
     urgencia_norm = min(1.0, urgencia_norm)
     
-    # Giro futuro normalizado (assumindo range baseado nos dados)
     giro_norm = min(1.0, giro_futuro_previsto / 1000.0) if giro_futuro_previsto > 0 else 0.0
     
-    # Score final (pesos somam 1.0)
     score = (
         peso_rentabilidade * rent_norm +
         peso_urgencia * urgencia_norm +
@@ -274,34 +360,78 @@ def calcular_score_elencacao(rentabilidade, nivel_urgencia, giro_futuro_previsto
     return score, {'rentabilidade_norm': rent_norm, 'urgencia_norm': urgencia_norm, 'giro_norm': giro_norm}
 
 
-def gerar_elencacao_completa():
+def gerar_elencacao_completa(top_n=3, usar_checkpoint=True):
     """
     Função principal que gera previsões e elencação completa.
+    
+    Parameters:
+    -----------
+    top_n : int
+        Número de SKUs para processar
+    usar_checkpoint : bool
+        Se True, tenta retomar de checkpoint
+    n_workers : int
+        Número de workers paralelos (None = auto)
     """
     print("\n" + "=" * 80)
-    print("TESTE: PREVISAO DE DEMANDA E ELENCAO - 3 SKUs")
+    print("TESTE: PREVISAO DE DEMANDA E ELENCAO - VERSÃO OTIMIZADA")
     print("=" * 80)
     
-    # 1. Identifica top 3 SKUs por movimentação
-    top_skus, df_top_skus = identificar_top_skus_movimentacao(top_n=3)
+    # Carrega checkpoint
+    checkpoint = {}
+    if usar_checkpoint:
+        checkpoint = carregar_checkpoint()
+        if checkpoint:
+            print(f"\n[CHECKPOINT] Encontrado checkpoint de {checkpoint.get('ultima_atualizacao', 'data desconhecida')}")
+    
+    # 1. Carrega dados UMA VEZ
+    df_vendas, df_estoque = carregar_dados()
+    if df_vendas is None or df_estoque is None:
+        print("\n[ERRO] Falha ao carregar dados!")
+        return None
+    
+    # 2. Identifica top SKUs
+    top_skus, df_top_skus = identificar_top_skus_movimentacao(df_vendas, top_n=top_n)
     
     if len(top_skus) == 0:
         print("\n[ERRO] Nenhum SKU encontrado!")
-        return
+        return None
     
-    # 2. Calcula métricas de vendas (R(t))
-    df_metricas_vendas = calcular_metricas_vendas(top_skus)
+    # 3. Calcula métricas de vendas (R(t))
+    df_metricas_vendas = calcular_metricas_vendas(df_vendas, top_skus)
     
-    # 3. Calcula venda média diária
-    df_venda_media = calcular_venda_media_diaria(top_skus)
+    # 4. Calcula venda média diária
+    df_venda_media = calcular_venda_media_diaria(df_vendas, top_skus)
     
-    # 4. Calcula nível de urgência (U(t))
-    df_urgencia = calcular_nivel_urgencia(top_skus, df_venda_media=df_venda_media)
+    # 5. Calcula nível de urgência (U(t))
+    df_urgencia = calcular_nivel_urgencia(df_estoque, top_skus, df_venda_media)
     
-    # 5. Gera previsões SARIMA (GP(t))
-    previsoes_sarima = gerar_previsoes_sarima(top_skus, horizonte=30)
+    # 6. Callback de progresso
+    def callback_progresso(atual, total, sku_atual, tempo_restante):
+        porcentagem = (atual / total) * 100
+        if tempo_restante is not None:
+            minutos_restantes = int(tempo_restante // 60)
+            segundos_restantes = int(tempo_restante % 60)
+            print(f"\n[PROGRESSO] {atual}/{total} SKUs processados ({porcentagem:.1f}%) - "
+                  f"SKU atual: {sku_atual} - "
+                  f"Tempo restante estimado: {minutos_restantes}m {segundos_restantes}s")
+        else:
+            print(f"\n[PROGRESSO] {atual}/{total} SKUs processados ({porcentagem:.1f}%) - SKU atual: {sku_atual}")
     
-    # 6. Consolida todas as métricas
+    # 7. Gera previsões SARIMA (GP(t)) - SEQUENCIAL COM LOGS
+    previsoes_sarima = gerar_previsoes_sarima_sequencial(
+        df_estoque, 
+        top_skus, 
+        horizonte=30,
+        callback_progresso=callback_progresso
+    )
+    
+    # Salva checkpoint
+    checkpoint['previsoes_completas'] = len(previsoes_sarima) == len(top_skus)
+    checkpoint['skus_processados'] = list(previsoes_sarima.keys())
+    salvar_checkpoint(checkpoint)
+    
+    # 8. Consolida todas as métricas
     print("\n" + "=" * 80)
     print("CONSOLIDANDO METRICAS E GERANDO ELENCAO")
     print("=" * 80)
@@ -325,8 +455,12 @@ def gerar_elencacao_completa():
         
         # Previsão SARIMA (GP(t))
         previsao_sku = previsoes_sarima.get(sku, None)
-        giro_futuro_previsto = previsao_sku['giro_futuro_previsto'] if previsao_sku else np.nan
-        estoque_medio_previsto = previsao_sku['estoque_medio_previsto'] if previsao_sku else np.nan
+        if previsao_sku:
+            giro_futuro_previsto = previsao_sku['giro_futuro_previsto']
+            estoque_medio_previsto = previsao_sku['estoque_medio_previsto']
+        else:
+            giro_futuro_previsto = np.nan
+            estoque_medio_previsto = np.nan
         
         # Calcula score de elencação
         if not np.isnan(nivel_urgencia) and not np.isnan(giro_futuro_previsto):
@@ -361,7 +495,7 @@ def gerar_elencacao_completa():
         df_resultado_completo = df_resultado_completo.sort_values('score_elencacao', ascending=False)
         df_resultado_completo['ranking'] = range(1, len(df_resultado_completo) + 1)
         
-        # 7. Exibe resultados
+        # 9. Exibe resultados
         print("\n" + "=" * 80)
         print("RANKING DE ELENCAO (Ordenado por Score)")
         print("=" * 80)
@@ -394,7 +528,6 @@ def gerar_elencacao_completa():
             print(f"  Score de elencação: {row['score_elencacao']:.3f}")
         
         # Salva resultado
-        from pathlib import Path
         Path("resultados").mkdir(exist_ok=True)
         caminho_saida = "resultados/resultado_elencacao_3_skus.csv"
         df_resultado_completo.to_csv(caminho_saida, index=False)
@@ -411,5 +544,4 @@ def gerar_elencacao_completa():
 
 
 if __name__ == "__main__":
-    resultado = gerar_elencacao_completa()
-
+    resultado = gerar_elencacao_completa(top_n=3, usar_checkpoint=True)

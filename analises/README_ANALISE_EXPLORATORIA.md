@@ -2,7 +2,7 @@
 
 ## 📋 Visão Geral
 
-Este script realiza análise exploratória detalhada para identificar padrões sazonais nos dados de estoque, especialmente relacionado a períodos de maior demanda (outubro e dezembro para brinquedos).
+Este script realiza análise exploratória detalhada para identificar padrões sazonais nos dados de **estoque (saldo)**, especialmente em períodos de maior movimentação (outubro e dezembro para brinquedos). Gera **figuras 1–4** do TCC (evolução estoque total, distribuição mensal, estoque médio por mês, série do SKU representativo) e alimenta o **pipeline TCC** (`gerar_figuras_tcc.py`) com top 10 e **top 300 candidatos** para comparação de modelos. Uso em modo TCC: `--tcc` (salva figura1.png … figura4.png em `resultados/figuras_tcc/`).
 
 ## 🎯 Objetivos
 
