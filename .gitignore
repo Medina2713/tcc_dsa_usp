@@ -38,9 +38,9 @@ wheels/
 .env.local
 
 # Dados (se você não quiser commitar dados grandes)
-*.csv
-*.xlsx
-*.xls
+#*.csv
+#*.xlsx
+#*.xls
 data/
 datasets/
 
@@ -52,7 +52,7 @@ datasets/
 Thumbs.db
 
 # Gráficos gerados (opcional - remova se quiser commitar)
-*.png
-*.jpg
-*.pdf
+#*.png
+#*.jpg
+#*.pdf
 
