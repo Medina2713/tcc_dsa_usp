@@ -32,7 +32,7 @@ from comparacao_modelos_previsao import (
 from sarima_estoque import PrevisorEstoqueSARIMA
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
-plt.style.use('seaborn-v0_8-darkgrid')
+# Estilo academico: sem grid (estilo aplicado em cada figura individualmente)
 
 # Configurações
 DIR_RESULTADOS = Path('resultados/resultados_comparacao')

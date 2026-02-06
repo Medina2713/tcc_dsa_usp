@@ -21,7 +21,19 @@ warnings.filterwarnings('ignore')
 from comparacao_modelos_previsao import comparar_modelos, visualizar_comparacao, gerar_relatorio_comparacao
 from sarima_estoque import PrevisorEstoqueSARIMA
 
-plt.style.use('seaborn-v0_8-darkgrid')
+# Estilo academico TCC (sem darkgrid)
+try:
+    from modelos.estilo_figuras_tcc import aplicar_estilo_tcc, configurar_savefig_tcc
+except ImportError:
+    def aplicar_estilo_tcc(ax, fig=None, fonte_eixos=14, fonte_ticks=12):
+        if fig: fig.patch.set_facecolor('white')
+        ax.set_facecolor('white'); ax.grid(False)
+        ax.spines['top'].set_visible(False); ax.spines['right'].set_visible(False)
+        ax.xaxis.label.set_fontsize(fonte_eixos); ax.yaxis.label.set_fontsize(fonte_eixos)
+        ax.tick_params(axis='both', labelsize=fonte_ticks)
+    def configurar_savefig_tcc(fig, path, dpi=300):
+        fig.patch.set_facecolor('white')
+        fig.savefig(path, dpi=dpi, bbox_inches='tight', facecolor='white', edgecolor='none')
 
 
 def calcular_giro_estoque(df_vendas, df_estoque, periodo_dias=30):
@@ -310,7 +322,7 @@ def visualizar_resultados_consolidados(resultados_completos, df_melhores):
         print("[AVISO] Nenhum resultado para visualizar")
         return
     
-    fig, axes = plt.subplots(2, 2, figsize=(16, 12))
+    fig, axes = plt.subplots(2, 2, figsize=(16, 12), facecolor='white')
     
     # Gráfico 1: MAE por modelo (boxplot)
     ax1 = axes[0, 0]
@@ -324,45 +336,45 @@ def visualizar_resultados_consolidados(resultados_completos, df_melhores):
         modelos_unicos = df_metricas['modelo'].unique()
         dados_boxplot = [df_metricas[df_metricas['modelo'] == m]['mae'].values for m in modelos_unicos]
         ax1.boxplot(dados_boxplot, labels=modelos_unicos)
-        ax1.set_title('Distribuicao de MAE por Modelo', fontsize=12, fontweight='bold')
-        ax1.set_ylabel('MAE')
+        ax1.set_title('Distribuicao de MAE por Modelo', fontsize=14, fontweight='bold')
+        ax1.set_ylabel('MAE', fontsize=14)
         ax1.tick_params(axis='x', rotation=45)
-        ax1.grid(True, alpha=0.3, axis='y')
+        aplicar_estilo_tcc(ax1, fig, fonte_eixos=14, fonte_ticks=12)
     
     # Gráfico 2: MAPE por modelo (boxplot)
     ax2 = axes[0, 1]
     if len(df_metricas) > 0:
         dados_boxplot = [df_metricas[df_metricas['modelo'] == m]['mape'].values for m in modelos_unicos]
         ax2.boxplot(dados_boxplot, labels=modelos_unicos)
-        ax2.set_title('Distribuicao de MAPE por Modelo', fontsize=12, fontweight='bold')
-        ax2.set_ylabel('MAPE (%)')
+        ax2.set_title('Distribuicao de MAPE por Modelo', fontsize=14, fontweight='bold')
+        ax2.set_ylabel('MAPE (%)', fontsize=14)
         ax2.tick_params(axis='x', rotation=45)
-        ax2.grid(True, alpha=0.3, axis='y')
+        aplicar_estilo_tcc(ax2, fig, fonte_eixos=14, fonte_ticks=12)
     
     # Gráfico 3: Melhor modelo por SKU (bar chart)
     ax3 = axes[1, 0]
     if len(df_melhores) > 0:
         modelos_contagem = df_melhores['modelo'].value_counts()
-        ax3.bar(range(len(modelos_contagem)), modelos_contagem.values, color='steelblue', alpha=0.7)
+        ax3.bar(range(len(modelos_contagem)), modelos_contagem.values, color='#2E86AB', alpha=0.8)
         ax3.set_xticks(range(len(modelos_contagem)))
         ax3.set_xticklabels(modelos_contagem.index, rotation=45, ha='right')
-        ax3.set_title('Frequencia: Melhor Modelo por SKU', fontsize=12, fontweight='bold')
-        ax3.set_ylabel('Quantidade de SKUs')
-        ax3.grid(True, alpha=0.3, axis='y')
+        ax3.set_title('Frequencia: Melhor Modelo por SKU', fontsize=14, fontweight='bold')
+        ax3.set_ylabel('Quantidade de SKUs', fontsize=14)
+        aplicar_estilo_tcc(ax3, fig, fonte_eixos=14, fonte_ticks=12)
     
     # Gráfico 4: MAE vs Giro de Estoque
     ax4 = axes[1, 1]
     if len(df_melhores) > 0:
         ax4.scatter(df_melhores['giro_estoque'], df_melhores['mae'], alpha=0.6, s=100)
-        ax4.set_xlabel('Giro de Estoque')
-        ax4.set_ylabel('MAE (Melhor Modelo)')
-        ax4.set_title('MAE vs Giro de Estoque', fontsize=12, fontweight='bold')
-        ax4.grid(True, alpha=0.3)
+        ax4.set_xlabel('Giro de Estoque', fontsize=14)
+        ax4.set_ylabel('MAE (Melhor Modelo)', fontsize=14)
+        ax4.set_title('MAE vs Giro de Estoque', fontsize=14, fontweight='bold')
+        aplicar_estilo_tcc(ax4, fig, fonte_eixos=14, fonte_ticks=12)
     
     plt.tight_layout()
     
     nome_arquivo = 'comparacao_consolidada_top_skus.png'
-    plt.savefig(nome_arquivo, dpi=300, bbox_inches='tight')
+    configurar_savefig_tcc(fig, nome_arquivo, dpi=300)
     print(f"\n[OK] Grafico consolidado salvo: {nome_arquivo}")
     plt.close()
 

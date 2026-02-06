@@ -42,9 +42,25 @@ DIR_RESULTADOS.mkdir(parents=True, exist_ok=True)
 MAX_PCT_ZEROS_REPRESENTATIVO = 30.0   # Nunca escolher SKU com mais que 30% de dias zerados
 MIN_ESTOQUE_MEDIO_REPRESENTATIVO = 1.0
 
-# Configuração de visualização
-plt.style.use('seaborn-v0_8-darkgrid')
-sns.set_palette("husl")
+# Estilo academico TCC (fundo branco, sem moldura, sem grid)
+try:
+    from modelos.estilo_figuras_tcc import aplicar_estilo_tcc, configurar_savefig_tcc
+except ImportError:
+    try:
+        import sys
+        _root = Path(__file__).resolve().parent.parent
+        sys.path.insert(0, str(_root))
+        from modelos.estilo_figuras_tcc import aplicar_estilo_tcc, configurar_savefig_tcc
+    except ImportError:
+        def aplicar_estilo_tcc(ax, fig=None, fonte_eixos=14, fonte_ticks=12):
+            if fig: fig.patch.set_facecolor('white')
+            ax.set_facecolor('white'); ax.grid(False)
+            ax.spines['top'].set_visible(False); ax.spines['right'].set_visible(False)
+            ax.xaxis.label.set_fontsize(fonte_eixos); ax.yaxis.label.set_fontsize(fonte_eixos)
+            ax.tick_params(axis='both', labelsize=fonte_ticks)
+        def configurar_savefig_tcc(fig, path, dpi=300):
+            fig.patch.set_facecolor('white')
+            fig.savefig(path, dpi=dpi, bbox_inches='tight', facecolor='white', edgecolor='none')
 
 
 def carregar_dados_processados(caminho='DB/historico_estoque_atual_processado.csv'):
@@ -401,121 +417,123 @@ def visualizar_padroes_sazonais(df, agregados_mensais, stats_sku=None, sku_exemp
         'figura_03_estoque_medio_mes', 'figura_04_serie_temporal_sku')
 
     # --- Figura 1: Evolução temporal do estoque total agregado ---
-    fig1, ax1 = plt.subplots(figsize=(12, 5))
+    fig1, ax1 = plt.subplots(figsize=(12, 5), facecolor='white')
     estoque_diario = df.groupby('data')['estoque_atual'].sum()
-    ax1.plot(estoque_diario.index, estoque_diario.values, linewidth=1.5, alpha=0.7, color='steelblue')
-    ax1.set_title('Figura 1 – Evolucao Temporal do Estoque Total Agregado', fontsize=14, fontweight='bold')
-    ax1.set_xlabel('Data')
-    ax1.set_ylabel('Estoque Total (unidades)')
-    ax1.grid(True, alpha=0.3)
+    ax1.plot(estoque_diario.index, estoque_diario.values, linewidth=2, alpha=0.8, color='#2E86AB')
+    ax1.set_title('Figura 1 – Evolucao Temporal do Estoque Total Agregado', fontsize=16, fontweight='bold')
+    ax1.set_xlabel('Data', fontsize=14)
+    ax1.set_ylabel('Estoque Total (unidades)', fontsize=14)
+    aplicar_estilo_tcc(ax1, fig1, fonte_eixos=14, fonte_ticks=12)
     plt.xticks(rotation=45)
     plt.tight_layout()
     p1 = out_dir / f'{sufixo[0]}.png'
-    plt.savefig(p1, dpi=300, bbox_inches='tight')
-    plt.close()
+    configurar_savefig_tcc(fig1, p1, dpi=300)
+    plt.close(fig1)
     _log(f"[OK] Figura 1: {p1}")
 
     # --- Figura 2: Distribuição mensal do estoque (boxplots) ---
-    fig2, ax2 = plt.subplots(figsize=(12, 5))
+    fig2, ax2 = plt.subplots(figsize=(12, 5), facecolor='white')
     df_plot = df.copy()
     df_plot['mes_nome_ord'] = pd.Categorical(df_plot['mes_nome'], categories=meses_ordem, ordered=True)
     df_plot = df_plot.sort_values('mes_nome_ord')
     df_boxplot = df_plot.sample(min(50000, len(df_plot))) if len(df_plot) > 50000 else df_plot
-    sns.boxplot(data=df_boxplot, x='mes_nome_ord', y='estoque_atual', ax=ax2)
-    ax2.set_title('Figura 2 – Distribuicao Mensal do Estoque', fontsize=14, fontweight='bold')
-    ax2.set_xlabel('Mes')
-    ax2.set_ylabel('Estoque (unidades)')
+    sns.boxplot(data=df_boxplot, x='mes_nome_ord', y='estoque_atual', ax=ax2, color='#87CEEB')
+    ax2.set_title('Figura 2 – Distribuicao Mensal do Estoque', fontsize=16, fontweight='bold')
+    ax2.set_xlabel('Mes', fontsize=14)
+    ax2.set_ylabel('Estoque (unidades)', fontsize=14)
+    aplicar_estilo_tcc(ax2, fig2, fonte_eixos=14, fonte_ticks=12)
     plt.xticks(rotation=45)
     for i, mes in enumerate(meses_ordem):
         if mes in ['Out', 'Dez']:
             ax2.axvline(x=i, color='red', linestyle='--', alpha=0.3, linewidth=2)
     plt.tight_layout()
     p2 = out_dir / f'{sufixo[1]}.png'
-    plt.savefig(p2, dpi=300, bbox_inches='tight')
-    plt.close()
+    configurar_savefig_tcc(fig2, p2, dpi=300)
+    plt.close(fig2)
     _log(f"[OK] Figura 2: {p2}")
 
     # --- Figura 3: Estoque médio por mês ---
-    fig3, ax3 = plt.subplots(figsize=(12, 5))
+    fig3, ax3 = plt.subplots(figsize=(12, 5), facecolor='white')
     agregados_ordenados = agregados_mensais.sort_values('mes')
-    cores = ['red' if m in ['Out', 'Dez'] else 'steelblue' for m in agregados_ordenados['mes_nome']]
+    cores = ['#CD5C5C' if m in ['Out', 'Dez'] else '#2E86AB' for m in agregados_ordenados['mes_nome']]
     ax3.bar(range(len(agregados_ordenados)), agregados_ordenados['estoque_medio'],
-            color=cores, alpha=0.7, edgecolor='black')
+            color=cores, alpha=0.8, edgecolor='none')
     ax3.set_xticks(range(len(agregados_ordenados)))
     ax3.set_xticklabels(agregados_ordenados['mes_nome'], rotation=45)
-    ax3.set_title('Figura 3 – Estoque Medio por Mes', fontsize=14, fontweight='bold')
-    ax3.set_xlabel('Mes')
-    ax3.set_ylabel('Estoque Medio (unidades)')
-    ax3.grid(True, alpha=0.3, axis='y')
+    ax3.set_title('Figura 3 – Estoque Medio por Mes', fontsize=16, fontweight='bold')
+    ax3.set_xlabel('Mes', fontsize=14)
+    ax3.set_ylabel('Estoque Medio (unidades)', fontsize=14)
+    aplicar_estilo_tcc(ax3, fig3, fonte_eixos=14, fonte_ticks=12)
     plt.tight_layout()
     p3 = out_dir / f'{sufixo[2]}.png'
-    plt.savefig(p3, dpi=300, bbox_inches='tight')
-    plt.close()
+    configurar_savefig_tcc(fig3, p3, dpi=300)
+    plt.close(fig3)
     _log(f"[OK] Figura 3: {p3}")
 
     # --- Figura 4: Série temporal do SKU com maior variação sazonal ---
     df_sku = df[df['sku'] == sku_exemplo].sort_values('data')
-    fig4, ax4 = plt.subplots(figsize=(12, 5))
+    fig4, ax4 = plt.subplots(figsize=(12, 5), facecolor='white')
     if len(df_sku) > 0:
-        ax4.plot(df_sku['data'], df_sku['estoque_atual'], linewidth=1.5, color='darkgreen', alpha=0.8)
+        ax4.plot(df_sku['data'], df_sku['estoque_atual'], linewidth=2, color='#2D8B57', alpha=0.9)
         has_leg = False
         for mes in [10, 12]:
             mask = df_sku['mes'] == mes
             if mask.sum() > 0:
                 ax4.scatter(df_sku.loc[mask, 'data'], df_sku.loc[mask, 'estoque_atual'],
-                            color='red', s=30, alpha=0.6, zorder=5, label='Out/Dez' if not has_leg else '')
+                            color='#CD5C5C', s=40, alpha=0.7, zorder=5, label='Out/Dez' if not has_leg else '')
                 has_leg = True
         if has_leg:
-            ax4.legend()
-    ax4.set_title(f'Figura 4 – Serie Temporal do Estoque de SKU Selecionado ({sku_exemplo})', fontsize=14, fontweight='bold')
-    ax4.set_xlabel('Data')
-    ax4.set_ylabel('Estoque (unidades)')
-    ax4.grid(True, alpha=0.3)
+            ax4.legend(fontsize=12)
+    ax4.set_title(f'Figura 4 – Serie Temporal do Estoque de SKU Selecionado ({sku_exemplo})', fontsize=16, fontweight='bold')
+    ax4.set_xlabel('Data', fontsize=14)
+    ax4.set_ylabel('Estoque (unidades)', fontsize=14)
+    aplicar_estilo_tcc(ax4, fig4, fonte_eixos=14, fonte_ticks=12)
     plt.xticks(rotation=45)
     plt.tight_layout()
     p4 = out_dir / f'{sufixo[3]}.png'
-    plt.savefig(p4, dpi=300, bbox_inches='tight')
-    plt.close()
+    configurar_savefig_tcc(fig4, p4, dpi=300)
+    plt.close(fig4)
     _log(f"[OK] Figura 4: {p4}")
 
     # Figura combinada (apenas se nao for modo TCC)
     if not dir_figuras_tcc:
-        fig = plt.figure(figsize=(16, 12))
+        fig = plt.figure(figsize=(16, 12), facecolor='white')
         ax1c = plt.subplot(2, 2, 1)
         estoque_diario = df.groupby('data')['estoque_atual'].sum()
-        ax1c.plot(estoque_diario.index, estoque_diario.values, linewidth=1.5, alpha=0.7, color='steelblue')
-        ax1c.set_title('Evolucao Temporal: Estoque Total Diario', fontsize=12, fontweight='bold')
-        ax1c.set_xlabel('Data')
-        ax1c.set_ylabel('Estoque Total (unidades)')
-        ax1c.grid(True, alpha=0.3)
+        ax1c.plot(estoque_diario.index, estoque_diario.values, linewidth=2, alpha=0.8, color='#2E86AB')
+        ax1c.set_title('Evolucao Temporal: Estoque Total Diario', fontsize=14, fontweight='bold')
+        ax1c.set_xlabel('Data', fontsize=12)
+        ax1c.set_ylabel('Estoque Total (unidades)', fontsize=12)
+        aplicar_estilo_tcc(ax1c, fig, fonte_eixos=12, fonte_ticks=11)
         plt.xticks(rotation=45)
         ax2c = plt.subplot(2, 2, 2)
-        sns.boxplot(data=df_boxplot, x='mes_nome_ord', y='estoque_atual', ax=ax2c)
-        ax2c.set_title('Distribuicao de Estoque por Mes (Boxplot)', fontsize=12, fontweight='bold')
-        ax2c.set_xlabel('Mes')
-        ax2c.set_ylabel('Estoque (unidades)')
+        sns.boxplot(data=df_boxplot, x='mes_nome_ord', y='estoque_atual', ax=ax2c, color='#87CEEB')
+        ax2c.set_title('Distribuicao de Estoque por Mes (Boxplot)', fontsize=14, fontweight='bold')
+        ax2c.set_xlabel('Mes', fontsize=12)
+        ax2c.set_ylabel('Estoque (unidades)', fontsize=12)
+        aplicar_estilo_tcc(ax2c, fig, fonte_eixos=12, fonte_ticks=11)
         plt.xticks(rotation=45)
         ax3c = plt.subplot(2, 2, 3)
         ax3c.bar(range(len(agregados_ordenados)), agregados_ordenados['estoque_medio'],
-                 color=cores, alpha=0.7, edgecolor='black')
+                 color=cores, alpha=0.8, edgecolor='none')
         ax3c.set_xticks(range(len(agregados_ordenados)))
         ax3c.set_xticklabels(agregados_ordenados['mes_nome'], rotation=45)
-        ax3c.set_title('Estoque Medio por Mes', fontsize=12, fontweight='bold')
-        ax3c.set_xlabel('Mes')
-        ax3c.set_ylabel('Estoque Medio (unidades)')
-        ax3c.grid(True, alpha=0.3, axis='y')
+        ax3c.set_title('Estoque Medio por Mes', fontsize=14, fontweight='bold')
+        ax3c.set_xlabel('Mes', fontsize=12)
+        ax3c.set_ylabel('Estoque Medio (unidades)', fontsize=12)
+        aplicar_estilo_tcc(ax3c, fig, fonte_eixos=12, fonte_ticks=11)
         ax4c = plt.subplot(2, 2, 4)
         if len(df_sku) > 0:
-            ax4c.plot(df_sku['data'], df_sku['estoque_atual'], linewidth=1.5, color='darkgreen', alpha=0.8)
-        ax4c.set_title(f'Serie Temporal: SKU {sku_exemplo}', fontsize=12, fontweight='bold')
-        ax4c.set_xlabel('Data')
-        ax4c.set_ylabel('Estoque (unidades)')
-        ax4c.grid(True, alpha=0.3)
+            ax4c.plot(df_sku['data'], df_sku['estoque_atual'], linewidth=2, color='#2D8B57', alpha=0.9)
+        ax4c.set_title(f'Serie Temporal: SKU {sku_exemplo}', fontsize=14, fontweight='bold')
+        ax4c.set_xlabel('Data', fontsize=12)
+        ax4c.set_ylabel('Estoque (unidades)', fontsize=12)
+        aplicar_estilo_tcc(ax4c, fig, fonte_eixos=12, fonte_ticks=11)
         plt.xticks(rotation=45)
         plt.tight_layout()
         p_comb = DIR_FIGURAS / 'analise_sazonalidade_padroes.png'
-        plt.savefig(p_comb, dpi=300, bbox_inches='tight')
-        plt.close()
+        configurar_savefig_tcc(fig, p_comb, dpi=300)
+        plt.close(fig)
         _log(f"[OK] Figura combinada: {p_comb}")
 
 

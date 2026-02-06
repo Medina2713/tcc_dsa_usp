@@ -87,7 +87,13 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error
 from sarima_estoque import PrevisorEstoqueSARIMA
 
 # Configuração e pastas de saída (TCC)
-plt.style.use('seaborn-v0_8-darkgrid')
+try:
+    from modelos.estilo_figuras_tcc import aplicar_estilo_tcc, configurar_savefig_tcc
+except ImportError:
+    try:
+        from .estilo_figuras_tcc import aplicar_estilo_tcc, configurar_savefig_tcc
+    except ImportError:
+        from estilo_figuras_tcc import aplicar_estilo_tcc, configurar_savefig_tcc
 DIR_FIGURAS_MODELOS = Path('resultados/figuras_modelos')
 DIR_TABELAS_TCC = Path('resultados/tabelas_tcc')
 DIR_RESULTADOS = Path('resultados')
@@ -710,70 +716,56 @@ def visualizar_comparacao(resultados):
     _log("GERANDO VISUALIZACOES...")
     _log("=" * 80)
     
-    fig, axes = plt.subplots(2, 1, figsize=(16, 10))
+    fig, axes = plt.subplots(2, 1, figsize=(14, 10), facecolor='white')
     
     serie_treino = resultados['serie_treino']
     serie_teste = resultados['serie_teste']
     previsoes = resultados['previsoes']
     
-    # Índices para plot
     idx_treino = range(len(serie_treino))
     idx_teste = range(len(serie_treino), len(serie_treino) + len(serie_teste))
     idx_previsao = idx_teste
-    
-    # Gráfico 1: Visão geral (treino + teste + previsões)
-    ax1 = axes[0]
-    
-    # Histórico de treino
-    ax1.plot(idx_treino, serie_treino.values, label='Treino', color='blue', linewidth=2, alpha=0.7)
-    
-    # Valores reais de teste
-    ax1.plot(idx_teste, serie_teste.values, label='Real (Teste)', color='green', 
-             linewidth=2, marker='o', markersize=4)
-    
-    # Previsões de cada modelo
     cores = {'sarima_anual': 'red', 'sarima_mensal': 'orange', 'arima': 'purple', 
              'media_movel': 'brown', 'exponencial': 'pink'}
     nomes = {'sarima_anual': 'SARIMA Anual', 'sarima_mensal': 'SARIMA Mensal', 
              'arima': 'ARIMA', 'media_movel': 'Media Movel', 'exponencial': 'Exponencial'}
     
+    ax1 = axes[0]
+    ax1.plot(idx_treino, serie_treino.values, label='Treino', color='#2E86AB', linewidth=2, alpha=0.8)
+    ax1.plot(idx_teste, serie_teste.values, label='Real (Teste)', color='#2D8B57', 
+             linewidth=2, marker='o', markersize=4)
     for chave, prev in previsoes.items():
         if len(prev) == len(serie_teste):
             ax1.plot(idx_previsao, prev, label=nomes.get(chave, chave), 
                     linestyle='--', linewidth=1.5, color=cores.get(chave, 'gray'), alpha=0.8)
+    ax1.axvline(x=len(serie_treino), color='gray', linestyle=':', linewidth=1.5, alpha=0.6)
+    ax1.set_title(f'Comparacao de Modelos - SKU: {resultados["sku"]}', fontsize=16, fontweight='bold')
+    ax1.set_xlabel('Periodo', fontsize=14)
+    ax1.set_ylabel('Estoque (unidades)', fontsize=14)
+    ax1.legend(loc='best', fontsize=11)
+    aplicar_estilo_tcc(ax1, fig, fonte_eixos=14, fonte_ticks=12)
     
-    ax1.axvline(x=len(serie_treino), color='black', linestyle=':', linewidth=2, alpha=0.5)
-    ax1.set_title(f'Comparacao de Modelos - SKU: {resultados["sku"]}', fontsize=14, fontweight='bold')
-    ax1.set_xlabel('Periodo')
-    ax1.set_ylabel('Estoque (unidades)')
-    ax1.legend(loc='best', fontsize=9)
-    ax1.grid(True, alpha=0.3)
-    
-    # Gráfico 2: Zoom no período de teste
     ax2 = axes[1]
-    ax2.plot(serie_teste.values, label='Real', color='green', linewidth=2, marker='o', markersize=5)
-    
+    ax2.plot(serie_teste.values, label='Real', color='#2D8B57', linewidth=2, marker='o', markersize=5)
     for chave, prev in previsoes.items():
         if len(prev) == len(serie_teste):
             ax2.plot(prev, label=nomes.get(chave, chave), linestyle='--', 
                     linewidth=2, color=cores.get(chave, 'gray'), marker='s', markersize=3, alpha=0.8)
-    
-    ax2.set_title('Zoom: Periodo de Teste (Comparacao Detalhada)', fontsize=14, fontweight='bold')
-    ax2.set_xlabel('Dias de Teste')
-    ax2.set_ylabel('Estoque (unidades)')
-    ax2.legend(loc='best', fontsize=9)
-    ax2.grid(True, alpha=0.3)
+    ax2.set_title('Zoom: Periodo de Teste', fontsize=16, fontweight='bold')
+    ax2.set_xlabel('Dias de Teste', fontsize=14)
+    ax2.set_ylabel('Estoque (unidades)', fontsize=14)
+    ax2.legend(loc='best', fontsize=11)
+    aplicar_estilo_tcc(ax2, fig, fonte_eixos=14, fonte_ticks=12)
     
     plt.tight_layout()
-    
     nome_arquivo = DIR_FIGURAS_MODELOS / f'comparacao_modelos_{resultados["sku"]}.png'
-    plt.savefig(nome_arquivo, dpi=300, bbox_inches='tight')
+    configurar_savefig_tcc(fig, nome_arquivo, dpi=300)
+    plt.close(fig)
     print(f"\n[OK] Grafico salvo: {nome_arquivo}")
-    plt.close()
 
 
 def _plotar_figura_modelo_unico(resultados, chave_previsao, titulo, nome_arquivo, dir_saida=None):
-    """Plota histórico + previsão para um único modelo (Figuras TCC 5, 6, 7)."""
+    """Plota histórico + previsão para um único modelo (Figuras TCC 5, 6, 7). Estilo academico: fundo branco, sem moldura, sem grid."""
     if chave_previsao not in resultados.get('previsoes', {}):
         return
     prev = resultados['previsoes'][chave_previsao]
@@ -781,24 +773,26 @@ def _plotar_figura_modelo_unico(resultados, chave_previsao, titulo, nome_arquivo
     serie_teste = resultados['serie_teste']
     if len(prev) != len(serie_teste):
         return
-    plt.figure(figsize=(14, 6))
+    fig, ax = plt.subplots(figsize=(12, 6), facecolor='white')
     hist = serie_treino.iloc[-90:] if len(serie_treino) > 90 else serie_treino
-    plt.plot(hist.index, hist.values, label='Historico Real', color='#2E86AB', linewidth=2, alpha=0.8)
-    plt.plot(serie_teste.index, prev, label='Previsao (Teste)', color='#A23B72', linewidth=2.5,
-             linestyle='--', marker='o', markersize=4)
-    plt.axvline(x=serie_treino.index[-1], color='gray', linestyle=':', alpha=0.7, linewidth=2)
-    plt.title(titulo, fontsize=14, fontweight='bold')
-    plt.xlabel('Data')
-    plt.ylabel('Estoque (unidades)')
-    plt.legend(loc='best')
-    plt.grid(True, alpha=0.3)
+    ax.plot(hist.index, hist.values, label='Historico (Treino)', color='#2E86AB', linewidth=2, alpha=0.9)
+    ax.plot(serie_teste.index, serie_teste.values, label='Real (Teste)', color='#2D8B57', linewidth=2,
+            alpha=0.9, linestyle='-')
+    ax.plot(serie_teste.index, prev, label='Previsao', color='#A23B72', linewidth=2.5,
+            linestyle='--', marker='o', markersize=4)
+    ax.axvline(x=serie_treino.index[-1], color='gray', linestyle=':', alpha=0.6, linewidth=1.5)
+    ax.set_title(titulo, fontsize=16, fontweight='bold')
+    ax.set_xlabel('Data', fontsize=14)
+    ax.set_ylabel('Estoque (unidades)', fontsize=14)
+    ax.legend(loc='best', fontsize=12)
+    aplicar_estilo_tcc(ax, fig, fonte_eixos=14, fonte_ticks=12)
     plt.xticks(rotation=45)
     plt.tight_layout()
     base = Path(dir_saida) if dir_saida else DIR_FIGURAS_MODELOS
     path = base / nome_arquivo
     path.parent.mkdir(parents=True, exist_ok=True)
-    plt.savefig(path, dpi=300, bbox_inches='tight')
-    plt.close()
+    configurar_savefig_tcc(fig, path, dpi=300)
+    plt.close(fig)
     print(f"[OK] {path}")
 
 
@@ -899,49 +893,57 @@ def salvar_figuras_tcc_multiplos_skus(lista_resultados, dir_figuras_tcc, sku_fig
         ('sarima_mensal', 'figura7.png', f'Figura 7 – Previsao do Estoque com o Modelo SARIMA (SKU {sku_codigo})'),
     ]
     
+    linhas_relatorio_numerico = []
     for chave, nome_arq, titulo in configs:
         if chave not in sku_representativo.get('previsoes', {}):
             _log(f"  [AVISO] Previsao '{chave}' nao encontrada para SKU {sku_codigo}. Pulando {nome_arq}")
             continue
         
-        # Gera figura única (não subplot) para o SKU representativo
-        fig, ax = plt.subplots(1, 1, figsize=(14, 6))
         prev = sku_representativo['previsoes'][chave]
         serie_treino = sku_representativo['serie_treino']
         serie_teste = sku_representativo['serie_teste']
         
         if len(prev) != len(serie_teste):
             _log(f"  [AVISO] Tamanho incompativel para {chave}. Pulando {nome_arq}")
-            plt.close(fig)
             continue
+
+        # Relatorio numerico: dados para analise das figuras
+        modelo_nome = {'exponencial': 'Holt-Winters', 'arima': 'ARIMA', 'sarima_mensal': 'SARIMA'}.get(chave, chave)
+        for i, (dt, real, pred) in enumerate(zip(serie_teste.index, serie_teste.values, prev)):
+            linhas_relatorio_numerico.append({
+                'sku': sku_codigo, 'modelo': modelo_nome, 'figura': nome_arq.replace('.png', ''),
+                'data': str(dt)[:10], 'indice_teste': i, 'valor_real': float(real), 'valor_previsto': float(pred),
+                'erro_abs': abs(float(real) - float(pred))
+            })
         
-        # Plota histórico (últimos 90 dias ou todos se menor)
+        # Gera figura com estilo academico (fundo branco, sem moldura, sem grid, fontes maiores)
+        fig, ax = plt.subplots(1, 1, figsize=(12, 6), facecolor='white')
         hist = serie_treino.iloc[-90:] if len(serie_treino) > 90 else serie_treino
-        ax.plot(hist.index, hist.values, label='Historico (Treino)', color='#2E86AB', linewidth=2, alpha=0.8)
-        
-        # Plota VALORES REAIS do teste (ground truth) — essencial para comparar previsão vs realidade
+        ax.plot(hist.index, hist.values, label='Historico (Treino)', color='#2E86AB', linewidth=2, alpha=0.9)
         ax.plot(serie_teste.index, serie_teste.values, label='Real (Teste)', color='#2D8B57', linewidth=2,
-                alpha=0.9, linestyle='-', marker='s', markersize=3)
-        
-        # Plota previsão do modelo
+                alpha=0.9, linestyle='-')
         ax.plot(serie_teste.index, prev, label='Previsao', color='#A23B72', linewidth=2.5,
                 linestyle='--', marker='o', markersize=4)
-        
-        # Linha vertical separando treino e teste
-        ax.axvline(x=serie_treino.index[-1], color='gray', linestyle=':', alpha=0.7, linewidth=2, label='Inicio da Previsao')
-        
-        ax.set_title(titulo, fontsize=14, fontweight='bold')
-        ax.set_xlabel('Data', fontsize=12)
-        ax.set_ylabel('Estoque (unidades)', fontsize=12)
-        ax.legend(loc='best', fontsize=11)
-        ax.grid(True, alpha=0.3)
+        ax.axvline(x=serie_treino.index[-1], color='gray', linestyle=':', alpha=0.6, linewidth=1.5)
+        ax.set_title(titulo, fontsize=16, fontweight='bold')
+        ax.set_xlabel('Data', fontsize=14)
+        ax.set_ylabel('Estoque (unidades)', fontsize=14)
+        ax.legend(loc='best', fontsize=12)
+        aplicar_estilo_tcc(ax, fig, fonte_eixos=14, fonte_ticks=12)
         plt.xticks(rotation=45)
         plt.tight_layout()
-        
         path = dir_figuras_tcc / nome_arq
-        fig.savefig(path, dpi=300, bbox_inches='tight')
+        configurar_savefig_tcc(fig, path, dpi=300)
         plt.close(fig)
         _log(f"  [OK] {path}")
+
+    # Salva relatorio numerico para analise das figuras 5-7
+    if linhas_relatorio_numerico:
+        df_rel = pd.DataFrame(linhas_relatorio_numerico)
+        path_rel = dir_figuras_tcc.parent / 'tabelas_tcc' / 'dados_numericos_figuras_5_7.csv'
+        path_rel.parent.mkdir(parents=True, exist_ok=True)
+        df_rel.to_csv(path_rel, index=False, encoding='utf-8-sig', sep=';')
+        _log(f"  [OK] Relatorio numerico: {path_rel}")
 
 
 def salvar_figuras_individuais_tcc(resultados, dir_figuras_tcc=None):
