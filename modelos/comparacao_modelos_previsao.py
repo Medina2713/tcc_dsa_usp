@@ -953,7 +953,6 @@ def salvar_figuras_tcc_multiplos_skus(lista_resultados, dir_figuras_tcc, sku_fig
         ax.plot(serie_teste.index, prev, label='Previsao', color='#A23B72', linewidth=2.5,
                 linestyle='--', marker='o', markersize=4)
         ax.axvline(x=serie_treino.index[-1], color='gray', linestyle=':', alpha=0.6, linewidth=1.5)
-        ax.set_title(titulo, fontsize=16, fontweight='bold')
         ax.set_xlabel('Data', fontsize=14)
         ax.set_ylabel('Estoque (unidades)', fontsize=14)
         ax.legend(loc='best', fontsize=12)
