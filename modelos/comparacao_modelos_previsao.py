@@ -21,6 +21,7 @@ Data: 2024
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
 from pathlib import Path
 import sys
 import time
@@ -234,7 +235,7 @@ def modelo_sarima_mensal(serie_treino):
             suppress_warnings=True,
             error_action='ignore',
             max_p=5, max_d=2, max_q=5,
-            max_P=2, max_D=1, max_Q=2,
+            max_P=3, max_D=1, max_Q=3,  # Aumentado para favorecer modelos sazonais
             information_criterion='aic',
             trace=True,
             n_jobs=_calcular_n_jobs_limite_cpu(CPU_LIMIT_PERCENT)
@@ -360,11 +361,30 @@ def modelo_suavizacao_exponencial(serie_treino):
             modelo = ExponentialSmoothing(serie_treino, trend=None).fit()
             return modelo
         
-        # Com tendência: usa damped_trend para evitar extrapolação linear explosiva
-        if len(serie_treino) > 365:
+        # Com tendência: usa damped_trend e sazonalidade quando dados suficientes
+        n = len(serie_treino)
+        if n > 365:
             modelo = ExponentialSmoothing(
                 serie_treino,
-                seasonal_periods=365,
+                seasonal_periods=30,  # Mensal (mais adequado para series de estoque)
+                trend='add',
+                damped_trend=True,
+                seasonal='add'
+            ).fit()
+        elif n >= 60:
+            # Sazonalidade mensal (30 dias) quando ha pelo menos 2 ciclos
+            modelo = ExponentialSmoothing(
+                serie_treino,
+                seasonal_periods=30,
+                trend='add',
+                damped_trend=True,
+                seasonal='add'
+            ).fit()
+        elif n >= 14:
+            # Sazonalidade semanal (7 dias) quando ha pelo menos 2 semanas
+            modelo = ExponentialSmoothing(
+                serie_treino,
+                seasonal_periods=7,
                 trend='add',
                 damped_trend=True,
                 seasonal='add'
@@ -504,6 +524,8 @@ def comparar_modelos(serie, sku, horizonte_previsao=30, proporcao_treino=0.8):
         'serie_treino': serie_treino,
         'serie_teste': serie_teste_previsao,
         'teste_constante': teste_constante,
+        'cv_teste': float(cv_teste),
+        'range_teste': float(range_teste),
     }
     
     # Verifica se há dados suficientes para SARIMA anual (m=365)
@@ -743,6 +765,8 @@ def visualizar_comparacao(resultados):
     ax1.set_xlabel('Periodo', fontsize=14)
     ax1.set_ylabel('Estoque (unidades)', fontsize=14)
     ax1.legend(loc='best', fontsize=11)
+    ax1.yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
+    ax1.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f'{int(round(x))}'))
     aplicar_estilo_tcc(ax1, fig, fonte_eixos=14, fonte_ticks=12)
     
     ax2 = axes[1]
@@ -755,6 +779,8 @@ def visualizar_comparacao(resultados):
     ax2.set_xlabel('Dias de Teste', fontsize=14)
     ax2.set_ylabel('Estoque (unidades)', fontsize=14)
     ax2.legend(loc='best', fontsize=11)
+    ax2.yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
+    ax2.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f'{int(round(x))}'))
     aplicar_estilo_tcc(ax2, fig, fonte_eixos=14, fonte_ticks=12)
     
     plt.tight_layout()
@@ -785,6 +811,8 @@ def _plotar_figura_modelo_unico(resultados, chave_previsao, titulo, nome_arquivo
     ax.set_xlabel('Data', fontsize=14)
     ax.set_ylabel('Estoque (unidades)', fontsize=14)
     ax.legend(loc='best', fontsize=12)
+    ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
+    ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f'{int(round(x))}'))
     aplicar_estilo_tcc(ax, fig, fonte_eixos=14, fonte_ticks=12)
     plt.xticks(rotation=45)
     plt.tight_layout()
@@ -930,6 +958,8 @@ def salvar_figuras_tcc_multiplos_skus(lista_resultados, dir_figuras_tcc, sku_fig
         ax.set_ylabel('Estoque (unidades)', fontsize=14)
         ax.legend(loc='best', fontsize=12)
         aplicar_estilo_tcc(ax, fig, fonte_eixos=14, fonte_ticks=12)
+        ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
+        ax.yaxis.set_major_formatter(mticker.FormatStrFormatter('%d'))
         plt.xticks(rotation=45)
         plt.tight_layout()
         path = dir_figuras_tcc / nome_arq

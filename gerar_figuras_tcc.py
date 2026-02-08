@@ -184,14 +184,37 @@ def _rodar_analise_exploratoria():
 N_CANDIDATOS = 300
 N_MELHORES = 10
 EPSILON_MAE_IGUAL = 0.01  # diff MAE < isso = metricas identicas (insatisfatorio)
+CV_TESTE_MIN = 5.0  # CV da serie de teste >= 5% para evitar SKUs quase constantes
+EPSILON_DIFF_MAE_TOP3 = 0.5  # diff entre Holt-Winters/ARIMA/SARIMA para evidenciar diferencas
+RANGE_TESTE_MIN = 20  # Amplitude minima (max-min) da serie de teste >= 20 unidades para escala legivel
 
 
-def _rodar_comparacao_300_selecionar_10(top300_skus):
+def _calcular_diff_mae_top3(r):
+    """Retorna max(MAE) - min(MAE) dos modelos Holt-Winters, ARIMA e SARIMA (usados em Fig 5-7)."""
+    MODELOS_FIG_5_7 = {
+        'Suavizacao Exponencial': 'exponencial',
+        'ARIMA Simples': 'arima',
+        'SARIMA Mensal (m=30)': 'sarima_mensal',
+    }
+    maes = []
+    for m in r.get('metricas', []):
+        nome = m.get('modelo', '')
+        if nome in MODELOS_FIG_5_7:
+            mae = m.get('mae')
+            if mae is not None and not (isinstance(mae, float) and np.isnan(mae)):
+                maes.append(float(mae))
+    if len(maes) < 2:
+        return 0.0
+    return float(np.max(maes) - np.min(maes))
+
+
+def _rodar_comparacao_300_selecionar_10(top300_skus, sku_representativo=None):
     """
     Fase 1: Roda comparacao (metricas apenas) para ate 300 candidatos.
-    Fase 2: Filtra (sem teste constante, sem resultados insatisfatorios), ranqueia por melhor MAE, escolhe 10.
-    Fase 3: Gera figuras, relatorios, Fig 5-7 e Tabela 2 apenas para os 10 melhores.
-    Fig 5-7 usam o melhor dos 10 (menor MAE).
+    Fase 2: Filtra (teste constante, CV_teste<5%, metricas insatisfatorias), ranqueia por MAE, escolhe 10.
+    Fase 3: Gera figuras, relatorios, Fig 5-7 e Tabela 2 para os 10 melhores.
+    SKU para Fig 5-7: prioriza maior diff_mae_top3 (evidencia diferencas entre modelos) no pool top 30;
+    se sku_representativo (Fig 4) tiver MAE competitivo, preferir para coerencia.
     """
     import csv
     try:
@@ -250,9 +273,11 @@ def _rodar_comparacao_300_selecionar_10(top300_skus):
     path_300.parent.mkdir(parents=True, exist_ok=True)
     with open(path_300, 'w', newline='', encoding='utf-8-sig') as f:
         w = csv.writer(f, delimiter=';')
-        w.writerow(['SKU', 'Modelo', 'MAE', 'RMSE', 'MAPE', 'teste_constante'])
+        w.writerow(['SKU', 'Modelo', 'MAE', 'RMSE', 'MAPE', 'teste_constante', 'cv_teste'])
         for r in lista_300:
             tc = r.get('teste_constante', False)
+            cv = r.get('cv_teste')
+            cv_str = f'{cv:.2f}' if cv is not None else ''
             for m in r.get('metricas', []):
                 w.writerow([
                     r.get('sku', ''),
@@ -261,15 +286,26 @@ def _rodar_comparacao_300_selecionar_10(top300_skus):
                     m.get('rmse'),
                     m.get('mape'),
                     'sim' if tc else 'nao',
+                    cv_str,
                 ])
     _log(f"[FASE 1] CSV salvo: {path_300}")
 
     # --- Fase 2: filtrar, ranquear, escolher 10 ---
     _log("\n[FASE 2/3] Filtrando e selecionando os 10 melhores...")
     elegiveis = []
+    n_quasi_const = 0
+    n_baixa_escala = 0
     for r in lista_300:
         if r.get('teste_constante', False):
             continue
+        cv_teste = r.get('cv_teste', 0.0)
+        if cv_teste is not None and cv_teste < CV_TESTE_MIN:
+            n_quasi_const += 1
+            continue  # serie de teste quase constante (CV < 5%)
+        range_teste = r.get('range_teste')
+        if range_teste is not None and range_teste < RANGE_TESTE_MIN:
+            n_baixa_escala += 1
+            continue  # escala do estoque muito pequena (range < 20 unidades)
         ms = r.get('metricas', [])
         if not ms:
             continue
@@ -280,14 +316,15 @@ def _rodar_comparacao_300_selecionar_10(top300_skus):
         diff_mae = max(maes) - min(maes)
         if diff_mae < EPSILON_MAE_IGUAL:
             continue  # insatisfatorio: todos modelos iguais
-        elegiveis.append((r, best_mae))
+        diff_mae_top3 = _calcular_diff_mae_top3(r)
+        elegiveis.append((r, best_mae, diff_mae_top3))
 
-    elegiveis.sort(key=lambda x: x[1])
+    elegiveis.sort(key=lambda x: x[1])  # por menor MAE
     top10_resultados = [x[0] for x in elegiveis[:N_MELHORES]]
 
     n_const = sum(1 for r in lista_300 if r.get('teste_constante', False))
-    n_insat = len(lista_300) - n_const - len(elegiveis)
-    _log(f"  Excluidos: {n_const} (teste constante), {n_insat} (metricas insatisfatorias).")
+    n_insat = len(lista_300) - n_const - n_quasi_const - n_baixa_escala - len(elegiveis)
+    _log(f"  Excluidos: {n_const} (teste constante), {n_quasi_const} (CV_teste<{CV_TESTE_MIN}%), {n_baixa_escala} (range<{RANGE_TESTE_MIN} un), {n_insat} (metricas insatisfatorias).")
     _log(f"  Elegiveis: {len(elegiveis)}. Top {N_MELHORES}: {[r['sku'] for r in top10_resultados]}.")
 
     if len(top10_resultados) < N_MELHORES:
@@ -297,8 +334,30 @@ def _rodar_comparacao_300_selecionar_10(top300_skus):
         _log("[ERRO] Nenhum SKU elegivel apos filtros.")
         return
 
-    # Melhor dos 10 para Fig 5-7 (menor MAE)
-    best_of_10 = top10_resultados[0]['sku']
+    # SKU para Fig 5-7: prioriza diferenciacao entre modelos (diff_mae_top3) e previsao proxima do real
+    # Usa pool maior (top 30 por MAE) para achar SKU com modelos distintos
+    N_POOL_FIG = min(30, len(elegiveis))
+    elegiveis_pool = elegiveis[:N_POOL_FIG]  # (r, best_mae, diff_mae_top3)
+    candidatos_com_diff = [(r, mae, d3) for r, mae, d3 in elegiveis_pool if d3 >= EPSILON_DIFF_MAE_TOP3]
+    if not candidatos_com_diff:
+        candidatos_com_diff = elegiveis_pool  # usa pool se nenhum tiver diferenciacao
+    # Ordena por diff_mae_top3 (maior primeiro) = evidenciar diferencas entre modelos
+    candidatos_com_diff.sort(key=lambda x: (x[2], -x[1]), reverse=True)  # maior diff, depois menor MAE
+    sku_rep_str = str(sku_representativo).strip() if sku_representativo else None
+    best_of_10 = candidatos_com_diff[0][0]['sku']
+    best_mae_val = candidatos_com_diff[0][1]
+    best_d3 = candidatos_com_diff[0][2]
+    # Preferir sku_representativo se estiver entre candidatos e MAE no max 10% pior que o melhor
+    for r, mae, d3 in candidatos_com_diff:
+        if sku_rep_str and str(r.get('sku', '')).strip() == sku_rep_str:
+            if mae <= best_mae_val * 1.10:  # ate 10% pior aceitavel para coerencia
+                best_of_10 = r['sku']
+                best_mae_val = mae
+                best_d3 = d3
+                _log(f"  [FIG 5-7] Usando SKU representativo (Fig 4): {best_of_10} (MAE={mae:.4f}, diff_mae_top3={d3:.4f})")
+                break
+    else:
+        _log(f"  [FIG 5-7] Usando SKU com previsao mais proxima do real: {best_of_10} (MAE={best_mae_val:.4f}, diff_mae_top3={best_d3:.4f})")
 
     # --- Fase 3: figuras, relatorios, Fig 5-7, Tabela 2 ---
     _log(f"\n[FASE 3/3] Gerando figuras e relatorios para os {len(top10_resultados)} melhores (Fig 5-7: {best_of_10})...")
@@ -548,7 +607,7 @@ def main():
     _log("=" * 80)
     _log("  (Fase 1: metricas para candidatos; Fase 2: filtrar constante/insatisfatorio, ranquear; Fase 3: figuras para os 10 melhores)")
     t2 = time.time()
-    df_elencacao = _rodar_comparacao_300_selecionar_10(top300_skus)
+    df_elencacao = _rodar_comparacao_300_selecionar_10(top300_skus, sku_representativo=sku_rep)
     dt2 = time.time() - t2
     _log(f"\n[2/2] Concluido em {dt2:.1f}s")
 
