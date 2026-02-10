@@ -189,13 +189,40 @@ EPSILON_DIFF_MAE_TOP3 = 0.5  # diff entre Holt-Winters/ARIMA/SARIMA para evidenc
 RANGE_TESTE_MIN = 20  # Amplitude minima (max-min) da serie de teste >= 20 unidades para escala legivel
 
 
+MODELOS_FIG_5_7 = {
+    'Suavizacao Exponencial': 'exponencial',
+    'ARIMA Simples': 'arima',
+    'SARIMA Mensal (m=30)': 'sarima_mensal',
+}
+
+
+def _get_mae_por_modelo(r):
+    """Retorna dict modelo_key -> MAE para os modelos das Fig 5-7."""
+    out = {}
+    for m in r.get('metricas', []):
+        nome = m.get('modelo', '')
+        if nome in MODELOS_FIG_5_7:
+            key = MODELOS_FIG_5_7[nome]
+            mae = m.get('mae')
+            if mae is not None and not (isinstance(mae, float) and np.isnan(mae)):
+                out[key] = float(mae)
+    return out
+
+
+def _holt_winters_melhor_que_arima_sarima(r):
+    """
+    True se Suavizacao Exponencial (Holt-Winters) tiver MAE menor que ARIMA e menor que SARIMA.
+    Exige que as tres metricas existam.
+    """
+    maes = _get_mae_por_modelo(r)
+    if set(maes.keys()) != {'exponencial', 'arima', 'sarima_mensal'}:
+        return False
+    mae_hw = maes['exponencial']
+    return mae_hw < maes['arima'] and mae_hw < maes['sarima_mensal']
+
+
 def _calcular_diff_mae_top3(r):
     """Retorna max(MAE) - min(MAE) dos modelos Holt-Winters, ARIMA e SARIMA (usados em Fig 5-7)."""
-    MODELOS_FIG_5_7 = {
-        'Suavizacao Exponencial': 'exponencial',
-        'ARIMA Simples': 'arima',
-        'SARIMA Mensal (m=30)': 'sarima_mensal',
-    }
     maes = []
     for m in r.get('metricas', []):
         nome = m.get('modelo', '')
@@ -213,8 +240,9 @@ def _rodar_comparacao_300_selecionar_10(top300_skus, sku_representativo=None):
     Fase 1: Roda comparacao (metricas apenas) para ate 300 candidatos.
     Fase 2: Filtra (teste constante, CV_teste<5%, metricas insatisfatorias), ranqueia por MAE, escolhe 10.
     Fase 3: Gera figuras, relatorios, Fig 5-7 e Tabela 2 para os 10 melhores.
-    SKU para Fig 5-7: prioriza maior diff_mae_top3 (evidencia diferencas entre modelos) no pool top 30;
-    se sku_representativo (Fig 4) tiver MAE competitivo, preferir para coerencia.
+    SKU para Fig 5-7: filtra candidatos em que Holt-Winters (Suavizacao Exponencial) tenha MAE menor que
+    ARIMA e que SARIMA; entre esses, prioriza maior diff_mae_top3 e menor MAE; se nenhum atender, usa
+    criterio alternativo (diff_mae_top3 + MAE). Se sku_representativo (Fig 4) tiver MAE competitivo, preferir.
     """
     import csv
     try:
@@ -334,21 +362,31 @@ def _rodar_comparacao_300_selecionar_10(top300_skus, sku_representativo=None):
         _log("[ERRO] Nenhum SKU elegivel apos filtros.")
         return
 
-    # SKU para Fig 5-7: prioriza diferenciacao entre modelos (diff_mae_top3) e previsao proxima do real
+    # SKU para Fig 5-7: prioriza SKU em que Holt-Winters (Suavizacao Exponencial) seja melhor que ARIMA e SARIMA
     # Usa pool maior (top 30 por MAE) para achar SKU com modelos distintos
     N_POOL_FIG = min(30, len(elegiveis))
     elegiveis_pool = elegiveis[:N_POOL_FIG]  # (r, best_mae, diff_mae_top3)
     candidatos_com_diff = [(r, mae, d3) for r, mae, d3 in elegiveis_pool if d3 >= EPSILON_DIFF_MAE_TOP3]
     if not candidatos_com_diff:
         candidatos_com_diff = elegiveis_pool  # usa pool se nenhum tiver diferenciacao
-    # Ordena por diff_mae_top3 (maior primeiro) = evidenciar diferencas entre modelos
-    candidatos_com_diff.sort(key=lambda x: (x[2], -x[1]), reverse=True)  # maior diff, depois menor MAE
+
+    # Filtro: preferir SKUs em que Holt-Winters tenha MAE menor que ARIMA e que SARIMA
+    candidatos_hw_melhor = [(r, mae, d3) for r, mae, d3 in candidatos_com_diff if _holt_winters_melhor_que_arima_sarima(r)]
+    if candidatos_hw_melhor:
+        pool_fig_5_7 = candidatos_hw_melhor
+        _log(f"  [FIG 5-7] {len(candidatos_hw_melhor)} candidato(s) com Holt-Winters melhor que ARIMA e SARIMA; escolhendo entre eles.")
+    else:
+        pool_fig_5_7 = candidatos_com_diff
+        _log(f"  [FIG 5-7] Nenhum candidato com Holt-Winters melhor que ARIMA e SARIMA; usando criterio alternativo (diff_mae_top3 + MAE).")
+
+    # Ordena por diff_mae_top3 (maior primeiro) = evidenciar diferencas entre modelos; depois menor MAE
+    pool_fig_5_7.sort(key=lambda x: (x[2], -x[1]), reverse=True)
     sku_rep_str = str(sku_representativo).strip() if sku_representativo else None
-    best_of_10 = candidatos_com_diff[0][0]['sku']
-    best_mae_val = candidatos_com_diff[0][1]
-    best_d3 = candidatos_com_diff[0][2]
+    best_of_10 = pool_fig_5_7[0][0]['sku']
+    best_mae_val = pool_fig_5_7[0][1]
+    best_d3 = pool_fig_5_7[0][2]
     # Preferir sku_representativo se estiver entre candidatos e MAE no max 10% pior que o melhor
-    for r, mae, d3 in candidatos_com_diff:
+    for r, mae, d3 in pool_fig_5_7:
         if sku_rep_str and str(r.get('sku', '')).strip() == sku_rep_str:
             if mae <= best_mae_val * 1.10:  # ate 10% pior aceitavel para coerencia
                 best_of_10 = r['sku']
@@ -357,7 +395,7 @@ def _rodar_comparacao_300_selecionar_10(top300_skus, sku_representativo=None):
                 _log(f"  [FIG 5-7] Usando SKU representativo (Fig 4): {best_of_10} (MAE={mae:.4f}, diff_mae_top3={d3:.4f})")
                 break
     else:
-        _log(f"  [FIG 5-7] Usando SKU com previsao mais proxima do real: {best_of_10} (MAE={best_mae_val:.4f}, diff_mae_top3={best_d3:.4f})")
+        _log(f"  [FIG 5-7] Usando SKU: {best_of_10} (MAE={best_mae_val:.4f}, diff_mae_top3={best_d3:.4f})")
 
     # --- Fase 3: figuras, relatorios, Fig 5-7, Tabela 2 ---
     _log(f"\n[FASE 3/3] Gerando figuras e relatorios para os {len(top10_resultados)} melhores (Fig 5-7: {best_of_10})...")

@@ -916,9 +916,9 @@ def salvar_figuras_tcc_multiplos_skus(lista_resultados, dir_figuras_tcc, sku_fig
     _log(f"  [INFO] Gerando figura 5 (Holt-Winters), 6 (ARIMA), 7 (SARIMA) para SKU {sku_codigo}...")
     
     configs = [
-        ('exponencial', 'figura5.png', f'Figura 5 – Previsao do Estoque com o Modelo Holt-Winters (SKU {sku_codigo})'),
-        ('arima', 'figura6.png', f'Figura 6 – Previsao do Estoque com o Modelo ARIMA (SKU {sku_codigo})'),
-        ('sarima_mensal', 'figura7.png', f'Figura 7 – Previsao do Estoque com o Modelo SARIMA (SKU {sku_codigo})'),
+        ('exponencial', f'figura5_{sku_codigo}.png', f'Figura 5 – Previsao do Estoque com o Modelo Holt-Winters (SKU {sku_codigo})'),
+        ('arima', f'figura6_{sku_codigo}.png', f'Figura 6 – Previsao do Estoque com o Modelo ARIMA (SKU {sku_codigo})'),
+        ('sarima_mensal', f'figura7_{sku_codigo}.png', f'Figura 7 – Previsao do Estoque com o Modelo SARIMA (SKU {sku_codigo})'),
     ]
     
     linhas_relatorio_numerico = []
