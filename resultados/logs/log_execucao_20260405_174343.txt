@@ -1,0 +1,66 @@
+[2026-04-05 17:43:43] ================================================================================
+[2026-04-05 17:43:43] GERADOR DE FIGURAS TCC (figura1 ... figura7)
+[2026-04-05 17:43:43] ================================================================================
+[2026-04-05 17:43:43] Inicio da execucao: 2026-04-05 17:43:43
+[2026-04-05 17:43:43] Arquivo de log: C:\Users\Desktop\Documents\POS\TCC\CODE\resultados\logs\log_execucao_20260405_174343.txt
+[2026-04-05 17:43:43] [CPU] Limite configurado: 80% | Cores disponiveis: 6 | n_jobs limitado: ~4
+[2026-04-05 17:43:43] [CPU] Monitoramento em tempo real: ATIVO
+[2026-04-05 17:43:43] 
+Saida: C:\Users\Desktop\Documents\POS\TCC\CODE\resultados\figuras_tcc
+[2026-04-05 17:43:43] 
+[LIMPEZA] Limpando diretorios de saida de execucoes anteriores...
+[2026-04-05 17:43:43]   [REMOVIDO] figura1.png
+[2026-04-05 17:43:43]   [REMOVIDO] figura2.png
+[2026-04-05 17:43:43]   [REMOVIDO] figura3.png
+[2026-04-05 17:43:43]   [REMOVIDO] figura4.png
+[2026-04-05 17:43:43]   [REMOVIDO] figura5.png
+[2026-04-05 17:43:43]   [REMOVIDO] figura6.png
+[2026-04-05 17:43:43]   [REMOVIDO] figura7.png
+[2026-04-05 17:43:43]   [OK] Diretorio limpo: C:\Users\Desktop\Documents\POS\TCC\CODE\resultados\figuras_tcc
+[2026-04-05 17:43:43]   [REMOVIDO] criterio_selecao_figuras_5_7.json
+[2026-04-05 17:43:43]   [REMOVIDO] dados_numericos_figuras_5_7.csv
+[2026-04-05 17:43:43]   [REMOVIDO] heuristica_mae_arima_vs_sarima_por_sku.csv
+[2026-04-05 17:43:43]   [REMOVIDO] medias_por_modelo_apenas_top10_tcc.csv
+[2026-04-05 17:43:43]   [REMOVIDO] medias_por_modelo_todos_candidatos_validos.csv
+[2026-04-05 17:43:43]   [REMOVIDO] resumo_quantitativo_figuras_5_7.csv
+[2026-04-05 17:43:43]   [REMOVIDO] tabela_01_base_dados.csv
+[2026-04-05 17:43:43]   [REMOVIDO] tabela_01_base_dados.md
+[2026-04-05 17:43:43]   [REMOVIDO] tabela_02_desempenho_modelos.csv
+[2026-04-05 17:43:43]   [REMOVIDO] taxa_vitoria_modelos_resumo.csv
+[2026-04-05 17:43:43]   [REMOVIDO] vitoria_modelo_por_sku.csv
+[2026-04-05 17:43:43]   [OK] Diretorio limpo: C:\Users\Desktop\Documents\POS\TCC\CODE\resultados\tabelas_tcc
+[2026-04-05 17:43:43]   [REMOVIDO] comparacao_modelos_0904.png
+[2026-04-05 17:43:43]   [REMOVIDO] comparacao_modelos_10841.png
+[2026-04-05 17:43:43]   [REMOVIDO] comparacao_modelos_2202.png
+[2026-04-05 17:43:43]   [REMOVIDO] comparacao_modelos_7460.png
+[2026-04-05 17:43:43]   [REMOVIDO] comparacao_modelos_7535.png
+[2026-04-05 17:43:43]   [REMOVIDO] comparacao_modelos_811076.png
+[2026-04-05 17:43:43]   [REMOVIDO] comparacao_modelos_811077.png
+[2026-04-05 17:43:43]   [REMOVIDO] comparacao_modelos_811080.png
+[2026-04-05 17:43:43]   [REMOVIDO] comparacao_modelos_899507.png
+[2026-04-05 17:43:43]   [REMOVIDO] comparacao_modelos_MK380.png
+[2026-04-05 17:43:43]   [OK] Diretorio limpo: C:\Users\Desktop\Documents\POS\TCC\CODE\resultados\figuras_modelos
+[2026-04-05 17:43:43]   [OK] Diretorio limpo: C:\Users\Desktop\Documents\POS\TCC\CODE\resultados\figuras_exploratoria
+[2026-04-05 17:43:43]   [REMOVIDO] relatorio_comparacao_0904.txt
+[2026-04-05 17:43:43]   [REMOVIDO] relatorio_comparacao_10841.txt
+[2026-04-05 17:43:43]   [REMOVIDO] relatorio_comparacao_2202.txt
+[2026-04-05 17:43:43]   [REMOVIDO] relatorio_comparacao_7460.txt
+[2026-04-05 17:43:43]   [REMOVIDO] relatorio_comparacao_7535.txt
+[2026-04-05 17:43:43]   [REMOVIDO] relatorio_comparacao_811076.txt
+[2026-04-05 17:43:43]   [REMOVIDO] relatorio_comparacao_811077.txt
+[2026-04-05 17:43:43]   [REMOVIDO] relatorio_comparacao_811080.txt
+[2026-04-05 17:43:43]   [REMOVIDO] relatorio_comparacao_899507.txt
+[2026-04-05 17:43:43]   [REMOVIDO] relatorio_comparacao_MK380.txt
+[2026-04-05 17:43:43]   [OK] 10 arquivo(s) removido(s) de C:\Users\Desktop\Documents\POS\TCC\CODE\resultados
+[2026-04-05 17:43:43] [LIMPEZA] Concluida.
+
+[2026-04-05 17:43:43] 
+[TABELA 1] Gerando Tabela 1 (explicacao da base de dados)...
+[2026-04-05 17:43:44] [TABELA 1] OK.
+[2026-04-05 17:43:44] 
+[PASSO 0] Verificando data wrangling...
+[2026-04-05 17:43:44] [PASSO 0] OK.
+[2026-04-05 17:43:44] 
+================================================================================
+[2026-04-05 17:43:44] [1/2] Analise exploratoria -> figura1, figura2, figura3, figura4
+[2026-04-05 17:43:44] ================================================================================

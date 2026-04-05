@@ -629,6 +629,6 @@ def gerar_elencacao_completa():
 
 ---
 
-**Data da Análise**: 2024  
+**Data da análise original:** 2024 · *Metadados do repositório atualizados em 05/04/2026.*  
 **Versão**: 1.0
 

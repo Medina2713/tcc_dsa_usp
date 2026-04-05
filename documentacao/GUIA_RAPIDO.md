@@ -61,10 +61,10 @@ print(resultados)
 
 ## ⚡ Exemplo Completo em 30 segundos
 
-Execute o arquivo de exemplo:
+Execute o arquivo de exemplo (a partir da raiz do repositório):
 
 ```bash
-python exemplo_uso_sarima.py
+python exemplos/exemplo_uso_sarima.py
 ```
 
 Isso vai:
@@ -145,7 +145,7 @@ Veja `exemplo_uso_sarima.py` → `exemplo_com_dados_reais_api()` para ver a estr
 
 ## 📚 Próximos Passos
 
-1. ✅ Execute `exemplo_uso_sarima.py` para ver exemplos
+1. ✅ Execute `exemplos/exemplo_uso_sarima.py` para ver exemplos
 2. ✅ Leia `README_SARIMA.md` para entender melhor os conceitos
 3. ✅ Veja `exemplo_elencacao_completa.py` para integração completa
 4. ✅ Adapte para seus dados reais da API

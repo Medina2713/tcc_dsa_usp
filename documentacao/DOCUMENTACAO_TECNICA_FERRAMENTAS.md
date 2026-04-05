@@ -834,5 +834,5 @@ Use este checklist para garantir que você pode explicar cada ferramenta:
 
 ---
 
-**Documento criado para TCC MBA Data Science & Analytics - 2024**
+**Documento criado para TCC MBA Data Science & Analytics — USP** · *Documentação revista em 05/04/2026.*
 

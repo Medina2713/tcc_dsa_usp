@@ -29,6 +29,7 @@ Sistema completo de **previsão de estoque** (saldo) e **elencação de produtos
 │   ├── validar_extracao_vendas.py
 │   ├── calcular_metricas_elencacao.py
 │   ├── gerar_tabelas_tcc.py   # Tabela 1 (base de dados) e Tabela 2 (desempenho)
+│   ├── gerar_evidencias_de_candidatos_csv.py  # Evidências auxiliares a partir de candidatos_300_metricas.csv
 │   └── validacao_walk_forward_sarima.py
 │
 ├── previsoes/                 # Scripts de previsão
@@ -44,6 +45,10 @@ Sistema completo de **previsão de estoque** (saldo) e **elencação de produtos
 │   ├── COMO_GERAR_FIGURAS_TCC.md
 │   ├── CRITERIOS_SELECAO_ANALISE_TEMPORAL.md
 │   ├── DOCUMENTACAO_GERAL_SISTEMA.md
+│   ├── ANALISE_FIGURAS_TABELAS_TCC.md
+│   ├── RESPOSTAS_ORIENTADORA_ANALISE_RESULTADOS.md
+│   ├── SKU_FIGURAS_5_7_SELECAO_E_REMEDIACAO.md
+│   ├── ORGANIZACAO_REPOSITORIO.md
 │   ├── GUIA_RAPIDO.md
 │   ├── README_SARIMA.md
 │   └── DOCUMENTACAO_TECNICA_FERRAMENTAS.md
@@ -52,7 +57,7 @@ Sistema completo de **previsão de estoque** (saldo) e **elencação de produtos
 │
 └── resultados/                # Figuras, tabelas, elencação, logs
     ├── figuras_tcc/           # figura1.png … figura7.png
-    ├── tabelas_tcc/           # tabela_02_desempenho_modelos.csv
+    ├── tabelas_tcc/           # Tabela 1/2, evidências CSV (orientadora), critérios JSON
     ├── elencacao_final.csv    # Ranking R(t), U(t), GP(t) — valor final da ferramenta
     ├── figuras_modelos/       # comparacao_modelos_*.png
     ├── candidatos_300_metricas.csv
@@ -83,7 +88,7 @@ Gera **todas** as figuras (1–7), **Tabela 2** e o **valor final da ferramenta 
 python gerar_figuras_tcc.py
 ```
 
-O script executa data wrangling (se necessário), análise exploratória (figura1–4), pipeline 300 candidatos → 10 melhores (métricas, filtros, figuras 5–7, Tabela 2) e **elencação final** (R(t), U(t), GP(t) → ranking). Salva `resultados/elencacao_final.csv` e **retorna** o DataFrame do ranking. Veja `documentacao/COMO_GERAR_FIGURAS_TCC.md` e `documentacao/CRITERIOS_SELECAO_ANALISE_TEMPORAL.md`.
+O script gera **Tabela 1** no início, executa data wrangling (se necessário), análise exploratória (figura1–4), pipeline 300 candidatos → 10 melhores (métricas, filtros, figuras 5–7 com seleção por `diff_mae_top3` e preferência pelo SKU da figura 4 quando aplicável, Tabela 2), grava **CSVs de evidência** em `resultados/tabelas_tcc/` e **elencação final** (R(t), U(t), GP(t) → ranking). Salva `resultados/elencacao_final.csv` e **retorna** o DataFrame do ranking. Veja `documentacao/COMO_GERAR_FIGURAS_TCC.md`, `documentacao/CRITERIOS_SELECAO_ANALISE_TEMPORAL.md` e `documentacao/RESPOSTAS_ORIENTADORA_ANALISE_RESULTADOS.md` (lista de ficheiros de evidência).
 
 **Funcionamento e razões:** Os modelos preveem **estoque (saldo)**, não vendas. GP(t) = soma das previsões de estoque; o terceiro pilar **sinaliza necessidade de reposição**. Limpeza de saídas anteriores antes de cada rodada; CPU limitado a ~80% (psutil).
 
@@ -154,22 +159,27 @@ python validacao/validar_extracao_vendas.py
 
 Consulte a pasta `documentacao/` para documentação detalhada:
 
-- **COMO_GERAR_FIGURAS_TCC.md** — Como gerar figuras 1–7, Tabela 2 e elencação final; funcionamento e razões do pipeline
+- **COMO_GERAR_FIGURAS_TCC.md** — Figuras 1–7, Tabelas 1–2, elencação final, CSVs de evidência; pipeline e parâmetros
 - **CRITERIOS_SELECAO_ANALISE_TEMPORAL.md** — Critérios de seleção de SKUs; pipeline 300→10; modelos preveem estoque, terceiro pilar = reposição
+- **SKU_FIGURAS_5_7_SELECAO_E_REMEDIACAO.md** — Critério `diff_mae_top3`, filtros de teste e alinhamento com a figura 4
+- **RESPOSTAS_ORIENTADORA_ANALISE_RESULTADOS.md** — Ligação perguntas da orientadora ↔ código e ficheiros em `resultados/tabelas_tcc/`
 - **DOCUMENTACAO_GERAL_SISTEMA.md** — Visão geral do sistema, fluxo de elencação, GP(t) = previsão de estoque
+- **ORGANIZACAO_REPOSITORIO.md** — Mapa de pastas e scripts principais
 - **README_SARIMA.md** — Módulo SARIMA (previsão de **estoque**)
 - **DOCUMENTACAO_TECNICA_FERRAMENTAS.md** — Ferramentas estatísticas (Box-Jenkins, etc.)
 - **GUIA_RAPIDO.md** — Guia rápido de uso
 - **EXPLICACAO_RESULTADOS_SARIMA.md** — Interpretação de resultados SARIMA
 - **RESUMO_VALIDACAO_VENDAS.md** — Validação das métricas de elencação
-- **ANALISE_FIGURAS_TABELAS_TCC.md** — Verificação figuras/tabelas vs. TCC
+- **ANALISE_FIGURAS_TABELAS_TCC.md** — Figuras/tabelas vs. código atual e localização das saídas
+
+Ficheiros **PDF** na raiz (se existirem) são exportações manuais a partir dos `.md`; não são gerados pelo pipeline Python.
 
 ## 🛠️ Uso do Módulo SARIMA
 
 ### Importar o Módulo
 
 ```python
-from sarima_estoque import PrevisorEstoqueSARIMA
+from sarima_estoque import PrevisorEstoqueSARIMA  # com cwd em previsoes/ ou PYTHONPATH incluindo previsoes/
 ```
 
 ### Exemplo Básico
@@ -263,4 +273,4 @@ Medina2713
 
 ---
 
-**Última atualização**: 02/01/26
+**Última atualização:** 05/04/2026

@@ -203,5 +203,5 @@ A **melhor previsão** é que o estoque permaneça no último valor conhecido (4
 
 ---
 
-**Criado para TCC MBA Data Science & Analytics - 2024**
+**Criado para TCC MBA Data Science & Analytics — USP** · *Documentação revista em 05/04/2026.*
 

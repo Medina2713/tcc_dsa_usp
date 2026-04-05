@@ -224,6 +224,6 @@ rm cache_checkpoints/checkpoint_elencacao.json
 
 ---
 
-**Data**: 2024  
+**Data (registo original):** 2024 · *Documentação revista em 05/04/2026.*  
 **Versão**: 1.0
 

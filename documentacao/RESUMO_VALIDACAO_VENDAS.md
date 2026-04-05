@@ -114,3 +114,6 @@ O sistema está pronto para:
 3. Aplicar normalização conforme Tabela 2.2
 4. Gerar ranking de priorização
 
+---
+
+*Documentação do repositório revista em 05/04/2026.*

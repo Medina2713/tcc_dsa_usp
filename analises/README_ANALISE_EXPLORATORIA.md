@@ -20,8 +20,11 @@ pip install pandas numpy matplotlib seaborn
 
 ## 🚀 Uso
 
+A partir da **raiz do repositório**:
+
 ```bash
-python analise_exploratoria_sazonalidade.py
+python analises/analise_exploratoria_sazonalidade.py
+python analises/analise_exploratoria_sazonalidade.py --tcc
 ```
 
 ## 📊 Estrutura do Script
@@ -244,5 +247,5 @@ No código, você pode ajustar:
 
 ---
 
-**Desenvolvido para TCC MBA Data Science & Analytics - 2024**
+**Desenvolvido para TCC MBA Data Science & Analytics — USP** · *Documentação revista em 05/04/2026.*
 

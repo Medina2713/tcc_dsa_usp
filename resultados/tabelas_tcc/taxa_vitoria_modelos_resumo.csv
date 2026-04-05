@@ -1,0 +1,5 @@
+﻿modelo;n_skus_vencedor;pct
+SARIMA Mensal (m=30);40;60.61
+Suavizacao Exponencial;23;34.85
+Media Movel (7 dias);2;3.03
+ARIMA Simples;1;1.52

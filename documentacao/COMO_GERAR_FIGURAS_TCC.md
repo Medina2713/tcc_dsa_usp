@@ -8,7 +8,7 @@ Este documento explica como gerar cada uma das **figuras** (figura1 … figura7)
 
 - **Modelos preveem ESTOQUE (saldo), não vendas.** SARIMA, ARIMA, Holt-Winters e Média Móvel são treinados na série histórica de **saldo de estoque** (`historico_estoque`). A saída é previsão de **unidades em estoque** por dia. **GP(t)** na elencação = **soma dessas previsões de estoque** no horizonte (ex.: 30 dias).
 - **Terceiro pilar da elencação:** A previsão de estoque serve para **sinalizar necessidade de reposição**. Estoque previsto baixo ou tendendo a zero → maior prioridade para repor; estoque previsto alto → menor urgência. Ou seja, a ferramenta responde “preciso repor unidades?” (e com que prioridade).
-- **Pipeline 300 → 10:** Seleciona até 300 candidatos (exploratório), roda **métricas** para todos (sem figuras), filtra testes constantes e resultados insatisfatórios, ranqueia por MAE e escolhe os **10 melhores**. Figuras, relatórios e Tabela 2 são gerados **apenas** para esses 10; figuras 5–7 usam o **melhor dos 10** (menor MAE) como SKU representativo.
+- **Pipeline 300 → 10:** Seleciona até 300 candidatos (exploratório), roda **métricas** para todos (sem figuras), filtra teste constante, série de teste com baixa variabilidade (`CV_teste` mínimo), amplitude mínima no teste, e métricas “idênticas” entre modelos; ranqueia por **menor melhor MAE** e escolhe os **10 melhores**. Figuras, relatórios e Tabela 2 são gerados **apenas** para esses 10; **figuras 5–7** usam **um** SKU escolhido no **pool** (até 30 melhores) por maior **`diff_mae_top3`** entre Holt-Winters, ARIMA e SARIMA mensal, com preferência pelo **SKU da figura 4** quando o MAE for no máximo 10% pior (ver `gerar_figuras_tcc.py` e `documentacao/SKU_FIGURAS_5_7_SELECAO_E_REMEDIACAO.md`).
 - **Elencação final:** Ao fim do pipeline, o script calcula **R(t)**, **U(t)** e **GP(t)** para os 10 melhores, gera o **ranking de elencação**, salva `resultados/elencacao_final.csv` e **retorna** o DataFrame desse ranking.
 - **Limpeza:** Antes de cada rodada, o script **remove** figuras, tabelas e relatórios de comparação de execuções anteriores (mantém apenas logs com timestamp).
 - **CPU:** Uso limitado a ~80% (quando `psutil` está disponível) para não travar outras aplicações.
@@ -49,8 +49,8 @@ python gerar_figuras_tcc.py
 2. Executa **data wrangling** (se o CSV processado não existir).
 3. Cria `resultados/figuras_tcc/` e roda a **análise exploratória** → gera **figura1**, **figura2**, **figura3**, **figura4** (agregados + SKU representativo com maior variação sazonal, zeros ≤ 30%).
 4. **Fase 1:** Seleciona até **300 candidatos** (zeros ≤ 30%, estoque ok, cv_mensal) e roda **métricas** (ARIMA, SARIMA m=30, Holt-Winters, Média Móvel) para todos, **sem** figuras nem relatórios. Salva `resultados/candidatos_300_metricas.csv`.
-5. **Fase 2:** Filtra testes constantes e resultados insatisfatórios (métricas idênticas entre modelos); ranqueia por **melhor MAE** e escolhe os **10 melhores**.
-6. **Fase 3:** Gera **figura5**, **figura6**, **figura7** (SKU com **menor MAE** dos 10), **Tabela 2**, relatórios e gráficos individuais **apenas** para os 10 melhores.
+5. **Fase 2:** Aplica os filtros (constante, CV/amplitude do teste, métricas idênticas); ranqueia por **menor melhor MAE** e escolhe os **10 melhores**.
+6. **Fase 3:** Gera **figura5**, **figura6**, **figura7** para o SKU selecionado pelo critério **`diff_mae_top3` + preferência figura 4** (não necessariamente o “primeiro” do top 10), **Tabela 2**, relatórios e gráficos individuais **apenas** para os 10 melhores; grava **CSVs de evidência** em `resultados/tabelas_tcc/` (`evidencias_orientadora_tcc.py`).
 7. **Elencação final:** Calcula R(t), U(t), GP(t) para os 10 melhores, gera o ranking, salva `resultados/elencacao_final.csv` e **retorna** o DataFrame do ranking (valor final da ferramenta de elencação).
 
 Você pode deixar o script rodando; a Fase 1 (até 300 candidatos) pode levar dezenas de minutos; a Fase 3 (10 SKUs) é mais rápida. Ao final, as figuras, a tabela e o CSV de elencação estarão nos diretórios indicados. O script **retorna** o DataFrame do ranking; ao rodar pela linha de comando, exibe uma mensagem com o caminho do CSV e o número de linhas. Veja `documentacao/CRITERIOS_SELECAO_ANALISE_TEMPORAL.md` para os critérios de seleção.
@@ -102,7 +102,7 @@ Sem `--tcc`, as figuras vão para `resultados/figuras_exploratoria/` com nomes `
 | **figura6** | Previsão do estoque com o modelo **ARIMA** (SKU representativo escolhido automaticamente). |
 | **figura7** | Previsão do estoque com o modelo **SARIMA** (SKU representativo escolhido automaticamente). |
 
-**Nota:** O SKU representativo é escolhido automaticamente como aquele com **maior variabilidade nas métricas** entre modelos, evitando SKUs onde todos os modelos têm métricas idênticas (problema comum quando modelos convergem para Random Walk ou quando a série de teste é constante).
+**Nota:** No pipeline completo, o SKU das figuras 5–7 maximiza a **diferença de MAE entre Holt-Winters, ARIMA e SARIMA mensal** (`diff_mae_top3`) entre os melhores candidatos, sujeito aos filtros de qualidade da série de teste; isso evita figuras em que as três curvas coincidem. Em execução **isolada** de `comparacao_modelos_previsao.py` sem o pipeline, o SKU continua a ser o passado com `--sku` ou o escolhido pelo próprio script.
 
 Quando o modo TCC está ativo, essas figuras são salvas em `resultados/figuras_tcc/` como **figura5.png**, **figura6.png**, **figura7.png**. O script mestre `gerar_figuras_tcc.py` ativa esse modo e usa o **mesmo** SKU representativo da figura4.
 
@@ -114,6 +114,8 @@ Quando o modo TCC está ativo, essas figuras são salvas em `resultados/figuras_
 - **Tabela 2:** `resultados/tabelas_tcc/tabela_02_desempenho_modelos.csv`
 - **Elencação final:** `resultados/elencacao_final.csv` (ranking com R(t), U(t), GP(t), score_elencacao). É o **valor final da ferramenta de elencação** retornado pelo script.
 - **Candidatos 300:** `resultados/candidatos_300_metricas.csv`
+- **Evidências (orientadora / discussão):** `resultados/tabelas_tcc/evidencia_arima_sarima_por_sku.csv`, `taxa_vitoria_modelos_resumo.csv`, `vitoria_modelo_por_sku.csv`, `medias_por_modelo_todos_candidatos_validos.csv`, `medias_por_modelo_apenas_top10_tcc.csv`, `criterio_selecao_figuras_5_7.json`, etc. (lista completa em `documentacao/RESPOSTAS_ORIENTADORA_ANALISE_RESULTADOS.md`).
+- **Tabela 1:** gerada no início do pipeline — `resultados/tabelas_tcc/tabela_01_base_dados.md`
 - **Logs:** `resultados/logs/log_execucao_YYYYMMDD_HHMMSS.txt`
 
 ---
@@ -122,9 +124,9 @@ Quando o modo TCC está ativo, essas figuras são salvas em `resultados/figuras_
 
 - **Figuras 1–3:** resultados **agregados** (todos os produtos ou totais/médias).
 - **Figura 4:** **um** SKU representativo (maior variação sazonal).
-- **Figuras 5–7:** **um** SKU representativo (escolhido automaticamente com maior variabilidade nas métricas), uma figura por modelo.
+- **Figuras 5–7:** **um** SKU (critério `diff_mae_top3` e preferência pelo SKU da figura 4 quando aplicável), uma figura por modelo.
 
-**Importante:** As figuras 5–7 mostram apenas **um único SKU** por figura (não múltiplos subplots). O SKU é escolhido automaticamente para ter métricas mais expressivas e diferenciadas entre os modelos, evitando casos onde todos os modelos têm métricas idênticas.
+**Importante:** As figuras 5–7 mostram apenas **um único SKU** por figura (não múltiplos subplots). O SKU visa **diferenciar** Holt-Winters, ARIMA e SARIMA mensal nos dados de teste, com filtros de variabilidade e escala.
 
 ---
 
@@ -139,4 +141,4 @@ Quando o modo TCC está ativo, essas figuras são salvas em `resultados/figuras_
 ---
 
 **Referência:** Figuras do TCC (nomenclatura e conteúdo), pipeline 300→10, elencação e critérios em `documentacao/CRITERIOS_SELECAO_ANALISE_TEMPORAL.md`.  
-**Última atualização:** 25/01/26
+**Última atualização:** 05/04/2026

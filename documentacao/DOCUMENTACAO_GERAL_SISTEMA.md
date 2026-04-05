@@ -64,6 +64,8 @@ Priorizar produtos para compra/reposição com base em três pilares:
 ├── validacao/                     # Validação e testes
 │   ├── validar_extracao_vendas.py
 │   ├── calcular_metricas_elencacao.py
+│   ├── gerar_tabelas_tcc.py
+│   ├── gerar_evidencias_de_candidatos_csv.py
 │   └── validacao_walk_forward_sarima.py
 │
 ├── exemplos/                      # Exemplos de uso
@@ -76,7 +78,7 @@ Priorizar produtos para compra/reposição com base em três pilares:
 │
 └── resultados/                    # Figuras, tabelas, elencação, logs
     ├── figuras_tcc/               # figura1.png … figura7.png
-    ├── tabelas_tcc/               # tabela_02_desempenho_modelos.csv
+    ├── tabelas_tcc/               # Tabela 1, Tabela 2, CSVs de evidência (orientadora), JSON de critérios
     ├── elencacao_final.csv        # Ranking R(t), U(t), GP(t)
     └── logs/
 ```
@@ -100,6 +102,7 @@ Priorizar produtos para compra/reposição com base em três pilares:
 
 **Como usar**:
 ```python
+# Executar com diretório de trabalho em previsoes/ ou PYTHONPATH apontando para previsoes/
 from sarima_estoque import PrevisorEstoqueSARIMA
 
 previsor = PrevisorEstoqueSARIMA(horizonte_previsao=30, frequencia='D')
@@ -154,12 +157,12 @@ python analises/analise_exploratoria_sazonalidade.py
 ### 🤖 Modelos de Previsão
 
 #### `modelos/comparacao_modelos_previsao.py`
-**Descrição**: Compara múltiplos modelos de previsão (SARIMA, ARIMA, Médias Móveis, Suavização Exponencial).
+**Descrição**: Compara múltiplos modelos de previsão (SARIMA anual se treino ≥ 730 dias, SARIMA mensal m=30, ARIMA, Médias Móveis, Suavização Exponencial). SARIMA anual é omitido quando o histórico de treino é inferior a ~2 anos (`MIN_DIAS_SARIMA_ANUAL`).
 
 **Métricas Calculadas**: MAE, RMSE, MAPE, R², MAE%, RMSE%, Bias
 
 **Saídas**: 
-- Gráficos de comparação: `resultados/comparacao_modelos_[SKU].png`
+- Gráficos de comparação: `resultados/comparacao_modelos_[SKU].png` (e, em modo TCC / pipeline, figuras 5–7 em `resultados/figuras_tcc/`)
 - Relatórios: `resultados/relatorio_comparacao_[SKU].txt`
 
 #### `modelos/comparacao_top_skus_otimizado.py`
@@ -291,13 +294,13 @@ pip install -r requirements_sarima.txt
 
 ### Fluxo Básico
 
-**Opção principal (TCC):** use o script único que gera figuras, Tabela 2 e **elencação final**:
+**Opção principal (TCC):** use o script único que gera **Tabela 1**, figuras, Tabela 2, CSVs de evidência e **elencação final**:
 
 ```bash
 python gerar_figuras_tcc.py
 ```
 
-Ele executa data wrangling (se necessário), análise exploratória (figura1–4), pipeline 300 candidatos → 10 melhores (métricas, filtros, figuras 5–7, Tabela 2) e **elencação final** (R(t), U(t), GP(t) → ranking). Salva `resultados/elencacao_final.csv` e **retorna** o DataFrame do ranking. Veja `documentacao/COMO_GERAR_FIGURAS_TCC.md`.
+Ele gera Tabela 1, executa data wrangling (se necessário), análise exploratória (figura1–4), pipeline 300 candidatos → 10 melhores (métricas, filtros, figuras 5–7 com seleção de SKU por `diff_mae_top3`, Tabela 2), grava evidências em `resultados/tabelas_tcc/` e **elencação final** (R(t), U(t), GP(t) → ranking). Salva `resultados/elencacao_final.csv` e **retorna** o DataFrame do ranking. Veja `documentacao/COMO_GERAR_FIGURAS_TCC.md` e `documentacao/RESPOSTAS_ORIENTADORA_ANALISE_RESULTADOS.md`.
 
 **Fluxo alternativo (passo a passo):**
 
@@ -408,7 +411,7 @@ score_elencacao = (
 
 ## 📝 Exemplos Práticos
 
-### Exemplo 1: Pipeline TCC (figuras, Tabela 2 e elencação final)
+### Exemplo 1: Pipeline TCC (Tabela 1, figuras, Tabela 2, evidências e elencação final)
 
 ```bash
 python gerar_figuras_tcc.py
@@ -416,11 +419,13 @@ python gerar_figuras_tcc.py
 
 **Resultado**: 
 - Figuras 1–7 em `resultados/figuras_tcc/`
+- Tabela 1 em `resultados/tabelas_tcc/` (ficheiro base de dados)
 - Tabela 2 em `resultados/tabelas_tcc/tabela_02_desempenho_modelos.csv`
+- CSVs de evidência (ex.: `evidencia_arima_sarima_por_sku.csv`, `taxa_vitoria_modelos_resumo.csv`) em `resultados/tabelas_tcc/`
 - **Elencação final** em `resultados/elencacao_final.csv` (ranking R(t), U(t), GP(t), score)
 - O script **retorna** o DataFrame do ranking (valor final da ferramenta de elencação)
 
-Veja `documentacao/COMO_GERAR_FIGURAS_TCC.md` e `documentacao/CRITERIOS_SELECAO_ANALISE_TEMPORAL.md`.
+Veja `documentacao/COMO_GERAR_FIGURAS_TCC.md`, `documentacao/CRITERIOS_SELECAO_ANALISE_TEMPORAL.md` e `documentacao/RESPOSTAS_ORIENTADORA_ANALISE_RESULTADOS.md`.
 
 ### Exemplo 2: Elencação Completa (3 SKUs)
 
@@ -619,6 +624,7 @@ Consulte a pasta `documentacao/` para:
 - **DOCUMENTACAO_TECNICA_FERRAMENTAS.md**: Ferramentas estatísticas
 - **EXPLICACAO_RESULTADOS_SARIMA.md**: Interpretação de resultados
 - **RESUMO_VALIDACAO_VENDAS.md**: Validação das métricas
+- **RESPOSTAS_ORIENTADORA_ANALISE_RESULTADOS.md**: Evidências e discussão dos resultados
 
 ---
 
@@ -719,6 +725,6 @@ Para dúvidas ou problemas:
 
 ---
 
-**Última atualização**: 25/01/26  
-**Versão**: 1.0 — Pipeline TCC (gerar_figuras_tcc), elencação final (R(t), U(t), GP(t)), modelos preveem **estoque**, terceiro pilar = reposição.
+**Última atualização:** 05/04/2026  
+**Versão:** 1.1 — Pipeline TCC (`gerar_figuras_tcc`), Tabela 1 + evidências CSV, seleção Fig. 5–7 por `diff_mae_top3`, elencação final (R(t), U(t), GP(t)), modelos preveem **estoque**, terceiro pilar = reposição.
 

@@ -92,3 +92,4 @@ Se quiser melhorar ainda mais:
 
 **Todas as melhorias foram implementadas e testadas!** ✅
 
+*Documentação do repositório revista em 05/04/2026.*

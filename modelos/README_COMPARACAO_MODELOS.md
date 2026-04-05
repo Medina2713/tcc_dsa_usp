@@ -8,7 +8,7 @@ Este script compara diferentes modelos de previsão temporal (**SARIMA**, **ARIM
 
 1. **SARIMA com Sazonalidade Anual (m=365)**
    - Captura padrões que se repetem anualmente
-   - Ideal para sazonalidade anual (ex: outubro e dezembro)
+   - **Só é estimado** se o período de treino tiver **≥ 730 dias** (~2 anos); caso contrário o script regista que o SARIMA anual foi omitido (séries curtas não sustentam bem `m=365`)
 
 2. **SARIMA com Sazonalidade Mensal (m=30)**
    - Captura padrões mensais
@@ -107,11 +107,9 @@ Gera relatório textual com métricas e melhor modelo por métrica.
 
 ## 📝 Arquivos Gerados
 
-1. **comparacao_modelos_[SKU].png**
-   - Gráficos comparativos
-   - Formato: PNG, 300 DPI
-
-2. **relatorio_comparacao_[SKU].txt**
+1. **comparacao_modelos_[SKU].png** — em `resultados/` (visão comparativa de todos os modelos)
+2. **Com `--tcc` ou via `gerar_figuras_tcc.py`:** **figura5.png**, **figura6.png**, **figura7.png** em `resultados/figuras_tcc/` (um modelo por ficheiro)
+3. **relatorio_comparacao_[SKU].txt**
    - Relatório textual completo
    - Métricas de todos os modelos
    - Melhor modelo por métrica
@@ -175,5 +173,7 @@ Gera relatório textual com métricas e melhor modelo por métrica.
 
 ---
 
-**Desenvolvido para TCC MBA Data Science & Analytics - 2024**
+**Desenvolvido para TCC MBA Data Science & Analytics — USP**
+
+**Última atualização:** 05/04/2026
 

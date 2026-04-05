@@ -1,6 +1,8 @@
 # 🚀 Guia Rápido: Como Explicar Cada Ferramenta
 
-**Contexto do projeto:** Os modelos (SARIMA, ARIMA, Holt-Winters, Média Móvel) preveem **estoque (saldo)**, não vendas. A previsão alimenta o **terceiro pilar** da elencação (GP(t) = soma das previsões de estoque) e **sinaliza necessidade de reposição**. Pipeline TCC: `gerar_figuras_tcc.py` gera figuras 1–7, Tabela 2 e elencação final. Ver `COMO_GERAR_FIGURAS_TCC.md` e `CRITERIOS_SELECAO_ANALISE_TEMPORAL.md`.
+**Contexto do projeto:** Os modelos (SARIMA, ARIMA, Holt-Winters, Média Móvel) preveem **estoque (saldo)**, não vendas. A previsão alimenta o **terceiro pilar** da elencação (GP(t) = soma das previsões de estoque) e **sinaliza necessidade de reposição**. Pipeline TCC: `gerar_figuras_tcc.py` gera Tabela 1, figuras 1–7, Tabela 2, CSVs de evidência em `resultados/tabelas_tcc/` e elencação final. Ver `COMO_GERAR_FIGURAS_TCC.md` e `CRITERIOS_SELECAO_ANALISE_TEMPORAL.md`.
+
+**Última revisão do texto introdutório:** 05/04/2026
 
 ---
 
@@ -403,5 +405,5 @@ Fold 3: Treina M1-M8, Testa M9  ← Expandiu!
 
 ---
 
-**Guia criado para TCC MBA Data Science & Analytics - 2024**
+**Guia criado para TCC MBA Data Science & Analytics — USP** · *Documentação do repositório revista em 05/04/2026.*
 

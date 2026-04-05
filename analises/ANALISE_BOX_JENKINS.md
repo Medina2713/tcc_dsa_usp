@@ -224,5 +224,5 @@ Após executar a análise, são gerados:
 
 ---
 
-**Desenvolvido para TCC MBA Data Science & Analytics - 2024**
+**Desenvolvido para TCC MBA Data Science & Analytics — USP** · *Documentação revista em 05/04/2026.*
 

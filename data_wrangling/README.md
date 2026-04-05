@@ -1,6 +1,6 @@
 # Data Wrangling - Preparação de Dados para SARIMA
 
-Este diretório contém scripts para preparar dados brutos de **histórico de estoque** (`historico_estoque`: sku, created_at, saldo) para uso com modelos de **previsão de estoque** (SARIMA, ARIMA, Holt-Winters, etc.). O pipeline TCC (`gerar_figuras_tcc.py`) executa o data wrangling automaticamente quando necessário.
+Este diretório contém scripts para preparar dados brutos de **histórico de estoque** (`historico_estoque`: sku, created_at, saldo) para uso com modelos de **previsão de estoque** (SARIMA, ARIMA, Holt-Winters, etc.). O pipeline TCC (`gerar_figuras_tcc.py`) procura `DB/historico_estoque_atual.csv` ou `DB/historico_estoque.csv`, gera **`DB/historico_estoque_atual_processado.csv`** e executa o wrangling automaticamente quando necessário. Os defaults internos de `dw_historico.py` podem ainda referir-se a `historico_estoque.csv`; o pipeline da raiz usa os ficheiros `*_atual_*` quando presentes.
 
 ## 📁 Arquivos
 

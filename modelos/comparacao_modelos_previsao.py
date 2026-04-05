@@ -445,6 +445,67 @@ def avaliar_modelo(y_real, y_previsto, nome_modelo):
     }
 
 
+def construir_auditoria_arima_sarima(resultados):
+    """
+    Evidencia empirica para o TCC: ordens (p,d,q), sazonal (P,D,Q,m), AIC e se as
+    previsoes ARIMA vs SARIMA coincidem numericamente (explica MAE/RMSE/MAPE iguais na Tabela 2).
+    """
+    sku = resultados.get('sku', '')
+    mod_s = resultados.get('modelos', {}).get('sarima_mensal')
+    mod_a = resultados.get('modelos', {}).get('arima')
+    prev_s = resultados.get('previsoes', {}).get('sarima_mensal')
+    prev_a = resultados.get('previsoes', {}).get('arima')
+
+    def _aic_val(m):
+        if m is None:
+            return np.nan
+        a = getattr(m, 'aic', None)
+        if callable(a):
+            try:
+                return float(a())
+            except Exception:
+                return np.nan
+        try:
+            return float(a) if a is not None else np.nan
+        except (TypeError, ValueError):
+            return np.nan
+
+    order_s = getattr(mod_s, 'order', None) if mod_s is not None else None
+    seas_s = getattr(mod_s, 'seasonal_order', None) if mod_s is not None else None
+    order_a = getattr(mod_a, 'order', None) if mod_a is not None else None
+
+    identicas = False
+    max_diff = np.nan
+    rmse_entre_prev = np.nan
+    if prev_s is not None and prev_a is not None and len(prev_s) == len(prev_a):
+        a = np.asarray(prev_s, dtype=float)
+        b = np.asarray(prev_a, dtype=float)
+        max_diff = float(np.max(np.abs(a - b)))
+        identicas = bool(np.allclose(a, b, rtol=1e-9, atol=1e-6))
+        rmse_entre_prev = float(np.sqrt(np.mean((a - b) ** 2)))
+
+    seasonal_null = False
+    if seas_s is not None and len(seas_s) >= 3:
+        P, D, Q = int(seas_s[0]), int(seas_s[1]), int(seas_s[2])
+        seasonal_null = (P == 0 and D == 0 and Q == 0)
+
+    return {
+        'sku': sku,
+        'arima_order': str(order_a) if order_a is not None else '',
+        'sarima_order': str(order_s) if order_s is not None else '',
+        'sarima_seasonal_order': str(seas_s) if seas_s is not None else '',
+        'sarima_PDQ_todos_zeros': seasonal_null,
+        'aic_arima': _aic_val(mod_a),
+        'aic_sarima': _aic_val(mod_s),
+        'previsoes_arima_sarima_identicas': identicas,
+        'max_abs_diff_previsao_arima_sarima': max_diff,
+        'rmse_entre_vetores_previsao_arima_sarima': rmse_entre_prev,
+        'teste_constante': bool(resultados.get('teste_constante', False)),
+        'cv_teste': resultados.get('cv_teste'),
+        'range_teste': resultados.get('range_teste'),
+    }
+
+
 def comparar_modelos(serie, sku, horizonte_previsao=30, proporcao_treino=0.8):
     """
     PARTE 5: COMPARAÇÃO COMPLETA DE MODELOS
@@ -720,6 +781,7 @@ def comparar_modelos(serie, sku, horizonte_previsao=30, proporcao_treino=0.8):
             _log("    MAE=0 para todos (serie de teste pode ser constante ou previsoes coincidirem).")
         _log("    Verifique o diagnostico da serie de treino acima. SKU com mais movimento pode ajudar.")
     
+    resultados['auditoria_arima_sarima'] = construir_auditoria_arima_sarima(resultados)
     return resultados
 
 
@@ -973,6 +1035,43 @@ def salvar_figuras_tcc_multiplos_skus(lista_resultados, dir_figuras_tcc, sku_fig
         path_rel.parent.mkdir(parents=True, exist_ok=True)
         df_rel.to_csv(path_rel, index=False, encoding='utf-8-sig', sep=';')
         _log(f"  [OK] Relatorio numerico: {path_rel}")
+        _salvar_resumo_quantitativo_figuras_5_7(df_rel, path_rel.parent / 'resumo_quantitativo_figuras_5_7.csv', sku_codigo)
+
+
+def _salvar_resumo_quantitativo_figuras_5_7(df_rel, path_out, sku):
+    """
+    Agrega MAE no horizonte, inclinacao da previsao (unidades/dia) e estabilidade (desvio padrao)
+    por modelo — base para texto do TCC (Figuras 5–7).
+    """
+    linhas = []
+    for modelo, g in df_rel.groupby('modelo'):
+        g = g.sort_values('indice_teste')
+        reals = g['valor_real'].astype(float).values
+        preds = g['valor_previsto'].astype(float).values
+        x = g['indice_teste'].astype(float).values
+        mae_h = float(np.mean(np.abs(reals - preds)))
+        rmse_h = float(np.sqrt(np.mean((reals - preds) ** 2)))
+        slope = float(np.polyfit(x, preds, 1)[0]) if len(x) >= 2 else np.nan
+        std_pred = float(np.std(preds))
+        n = len(preds)
+        k = min(7, n)
+        mean_first = float(np.mean(preds[:k]))
+        mean_last = float(np.mean(preds[n - k:]))
+        linhas.append({
+            'sku': sku,
+            'modelo': modelo,
+            'mae_horizonte_teste': round(mae_h, 6),
+            'rmse_horizonte_teste': round(rmse_h, 6),
+            'inclinacao_previsao_unid_por_dia': round(slope, 6),
+            'desvio_padrao_previsao': round(std_pred, 6),
+            'media_previsao_primeiros_7d': round(mean_first, 6),
+            'media_previsao_ultimos_7d': round(mean_last, 6),
+            'amplitude_media_ultimos_7_menos_primeiros_7': round(mean_last - mean_first, 6),
+        })
+    path_out = Path(path_out)
+    path_out.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(linhas).to_csv(path_out, index=False, encoding='utf-8-sig', sep=';')
+    _log(f"  [OK] Resumo quantitativo Fig 5-7: {path_out}")
 
 
 def salvar_figuras_individuais_tcc(resultados, dir_figuras_tcc=None):

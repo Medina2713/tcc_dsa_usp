@@ -1,0 +1,14 @@
+{
+  "sku_figuras_5_a_7": "7460",
+  "sku_representativo_figura_4": "811077",
+  "justificativa": "Pool: ate 300 SKUs com sazonalidade/criterios da analise exploratoria. Excluem-se teste constante, CV_teste abaixo do minimo, range de teste baixo e SKUs onde todos os modelos tem MAE quase igual. Entre os elegiveis, o top 10 segue o menor melhor MAE. O SKU das Figuras 5-7 e escolhido entre os 30 melhores MAE: prioriza-se maior diferenca de MAE entre Holt-Winters, ARIMA e SARIMA (diff_mae_top3); se o SKU representativo da Figura 4 estiver no conjunto e seu MAE for no maximo 10% pior que o melhor do pool, usa-se para coerencia narrativa.",
+  "parametros_script": {
+    "N_CANDIDATOS": 300,
+    "N_MELHORES": 10,
+    "CV_TESTE_MIN": 5.0,
+    "RANGE_TESTE_MIN": 20,
+    "EPSILON_MAE_IGUAL": 0.01,
+    "EPSILON_DIFF_MAE_TOP3": 0.5,
+    "N_POOL_FIG": 20
+  }
+}

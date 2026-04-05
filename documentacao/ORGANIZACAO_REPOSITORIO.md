@@ -12,7 +12,7 @@ CODE/
 ├── exemplos/              # Exemplos de uso
 ├── data_wrangling/        # Scripts de preparação de dados
 ├── DB/                    # Dados (CSV)
-└── resultados_comparacao/ # Resultados (criado pelo script otimizado)
+└── resultados/              # Figuras TCC, tabelas, elencação, resultados_comparacao/, logs
 ```
 
 ## 📋 Mapeamento de Arquivos
@@ -32,12 +32,13 @@ CODE/
 - `relatorio_comparacao_*.txt`
 - `README_COMPARACAO_MODELOS.md`
 - `README_OTIMIZACAO.md` ⭐ **NOVO**
-- `resultados_comparacao/` (pasta criada pelo script)
+- `resultados/resultados_comparacao/` (pasta criada pelo script otimizado)
 
 ### validacao/
-- `validacao_walk_forward_sarima.py`
-- `teste_tempo_processamento.py`
-- `tratamento_outliers_sarima.py`
+- `validar_extracao_vendas.py`, `calcular_metricas_elencacao.py`
+- `gerar_tabelas_tcc.py` (Tabela 1 e Tabela 2 para o TCC)
+- `gerar_evidencias_de_candidatos_csv.py` (evidências a partir de `candidatos_300_metricas.csv`)
+- `validacao_walk_forward_sarima.py`, `teste_tempo_processamento.py`, `tratamento_outliers_sarima.py`
 
 ### previsoes/
 - `teste_sarima_produto.py`
@@ -95,5 +96,7 @@ CODE/
 
 ---
 
-**Use `gerar_figuras_tcc.py` para figuras TCC e elencação final.** Para comparação de modelos isolada: `comparacao_modelos_previsao.py` ou `comparacao_top_skus_otimizado.py`. ✅
+**Use `gerar_figuras_tcc.py` para figuras TCC (incl. Tabela 1), Tabela 2, evidências em `resultados/tabelas_tcc/` e elencação final.** Para comparação de modelos isolada: `comparacao_modelos_previsao.py` ou `comparacao_top_skus_otimizado.py`.
+
+**Última atualização:** 05/04/2026
 

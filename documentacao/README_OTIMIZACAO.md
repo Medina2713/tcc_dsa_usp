@@ -36,7 +36,7 @@ Todas as métricas são calculadas:
 ### 4. Sistema de Checkpoint
 
 O script salva automaticamente quais SKUs já foram processados:
-- Arquivo: `resultados_comparacao/checkpoint_skus.json`
+- Arquivo: `resultados/resultados_comparacao/checkpoint_skus.json`
 - Pode interromper e retomar
 - Evita reprocessar SKUs já processados
 
@@ -130,5 +130,5 @@ No código, você pode ajustar:
 
 ---
 
-**Desenvolvido para TCC MBA Data Science & Analytics - 2024**
+**Desenvolvido para TCC MBA Data Science & Analytics — USP** · *Documentação revista em 05/04/2026.*
 

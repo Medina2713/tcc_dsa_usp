@@ -31,6 +31,7 @@ from comparacao_modelos_previsao import (
 )
 from sarima_estoque import PrevisorEstoqueSARIMA
 from sklearn.metrics import mean_absolute_error, mean_squared_error
+from pmdarima import auto_arima
 
 # Estilo academico: sem grid (estilo aplicado em cada figura individualmente)
 

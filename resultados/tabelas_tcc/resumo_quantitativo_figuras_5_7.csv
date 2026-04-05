@@ -1,0 +1,4 @@
+﻿sku;modelo;mae_horizonte_teste;rmse_horizonte_teste;inclinacao_previsao_unid_por_dia;desvio_padrao_previsao;media_previsao_primeiros_7d;media_previsao_ultimos_7d;amplitude_media_ultimos_7_menos_primeiros_7
+7460;ARIMA;14.674455;15.787589;-2.070232;18.905178;103.54834;55.39407;-48.15427
+7460;Holt-Winters;38.900111;49.850097;0.727279;9.407805;116.812639;133.035873;16.223234
+7460;SARIMA;14.674455;15.787589;-2.070232;18.905178;103.54834;55.39407;-48.15427

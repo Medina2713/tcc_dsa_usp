@@ -204,20 +204,21 @@ O **gerador de figuras TCC** usa seleção em duas etapas: (1) **candidatos** pe
 
 ### 7.2 Fase 1: Rodada de métricas (sem figuras)
 
-- Para cada um dos **300 candidatos**, roda comparação de modelos (SARIMA m=30, ARIMA, Média Móvel, Holt-Winters). **Não** gera figuras nem relatórios por SKU.
+- Para cada um dos **300 candidatos**, roda comparação de modelos (`comparacao_modelos_previsao`: SARIMA anual apenas se treino ≥ 730 dias, SARIMA m=30, ARIMA, Média Móvel, Holt-Winters). **Não** gera figuras nem relatórios por SKU.
 - Salva `resultados/candidatos_300_metricas.csv` (SKU, Modelo, MAE, RMSE, MAPE, teste_constante).
 
 ### 7.3 Fase 2: Filtros e escolha dos 10 melhores
 
-- **Exclui** SKUs com **série de teste constante** (`teste_constante`), pois MAE/RMSE/MAPE zerados não são comparáveis.
-- **Exclui** SKUs com **resultados insatisfatórios**: todos os modelos com MAE praticamente iguais (diferença &lt; 0,01), pois não há diferenciação entre modelos.
-- **Ranqueia** os elegíveis pelo **menor MAE** (melhor modelo do SKU).
-- **Seleciona** os **10 melhores** (menor MAE).
+- **Exclui** SKUs com **série de teste constante** (`teste_constante`), pois métricas podem não ser comparáveis.
+- **Exclui** SKUs com **CV da série de teste** abaixo do mínimo configurado (quase constantes) e com **amplitude** (`range_teste`) abaixo do mínimo (escala ilegível).
+- **Exclui** SKUs com **resultados insatisfatórios**: todos os modelos com MAE praticamente iguais (diferença &lt; ε entre todos), pois não há diferenciação entre modelos.
+- **Ranqueia** os elegíveis pelo **menor melhor MAE** entre modelos.
+- **Seleciona** os **10 melhores**.
 
 ### 7.4 Fase 3: Figuras, relatórios e elencação para os 10 melhores
 
 - Gera `comparacao_modelos_*.png`, `relatorio_comparacao_*.txt`, **figura5**, **figura6**, **figura7** e **Tabela 2** somente para os **10** selecionados.
-- **Figuras 5–7** usam o **melhor dos 10** (SKU com menor MAE) como representativo, evitando figuras com resultados insatisfatórios ou teste constante.
+- **Figuras 5–7** usam **um** SKU escolhido no **pool** (até 30 melhores por MAE) por maior **`diff_mae_top3`** entre Holt-Winters, ARIMA e SARIMA mensal, com preferência pelo **SKU da figura 4** quando o MAE for no máximo 10% pior (constantes em `gerar_figuras_tcc.py`). Grava também **CSVs de evidência** em `resultados/tabelas_tcc/`. Detalhes: `documentacao/SKU_FIGURAS_5_7_SELECAO_E_REMEDIACAO.md`.
 - **Elencação final:** Calcula R(t), U(t) e GP(t) (soma das previsões de **estoque**) para os 10 melhores, gera o ranking, salva `resultados/elencacao_final.csv` e **retorna** o DataFrame do ranking. Esse é o **valor final da ferramenta de elencação** (priorização para reposição).
 
 ### 7.5 Resumo do pipeline
@@ -226,8 +227,8 @@ O **gerador de figuras TCC** usa seleção em duas etapas: (1) **candidatos** pe
 |-------|-----------|
 | Exploratória | Top 300 candidatos (zeros ≤ 30%, estoque ok, cv_mensal); Fig 1–4 |
 | Fase 1 | Métricas para os 300 (sem figuras); salva `candidatos_300_metricas.csv` |
-| Fase 2 | Filtra constante/insatisfatório; ranqueia por MAE; escolhe 10 |
-| Fase 3 | Figuras, relatórios, Fig 5–7, Tabela 2 e **elencação final** (ranking → `elencacao_final.csv`) só para os 10 |
+| Fase 2 | Filtra constante, baixa variabilidade/amplitude do teste, insatisfatório; ranqueia por MAE; escolhe 10 |
+| Fase 3 | Figuras, relatórios, Fig 5–7 (SKU por `diff_mae_top3`), Tabela 2, evidências CSV e **elencação final** (ranking → `elencacao_final.csv`) |
 
 **Referência:** `gerar_figuras_tcc.py`, `analises/analise_exploratoria_sazonalidade.py` (`_top_n_eligible`).
 
@@ -235,7 +236,7 @@ O **gerador de figuras TCC** usa seleção em duas etapas: (1) **candidatos** pe
 
 ## 8. Resumo
 
-- **Pipeline TCC:** 300 candidatos (exploratório) → métricas → filtros (sem constante/insatisfatório) → 10 melhores por MAE → figuras, Tabela 2 e **elencação final** (ranking R(t), U(t), GP(t)) só para os 10. O script **retorna** o DataFrame do ranking.
+- **Pipeline TCC:** 300 candidatos (exploratório) → métricas → filtros (constante, variabilidade/amplitude do teste, insatisfatório) → 10 melhores por MAE → figuras, Tabela 2, evidências, Fig. 5–7 (SKU por `diff_mae_top3`) e **elencação final** (ranking R(t), U(t), GP(t)) só para os 10. O script **retorna** o DataFrame do ranking.
 - **Modelos preveem estoque (saldo), não vendas.** GP(t) = soma das previsões de estoque; o terceiro pilar da elencação **sinaliza necessidade de reposição**.
 - **Script alternativo** `selecionar_top_skus_analise_temporal.py`: escolha por **score de qualidade** (observações, CV, estoque, lacunas, densidade). Não usa rodada de modelos.
 - Nenhum dos dois escolhe por giro ou venda; o foco é **qualidade da série** e, no pipeline TCC, **desempenho dos modelos**.
@@ -246,4 +247,4 @@ O **gerador de figuras TCC** usa seleção em duas etapas: (1) **candidatos** pe
 - Pipeline TCC: `gerar_figuras_tcc.py`, `analises/analise_exploratoria_sazonalidade.py`  
 - Score de qualidade: `previsoes/selecionar_top_skus_analise_temporal.py`  
 
-**Última atualização:** 25/01/26
+**Última atualização:** 05/04/2026

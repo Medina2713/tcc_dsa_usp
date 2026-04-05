@@ -1,198 +1,72 @@
 # Análise: Figuras e Tabelas do TCC vs. Código Atual
 
-Este documento verifica se o repositório **consegue gerar todas as figuras e tabelas** exigidas na parte escrita do TCC e descreve **as alterações já implementadas**.
+Este documento descreve **como o repositório gera hoje** as figuras e tabelas usadas no TCC e onde encontrar as saídas.
 
-**Funcionamento atual (resumo):** O script **`gerar_figuras_tcc.py`** gera figuras 1–7, Tabela 2 e o **valor final da ferramenta de elencação** (ranking R(t), U(t), GP(t)). Pipeline: análise exploratória → 300 candidatos → métricas (sem figuras) → filtros (constante/insatisfatório) → 10 melhores por MAE → figuras, relatórios e elencação só para os 10. Figuras 5–7 usam o **melhor dos 10** (menor MAE). Os **modelos preveem estoque (saldo)**, não vendas; GP(t) = soma das previsões de estoque; o terceiro pilar **sinaliza necessidade de reposição**. Saídas: `resultados/figuras_tcc/`, `resultados/tabelas_tcc/`, `resultados/elencacao_final.csv`. Ver `documentacao/COMO_GERAR_FIGURAS_TCC.md` e `documentacao/CRITERIOS_SELECAO_ANALISE_TEMPORAL.md`.
-
----
-
-## Resumo Executivo (atualizado)
-
-| Item | TCC | Situação atual | Consegue preencher? |
-|------|-----|----------------|---------------------|
-| **Figura 1** | Evolução temporal do estoque total agregado | `figura_01_evolucao_estoque_total.png` em `resultados/figuras_exploratoria/` | **Sim** |
-| **Figura 2** | Distribuição mensal do estoque (boxplots) | `figura_02_distribuicao_mensal.png` | **Sim** |
-| **Figura 3** | Estoque médio por mês | `figura_03_estoque_medio_mes.png` | **Sim** |
-| **Figura 4** | Série temporal de SKU com maior variação sazonal | `figura_04_serie_temporal_sku.png` — SKU = top‑1 `diferenca_alta_outros` | **Sim** |
-| **Figura 5** | Previsão com Holt-Winters | `figura_05_holt_winters_{sku}.png` em `resultados/figuras_modelos/` | **Sim** |
-| **Figura 6** | Previsão com ARIMA | `figura_06_arima_{sku}.png` | **Sim** |
-| **Figura 7** | Previsão com SARIMA | `figura_07_sarima_{sku}.png` e `previsao_sarima_{sku}.png` | **Sim** |
-| **Tabela 1** | Explicação da base de dados | `validacao/gerar_tabelas_tcc.py` → `resultados/tabelas_tcc/tabela_01_base_dados.csv` | **Sim** |
-| **Tabela 2** | Desempenho dos modelos (MAE, RMSE, MAPE) | `tabela_02_desempenho_modelos.csv` (comparação ou consolidado) | **Sim** |
+**Estado atual (resumo):** O script **`gerar_figuras_tcc.py`** (raiz do repositório) orquestra o fluxo completo: Tabela 1, data wrangling, figuras 1–4 (modo TCC), fase de comparação em até 300 SKUs, seleção dos 10 melhores, figuras 5–7, Tabela 2, elencação final e **CSVs de evidência** em `resultados/tabelas_tcc/`. Os modelos preveem **estoque (saldo)**; GP(t) na elencação é a soma das previsões de estoque. Documentação complementar: `documentacao/COMO_GERAR_FIGURAS_TCC.md`, `documentacao/CRITERIOS_SELECAO_ANALISE_TEMPORAL.md`, `documentacao/SKU_FIGURAS_5_7_SELECAO_E_REMEDIACAO.md`, `documentacao/RESPOSTAS_ORIENTADORA_ANALISE_RESULTADOS.md`.
 
 ---
 
-## 1. Figuras da Análise Exploratória (Figuras 1–4)
+## Resumo executivo
 
-### O que o TCC pede
-
-- **Figura 1:** Evolução temporal do **estoque total agregado** ao longo do período.
-- **Figura 2:** **Distribuição mensal** do estoque (boxplots por mês).
-- **Figura 3:** **Estoque médio por mês** (agregando independente do ano).
-- **Figura 4:** **Série temporal de um SKU representativo**, selecionado entre os de **maior variação sazonal**.
-
-### O que o código faz hoje
-
-**Script:** `analises/analise_exploratoria_sazonalidade.py`
-
-- A função `visualizar_padroes_sazonais` gera **uma única figura** 2×2 (`analise_sazonalidade_padroes.png`) com:
-  1. **Subplot 1:** Evolução temporal do estoque total diário → equivale à **Figura 1**.
-  2. **Subplot 2:** Boxplot por mês → equivale à **Figura 2**.
-  3. **Subplot 3:** Estoque médio por mês (barras) → equivale à **Figura 3**.
-  4. **Subplot 4:** Série temporal de um SKU → conceito da **Figura 4**.
-
-**Problemas identificados:**
-
-1. **Figuras 1–4 em uma só:** O TCC trata “Figura 1”, “Figura 2”, etc. como **figuras distintas**. Hoje tudo está em um único PNG. Seria necessário **salvar quatro figuras separadas** (ou ao menos exportar subfiguras individuais) para atender ao formato do texto.
-
-2. **Figura 4 – Critério do SKU:** O TCC pede SKU “**selecionado entre aqueles que apresentaram maior variação sazonal**”. No código:
-   - `analise_por_sku_individual` calcula `diferenca_alta_outros` e ordena por ela (maior variação sazonal em primeiro).
-   - Já existe, portanto, o **ranking** de SKUs por variação sazonal.
-   - Porém `visualizar_padroes_sazonais` é chamada **sem** `sku_exemplo` e **sem** `stats_sku`. O subplot 4 usa o **default**: SKU com **mais observações** (`df.groupby('sku').size().idxmax()`), **não** o de maior variação sazonal.
-   - Ou seja: **os dados para escolher o SKU certo existem**, mas a **visualização não os utiliza**.
-
-3. **Pasta de saída:** O script salva `analise_sazonalidade_padroes.png` e `relatorio_analise_sazonalidade.txt` no **diretório corrente** (não em `resultados/`). O README prevê resultados em `resultados/`; isso é apenas organização.
-
-**Conclusão (Figuras 1–4):**
-
-- **Conteúdo:** Figuras 1, 2 e 3 estão **implementadas** (como subplots). A Figura 4 também, mas com **critério de SKU errado**.
-- **Ajustes necessários (sem mexer ainda, só verificação):**
-  - Gerar **Figuras 1, 2 e 3** como arquivos PNG separados (ou equivalentes).
-  - Passar para `visualizar_padroes_sazonais` o **SKU com maior `diferenca_alta_outros`** (primeiro de `stats_sku`) para o subplot da Figura 4 e, se desejado, salvar esse subplot como **Figura 4** em arquivo próprio.
+| Item | Onde é gerado / ficheiro | Notas |
+|------|---------------------------|--------|
+| **Figura 1–4** | `resultados/figuras_tcc/figura1.png` … `figura4.png` | `analises/analise_exploratoria_sazonalidade.py` com `usar_nomes_tcc=True` via pipeline; SKU da figura 4 = maior variação sazonal (critérios em `CRITERIOS_…`). |
+| **Figura 5–7** | `resultados/figuras_tcc/figura5.png` … `figura7.png` | Uma figura por modelo (Holt-Winters, ARIMA, SARIMA **mensal m=30**) para **um** SKU; ver seleção abaixo. |
+| **Tabela 1** | `resultados/tabelas_tcc/tabela_01_base_dados.md` (+ CSV se aplicável) | `validacao/gerar_tabelas_tcc.py` — chamada no início de `gerar_figuras_tcc.py`. |
+| **Tabela 2** | `resultados/tabelas_tcc/tabela_02_desempenho_modelos.csv` | Consolidada a partir da comparação nos 10 SKUs selecionados. |
+| **Elencação final** | `resultados/elencacao_final.csv` | Ranking R(t), U(t), GP(t) para os 10 melhores. |
+| **Evidências (discussão / orientadora)** | `evidencia_arima_sarima_por_sku.csv`, `taxa_vitoria_modelos_resumo.csv`, `vitoria_modelo_por_sku.csv`, `medias_por_modelo_*.csv`, `criterio_selecao_figuras_5_7.json`, etc. | `modelos/evidencias_orientadora_tcc.py` (invocado por `gerar_figuras_tcc.py`). Regeneração parcial: `python validacao/gerar_evidencias_de_candidatos_csv.py`. |
 
 ---
 
-## 2. Figuras da Modelagem Preditiva (Figuras 5–7)
+## 1. Figuras 1–4 (análise exploratória)
 
-### O que o TCC pede
+- **Script:** `analises/analise_exploratoria_sazonalidade.py`, acionado pelo pipeline com dados em `DB/historico_estoque_atual_processado.csv` (ou equivalente gerado pelo wrangling).
+- **Saída TCC:** ficheiros **separados** `figura1.png`–`figura4.png` em `resultados/figuras_tcc/`, não apenas um painel 2×2 em pasta alternativa.
+- **Figura 4:** SKU representativo por **maior** `diferenca_alta_outros` (variação sazonal), com filtros de zeros e estoque (alinhado ao texto do TCC).
 
-- **Figura 5:** Previsão do estoque com o **modelo Holt-Winters** (apenas esse modelo).
-- **Figura 6:** Previsão do estoque com o **modelo ARIMA** (apenas esse modelo).
-- **Figura 7:** Previsão do estoque com o **modelo SARIMA** (apenas esse modelo).
+Execução isolada (equivalente ao trecho exploratório do pipeline):
 
-Cada figura deve ilustrar “Previsão do Estoque com o Modelo X”, i.e. histórico + previsão **por modelo**, em figuras **separadas**.
-
-### O que o código faz hoje
-
-**Scripts relevantes:**
-
-1. **`modelos/comparacao_modelos_previsao.py`**
-   - Compara SARIMA (anual e mensal), ARIMA, média móvel e **Holt-Winters** (ExponentialSmoothing).
-   - Gera **uma única** figura `comparacao_modelos_{sku}.png` com **todos** os modelos no mesmo gráfico (treino + teste + previsões).
-   - **Não** gera figuras individuais por modelo (Holt-Winters só, ARIMA só, SARIMA só).
-
-2. **`previsoes/teste_sarima_produto.py`**
-   - Gera `resultados/previsao_sarima_{sku}.png` com **apenas** SARIMA (histórico + previsão).
-   - Formato adequado para **Figura 7**.
-
-3. **`modelos/comparacao_top_skus_otimizado.py`**
-   - Salva apenas JSON e CSV (métricas por modelo por SKU). **Não gera figuras.**
-
-**Problemas identificados:**
-
-1. **Figura 5 (Holt-Winters):** Não há figura **exclusiva** de previsão Holt-Winters. Só aparece no gráfico comparativo.
-2. **Figura 6 (ARIMA):** Idem — não há figura **exclusiva** ARIMA.
-3. **Figura 7 (SARIMA):** **Atendida** por `teste_sarima_produto.py` (ou uso equivalente do módulo SARIMA para gerar um PNG só com SARIMA).
-
-**Conclusão (Figuras 5–7):**
-
-- **Figura 7:** **Sim** — já existe geração de figura “só SARIMA”.
-- **Figuras 5 e 6:** **Não** — o código não gera figuras **separadas** “só Holt-Winters” e “só ARIMA”. Seria preciso **novas rotinas de plot** (ou reaproveitar a lógica de `comparacao_modelos_previsao` e `teste_sarima_produto`) para exportar duas figuras adicionais, uma por modelo.
+```bash
+python analises/analise_exploratoria_sazonalidade.py --tcc
+```
 
 ---
 
-## 3. Tabela 1 – Explicação da Base de Dados
+## 2. Figuras 5–7 (comparação de modelos)
 
-### O que o TCC pede
-
-**Tabela 1.** Explicação da base de dados utilizada.
-
-Colunas sugeridas: **Variável** | **Descrição da variável** | **Código e rótulo da variável**.
-
-O texto do TCC deixa a tabela em branco (“...”); o preenchimento é manual.
-
-### O que o código faz hoje
-
-- **Fontes:** `historico_estoque` (sku, created_at, saldo) e `venda_produtos` (sku, created_at, quantidade, valor_unitario, custo_unitario, margem_proporcional, etc.).
-- **Uso:** `data_wrangling/dw_historico.py`, `validacao/validar_extracao_vendas.py`, `validacao/calcular_metricas_elencacao.py`, leituras em `previsoes/` e `modelos/`.
-- Não há **script** que gere a Tabela 1; ela é **documental**.
-
-**Conclusão (Tabela 1):**
-
-- **Sim** — dá para preencher a Tabela 1 com as variáveis das tabelas `historico_estoque` e `venda_produtos`, suas descrições e códigos/formatos. Basta redigir a partir do esquema e do uso no código. Nenhuma alteração de código é necessária para “gerar” a tabela; o que existe já sustenta o preenchimento.
+- **Lógica principal:** `modelos/comparacao_modelos_previsao.py` — compara vários modelos; em modo TCC gera PNGs **por modelo** (figuras 5–7) para o SKU indicado.
+- **Pipeline TCC:** após métricas em até 300 candidatos e filtros (`teste_constante`, `diff_mae` entre todos os modelos, `CV_teste` mínimo, `range_teste` mínimo, etc.), o SKU das figuras 5–7 **não** é apenas “o primeiro do top 10 por MAE”: escolhe-se no **pool** (até 30 melhores por MAE) o SKU com maior **`diff_mae_top3`** (diferença de MAE entre Holt-Winters, ARIMA e SARIMA mensal), com **preferência pelo SKU da figura 4** se estiver no conjunto e com MAE até 10% pior que o melhor candidato — ver constantes em `gerar_figuras_tcc.py` e `documentacao/SKU_FIGURAS_5_7_SELECAO_E_REMEDIACAO.md`.
+- **SARIMA anual (m=365):** só entra na comparação se o treino tiver **≥ 730 dias** (`MIN_DIAS_SARIMA_ANUAL` em `comparacao_modelos_previsao.py`). As figuras 5–7 do TCC usam **SARIMA mensal (m=30)** na figura 7.
 
 ---
 
-## 4. Tabela 2 – Desempenho dos Modelos (MAE, RMSE, MAPE)
+## 3. Tabela 1 — base de dados
 
-### O que o TCC pede
-
-**Tabela 2.** Desempenho dos modelos de previsão por métrica de erro.
-
-Resumo dos resultados **médios** (ou análogos) para os principais modelos, usando **MAE**, **RMSE** e **MAPE**.
-
-### O que o código faz hoje
-
-- **`comparacao_modelos_previsao.py`:** Calcula MAE, RMSE e MAPE por modelo (por SKU). Imprime e grava em `relatorio_comparacao_{sku}.txt`. Não gera CSV em formato de “tabela resumo” para o TCC.
-- **`comparacao_top_skus_otimizado.py`:**
-  - Salva `metricas_{sku}.csv` (por SKU e modelo) e `metricas_consolidadas.csv` (todos os SKUs e modelos).
-  - Gera `relatorio_consolidado.txt` com **“ESTATISTICAS POR MODELO”**: MAE médio, RMSE médio, MAPE médio por modelo.
-- Ou seja: **os dados existem** (por modelo e, no consolidado, médias por modelo).
-
-**Conclusão (Tabela 2):**
-
-- **Sim** — é possível montar a Tabela 2 a partir de:
-  - `resultados/resultados_comparacao/metricas_consolidadas.csv`, ou
-  - `relatorio_consolidado.txt` (bloco “ESTATISTICAS POR MODELO”).
-- Basta **agregar** por modelo (média de MAE, RMSE, MAPE) e **formatar** em tabela (Excel, LaTeX, etc.). Um script auxiliar poderia exportar diretamente uma tabela “Modelo | MAE | RMSE | MAPE”, mas os dados já permitem o preenchimento.
+Gerada por código (`validacao/gerar_tabelas_tcc.py`), invocada automaticamente por `gerar_figuras_tcc.py`. Descreve variáveis das bases `historico_estoque` e `venda_produtos` conforme usadas no projeto.
 
 ---
 
-## 5. Checklist por Item
+## 4. Tabela 2 — desempenho dos modelos
 
-| # | Item | Geração automática? | Dados existem? | Ação para preencher |
-|---|------|---------------------|----------------|----------------------|
-| 1 | **Figura 1** – Evolução estoque total | Subplot apenas | Sim | Salvar subplot como figura única |
-| 2 | **Figura 2** – Boxplots mensais | Subplot apenas | Sim | Salvar subplot como figura única |
-| 3 | **Figura 3** – Estoque médio por mês | Subplot apenas | Sim | Salvar subplot como figura única |
-| 4 | **Figura 4** – Série SKU maior variação sazonal | Subplot com SKU errado | Sim (stats_sku) | Usar top-1 `diferenca_alta_outros` e opcionalmente separar figura |
-| 5 | **Figura 5** – Holt-Winters | Não | Sim (previsões) | Criar rotina de figura só Holt-Winters |
-| 6 | **Figura 6** – ARIMA | Não | Sim (previsões) | Criar rotina de figura só ARIMA |
-| 7 | **Figura 7** – SARIMA | Sim (`previsao_sarima_*.png`) | Sim | Usar como está |
-| 8 | **Tabela 1** – Base de dados | Não (manual) | Sim (código/schema) | Preencher manualmente |
-| 9 | **Tabela 2** – MAE, RMSE, MAPE | CSV/relatório (não tabela formatada) | Sim | Agregar por modelo e formatar |
+Produzida no fluxo de comparação dos **10** SKUs finais; ficheiro em `resultados/tabelas_tcc/`. Médias agregadas e “taxas de vitória” por SKU aparecem também nos CSVs de evidência listados no resumo executivo.
 
 ---
 
-## 6. Resumo das Lacunas
+## 5. Ficheiros auxiliares e gráficos fora do modo TCC
 
-1. **Figuras 1–4:** Conteúdo presente em um único PNG; TCC exige figuras **separadas**. Figura 4 usa SKU por **número de observações**, não por **maior variação sazonal**.
-2. **Figuras 5 e 6:** Não existem figuras **exclusivas** para Holt-Winters e ARIMA; só o comparativo geral e a figura só SARIMA.
-3. **Tabela 1:** Preenchimento manual; dados disponíveis no projeto.
-4. **Tabela 2:** Dados disponíveis (CSV/relatório); falta só agregar e formatar como tabela do TCC.
+- **`resultados/figuras_exploratoria/`** — execuções sem nomes `figura1`…`figura4` (nomenclatura antiga/alternativa).
+- **`resultados/figuras_modelos/`** — comparações e figuras por SKU quando se corre `comparacao_modelos_previsao.py` diretamente (nomes podem incluir o código do SKU).
+- **`resultados/resultados_comparacao/`** — saídas de `comparacao_top_skus_otimizado.py` (JSON/CSV por SKU, consolidados).
 
----
-
-## 7. Conclusão
-
-- **Tabela 1 e Tabela 2:** **Sim** — é possível preencher ambas. Tabela 1 manualmente; Tabela 2 a partir dos CSVs/relatórios existentes.
-- **Figura 7:** **Sim** — já existe geração de figura “Previsão do Estoque com o Modelo SARIMA”.
-- **Figuras 1–4:** **Parcial** — os gráficos existem, mas em figura única e (no caso da Fig 4) com critério de SKU incorreto. Ajustes no script de análise exploratória permitiriam atender ao TCC.
-- **Figuras 5 e 6:** **Não** — o repositório hoje **não** gera figuras exclusivas para Holt-Winters e ARIMA. Seria necessário implementar essa geração (ou estender a comparação de modelos para exportar figuras por modelo).
-
-**Em resumo:** As alterações foram **implementadas**. Todas as figuras e tabelas do TCC podem ser geradas pelos scripts atuais.
+Para o **capítulo do TCC** em formato padronizado, use **`resultados/figuras_tcc/`** e as tabelas em **`resultados/tabelas_tcc/`** após `python gerar_figuras_tcc.py`.
 
 ---
 
-## 8. Estrutura de saída (pastas específicas)
+## 6. PDF vs. Markdown
 
-- **`resultados/figuras_exploratoria/`** — Figuras 1–4 e figura combinada (`analise_sazonalidade_padroes.png`).
-- **`resultados/figuras_modelos/`** — Figuras 5, 6, 7, `comparacao_modelos_{sku}.png`, `previsao_sarima_{sku}.png`.
-- **`resultados/tabelas_tcc/`** — Tabela 1 (base de dados) e Tabela 2 (desempenho dos modelos).
-- **`resultados/resultados_comparacao/`** — Saídas do `comparacao_top_skus_otimizado` (JSON, CSV consolidado).
-- **`resultados/`** — Relatórios TXT, métricas de elencação, etc.
+Ficheiros como `REspostas_orientadora.pdf` na raiz (se existirem) são **exportações manuais** a partir dos `.md` em `documentacao/`; o pipeline Python **não** regenera PDF automaticamente.
 
 ---
 
-**Referência:** Parte escrita do TCC (figuras e tabelas citadas).  
-**Última atualização:** 25/01/26 (alterações implementadas)
+**Última atualização:** 05/04/2026

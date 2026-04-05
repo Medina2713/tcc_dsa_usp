@@ -5,14 +5,14 @@ Gera todas as figuras do TCC (figura1 ... figura7) e o valor final da ferramenta
 
 - Analise exploratoria -> figura1, figura2, figura3, figura4 (agregados + SKU representativo).
 - Seleciona ate 300 candidatos (zeros <= 30%, estoque ok, cv_mensal) e roda metricas (ARIMA, SARIMA m=30, etc.) sem figuras.
-- Filtra teste constante e resultados insatisfatorios; ranqueia por melhor MAE e escolhe os 10 melhores.
-- Gera figura5, figura6, figura7 (SKU com menor MAE dos 10), Tabela 2, relatorios e graficos por SKU apenas para os 10.
+- Filtra teste constante, CV/range minimos no teste e MAE quase igual entre modelos; ranqueia por melhor MAE e escolhe os 10 melhores.
+- Figuras 5-7: SKU no top 30 MAE com maior diff_mae_top3 (HW/ARIMA/SARIMA); preferencia Fig.4 se elegivel. Tabela 2, relatorios e graficos por SKU apenas para os 10.
 - Gera elencacao final (R(t), U(t), GP(t)) para os 10 melhores e retorna o DataFrame do ranking.
 
 Os modelos preveem ESTOQUE (saldo), nao vendas. GP(t) = soma das previsoes de estoque.
 
 Salva em resultados/figuras_tcc/, resultados/tabelas_tcc/, resultados/candidatos_300_metricas.csv,
-resultados/elencacao_final.csv.
+resultados/elencacao_final.csv. Gera CSVs de evidencia em tabelas_tcc/ (taxa vitoria, medias). Regenerar: python validacao/gerar_evidencias_de_candidatos_csv.py
 
 Retorno: DataFrame com ranking de elencacao (ranking, sku, estoque_atual, R(t), U(t), GP(t), score_elencacao).
 
@@ -358,6 +358,29 @@ def _rodar_comparacao_300_selecionar_10(top300_skus, sku_representativo=None):
                 break
     else:
         _log(f"  [FIG 5-7] Usando SKU com previsao mais proxima do real: {best_of_10} (MAE={best_mae_val:.4f}, diff_mae_top3={best_d3:.4f})")
+
+    # CSVs de evidencia (discussao TCC / orientadora)
+    try:
+        ev = _carregar_modulo('evidencias_orientadora_tcc', ROOT / 'modelos' / 'evidencias_orientadora_tcc.py')
+        ev.salvar_evidencias_orientadora(
+            lista_300,
+            top10_resultados,
+            str(best_of_10),
+            sku_representativo,
+            ROOT / 'resultados' / 'tabelas_tcc',
+            constantes={
+                'N_CANDIDATOS': N_CANDIDATOS,
+                'N_MELHORES': N_MELHORES,
+                'CV_TESTE_MIN': CV_TESTE_MIN,
+                'RANGE_TESTE_MIN': RANGE_TESTE_MIN,
+                'EPSILON_MAE_IGUAL': EPSILON_MAE_IGUAL,
+                'EPSILON_DIFF_MAE_TOP3': EPSILON_DIFF_MAE_TOP3,
+                'N_POOL_FIG': min(30, len(elegiveis)),
+            },
+            log_fn=_log,
+        )
+    except Exception as _e_ev:
+        _log(f'  [AVISO] Falha ao salvar evidencias orientadora: {_e_ev}')
 
     # --- Fase 3: figuras, relatorios, Fig 5-7, Tabela 2 ---
     _log(f"\n[FASE 3/3] Gerando figuras e relatorios para os {len(top10_resultados)} melhores (Fig 5-7: {best_of_10})...")

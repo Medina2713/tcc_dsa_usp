@@ -302,3 +302,4 @@ serie_tratada = tratamento.substituir_outliers_suavizacao()
 
 **✅ PROJETO COMPLETO E PRONTO PARA USO!**
 
+*Os imports de exemplo assumem o diretório de trabalho adequado (`analises/`, `validacao/`). Documentação revista em 05/04/2026.*
